@@ -46,7 +46,7 @@
                     data-label-light="<?= htmlspecialchars($t('layout.enable_light_mode')) ?>"
                 >
                     <svg class="theme-toggle-icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-                        <path d="M12 3a1 1 0 0 1 1 1 7 7 0 1 0 7 7 1 1 0 1 1 2 0 9 9 0 1 1-9-9 1 1 0 0 1-1 1Z" fill="currentColor"></path>
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"></path>
                     </svg>
                 </button>
             </li>
