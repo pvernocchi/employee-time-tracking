@@ -60,8 +60,14 @@ class DashboardController
         // Admin/Manager data
         $adminData = [];
         if (Auth::isManager()) {
+            $reviewerId = Auth::id();
             $adminData['pending_leave_count'] = $db->fetchOne(
-                'SELECT COUNT(*) as count FROM leave_requests WHERE status = "pending"'
+                'SELECT COUNT(*) as count
+                 FROM leave_requests lr
+                 JOIN users u ON lr.user_id = u.id
+                 LEFT JOIN users um ON u.manager_id = um.id
+                 WHERE lr.status = "pending" AND (u.manager_id = ? OR um.manager_id = ?)',
+                [$reviewerId, $reviewerId]
             )['count'];
 
             $adminData['active_employees'] = $db->fetchOne(

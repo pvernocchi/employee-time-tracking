@@ -14,6 +14,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Manager</th>
                 <th>Department</th>
                 <th>Rate</th>
                 <th>Status</th>
@@ -26,6 +27,13 @@
                 <td><?= htmlspecialchars($emp['first_name'] . ' ' . $emp['last_name']) ?></td>
                 <td><?= htmlspecialchars($emp['email']) ?></td>
                 <td><span class="badge badge-role-<?= $emp['role'] ?>"><?= ucfirst($emp['role']) ?></span></td>
+                <td>
+                    <?php if (!empty($emp['manager_first_name']) || !empty($emp['manager_last_name'])): ?>
+                        <?= htmlspecialchars(trim(($emp['manager_first_name'] ?? '') . ' ' . ($emp['manager_last_name'] ?? ''))) ?>
+                    <?php else: ?>
+                        —
+                    <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($emp['department'] ?? '—') ?></td>
                 <td><?= $emp['hourly_rate'] ? '$' . number_format($emp['hourly_rate'], 2) : '—' ?></td>
                 <td><span class="badge badge-<?= $emp['is_active'] ? 'active' : 'inactive' ?>"><?= $emp['is_active'] ? 'Active' : 'Inactive' ?></span></td>

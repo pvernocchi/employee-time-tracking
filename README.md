@@ -14,6 +14,7 @@ This application helps organizations track working time with a classic server-re
 - 📅 **Weekly and monthly timesheets**
 - 🏖️ **Leave request workflow** for employees and managers
 - 👥 **Employee administration** for admins
+- 🧭 **Manager/team assignment** so approvals follow reporting hierarchy
 - 📊 **Reports and CSV exports** for management
 - 🛡️ **Compliance dashboard** with audit visibility and labor inspection exports
 - 🧾 **Inspector access** for read-only record review and export
