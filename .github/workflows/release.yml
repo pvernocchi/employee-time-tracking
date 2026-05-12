@@ -92,7 +92,7 @@ jobs:
                 echo "- ${TITLE} by @${AUTHOR} in ${URL}"
               done < "$SORTED_PRS_FILE"
             else
-              echo "- No merged pull requests found in this Release Diff."
+              echo "- No merged pull requests found for this release."
             fi
 
             echo
