@@ -34,23 +34,10 @@
             <?php if (\App\Core\Auth::isInspector()): ?>
             <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.inspector')) ?></a></li>
             <?php endif; ?>
-            <li>
-                <button
-                    type="button"
-                    id="theme-toggle"
-                    class="theme-toggle"
-                    aria-label="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
-                    title="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
-                    aria-pressed="false"
-                    data-label-dark="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
-                    data-label-light="<?= htmlspecialchars($t('layout.enable_light_mode')) ?>"
-                >
-                    <svg class="theme-toggle-icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"></path>
-                    </svg>
-                </button>
-            </li>
-            <li class="nav-dropdown nav-dropdown-right">
+        </ul>
+        <div class="nav-user">
+            <span><?= htmlspecialchars(\App\Core\Auth::user()['first_name'] ?? '') ?></span>
+            <div class="nav-dropdown nav-dropdown-right">
                 <?php $currentLocaleMeta = $localeMeta($currentLocale); ?>
                 <a href="#">
                     <img src="<?= htmlspecialchars($currentLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
@@ -67,10 +54,21 @@
                         </li>
                     <?php endforeach; ?>
                 </ul>
-            </li>
-        </ul>
-        <div class="nav-user">
-            <span><?= htmlspecialchars(\App\Core\Auth::user()['first_name'] ?? '') ?></span>
+            </div>
+            <button
+                type="button"
+                id="theme-toggle"
+                class="theme-toggle"
+                aria-label="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                title="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                aria-pressed="false"
+                data-label-dark="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                data-label-light="<?= htmlspecialchars($t('layout.enable_light_mode')) ?>"
+            >
+                <svg class="theme-toggle-icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"></path>
+                </svg>
+            </button>
             <a href="/mfa/setup" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.mfa_setup')) ?>">🔑</a>
             <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>
