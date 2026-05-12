@@ -111,7 +111,7 @@ a:hover { text-decoration: underline; }
 }
 
 .locale-menu a {
-    display: inline-flex !important;
+    display: inline-flex;
     align-items: center;
     gap: 0.45rem;
 }
