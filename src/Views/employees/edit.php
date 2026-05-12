@@ -100,17 +100,22 @@
             if (!roleSelect || !managerField || !teamMembersField || !managerSelect) return;
 
             const role = roleSelect.value;
-            const showManagerField = role === 'employee' || role === 'manager';
-            const showTeamMembersField = role === 'manager';
+            const isEmployee = role === 'employee';
+            const isManager = role === 'manager';
+            const isInspector = role === 'inspector';
+            const isAdmin = role === 'admin';
+
+            const showManagerField = isEmployee || isManager;
+            const showTeamMembersField = isManager;
 
             managerField.style.display = showManagerField ? '' : 'none';
-            managerSelect.required = role === 'employee';
+            managerSelect.required = isEmployee;
             if (!showManagerField) {
                 managerSelect.value = '';
             }
 
             teamMembersField.style.display = showTeamMembersField ? '' : 'none';
-            if (!showTeamMembersField) {
+            if (!showTeamMembersField && (isAdmin || isInspector || isEmployee)) {
                 Array.from(document.getElementById('team_member_ids').options).forEach((option) => {
                     option.selected = false;
                 });
