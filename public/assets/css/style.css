@@ -26,9 +26,26 @@
     --gray-700: #374151;
     --gray-800: #1f2937;
     --gray-900: #111827;
+    --surface-bg: #ffffff;
     --radius: 8px;
     --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] {
+    --gray-50: #0f172a;
+    --gray-100: #1e293b;
+    --gray-200: #334155;
+    --gray-300: #475569;
+    --gray-400: #94a3b8;
+    --gray-500: #b8c2d3;
+    --gray-600: #cbd5e1;
+    --gray-700: #e2e8f0;
+    --gray-800: #f1f5f9;
+    --gray-900: #f8fafc;
+    --surface-bg: #1e293b;
+    --shadow: 0 1px 3px rgba(0,0,0,0.45), 0 1px 2px rgba(0,0,0,0.35);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
 }
 
 body {
@@ -44,7 +61,7 @@ a:hover { text-decoration: underline; }
 
 /* Navbar */
 .navbar {
-    background: white;
+    background: var(--surface-bg);
     border-bottom: 1px solid var(--gray-200);
     padding: 0.75rem 1.5rem;
     display: flex;
@@ -88,7 +105,7 @@ a:hover { text-decoration: underline; }
     position: absolute;
     top: 100%;
     left: 0;
-    background: white;
+    background: var(--surface-bg);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);
@@ -137,6 +154,30 @@ a:hover { text-decoration: underline; }
     color: var(--gray-600);
 }
 
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    background: var(--surface-bg);
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+    background: var(--gray-100);
+    color: var(--gray-900);
+}
+
+.theme-toggle-icon {
+    width: 16px;
+    height: 16px;
+}
+
 /* Container */
 .container {
     max-width: 1200px;
@@ -160,7 +201,7 @@ a:hover { text-decoration: underline; }
 
 /* Cards */
 .card {
-    background: white;
+    background: var(--surface-bg);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -180,7 +221,7 @@ a:hover { text-decoration: underline; }
 }
 
 .stat-card {
-    background: white;
+    background: var(--surface-bg);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     padding: 1.25rem;
@@ -217,7 +258,7 @@ a:hover { text-decoration: underline; }
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-success { background: var(--success); color: white; }
 .btn-danger { background: var(--danger); color: white; }
-.btn-outline { background: white; border-color: var(--gray-300); color: var(--gray-700); }
+.btn-outline { background: var(--surface-bg); border-color: var(--gray-300); color: var(--gray-700); }
 .btn-outline:hover { background: var(--gray-50); }
 .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
 .btn-lg { padding: 0.75rem 2rem; font-size: 1.1rem; }
@@ -375,7 +416,7 @@ a:hover { text-decoration: underline; }
 }
 
 .auth-card {
-    background: white;
+    background: var(--surface-bg);
     border-radius: var(--radius);
     padding: 2rem;
     box-shadow: var(--shadow-md);
