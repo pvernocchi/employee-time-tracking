@@ -1,174 +1,192 @@
 # ⏱️ Employee Time Tracking
 
-[![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.0.2-brightgreen.svg)](VERSION)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![MySQL 5.7+](https://img.shields.io/badge/MySQL-5.7%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Licencia GPLv3](https://img.shields.io/badge/Licencia-GPLv3-blue.svg)](LICENSE)
+[![Versión 0.2.2](https://img.shields.io/badge/Versi%C3%B3n-0.2.2-brightgreen.svg)](VERSION)
+[![Despliegue por FTP](https://github.com/pvernocchi/employee-time-tracking/actions/workflows/ftp-deploy.yml/badge.svg)](.github/workflows/ftp-deploy.yml)
 
-A lightweight **vanilla PHP** time-tracking platform for teams that need simple attendance management, leave workflows, and compliance reporting aligned with Spanish labor law.
+**Employee Time Tracking** es una aplicación web ligera de fichaje y gestión de jornada para equipos que necesitan registrar horas, administrar ausencias y preparar informes de cumplimiento laboral en España.
 
-> 🇪🇸 [Versión en español](README.es.md)
-
----
-
-## Why This Project?
-
-Most time-tracking tools are either overkill SaaS platforms or complex self-hosted apps that demand containerized infrastructure. This project takes a different approach:
-
-- **Zero framework overhead** — pure PHP 8.1+ with PSR-4 autoloading, no heavy framework to learn
-- **Shared-hosting friendly** — runs on any LAMP stack with Apache, PHP, and MySQL
-- **Compliance-ready** — built around **Real Decreto-ley 8/2019 / Art. 34.9 ET** with daily/weekly hour checks, overtime monitoring, rest-period alerts, audit logs, and inspection-ready CSV exports
-- **Role-based access** — four distinct roles (Admin, Manager, Employee, Inspector) with appropriate permissions
-- **Multi-language UI** — supports Spanish, English, Catalan, Basque, and Galician
-- **MFA support** — TOTP and WebAuthn/FIDO2 (YubiKey, Windows Hello) for secure authentication
+Está desarrollada en **PHP 8.1+ sin framework**, usa **MySQL**, se instala mediante Composer y está pensada para entornos LAMP o alojamientos compartidos donde el directorio público del sitio apunta a `public/`.
 
 ---
 
-## Features
+## ✨ Qué hace el proyecto
 
-| Area | What it covers |
-| --- | --- |
-| **Dashboard** | Personal stats, active status, pending leave, manager overview |
-| **Time Tracking** | Clock in/out, break tracking, shift notes |
-| **Timesheets** | Weekly breakdowns and monthly summaries |
-| **Leave Management** | Submit, review, approve/reject, and cancel requests |
-| **Reporting** | Filtered reports with CSV export |
-| **Compliance** | Alerts dashboard, audit log, inspection exports |
-| **Inspector Portal** | Read-only employee record browsing and official exports |
-| **Security** | CSRF protection, MFA (TOTP + WebAuthn), session management |
-| **Admin Settings** | Employee management, SMTP configuration, security policies |
+La aplicación centraliza el registro horario y la gestión operativa de empleados:
+
+- 🕒 **Fichaje de entrada y salida** con seguimiento de pausas y notas de jornada.
+- 📅 **Hojas de horas** semanales y mensuales para empleados y responsables.
+- 🏖️ **Solicitudes de permisos y vacaciones** con revisión, aprobación, rechazo y cancelación.
+- 📊 **Informes y exportaciones CSV** para registros de jornada, horas extra e incidencias.
+- ⚖️ **Cumplimiento laboral** con límites diarios, semanales, descansos, auditoría y exportación para inspecciones.
+- 🔐 **Seguridad integrada** con sesiones, CSRF, contraseñas cifradas, TOTP y WebAuthn/FIDO2.
+- 🌍 **Interfaz multidioma** con soporte para español, inglés, catalán, euskera y gallego.
 
 ---
 
-## Quick Start
+## 🚀 Por qué es útil
 
-### Prerequisites
+Employee Time Tracking está diseñado para organizaciones que quieren una solución autocontenida y fácil de mantener:
 
-- PHP 8.1+
-- MySQL 5.7+
-- Apache with `mod_rewrite` enabled
-- [Composer](https://getcomposer.org/)
+- **Sin dependencia de un SaaS externo**: los datos permanecen en la infraestructura de la organización.
+- **Compatible con hosting compartido**: no requiere contenedores ni un framework pesado.
+- **Preparado para el contexto español**: incluye valores por defecto alineados con el registro obligatorio de jornada y conservación de datos.
+- **Roles claros**: administrador, responsable, empleado e inspector tienen permisos diferenciados.
+- **Instalación guiada**: el instalador web crea la configuración, ejecuta migraciones y permite crear el primer administrador.
 
-### Installation
+---
+
+## 📦 Requisitos
+
+Antes de empezar, asegúrate de tener:
+
+- PHP **8.1 o superior**.
+- MySQL **5.7 o superior**.
+- Apache con `mod_rewrite` habilitado.
+- [Composer](https://getcomposer.org/).
+- Acceso para apuntar la raíz web del sitio al directorio `public/`.
+
+---
+
+## 🛠️ Primeros pasos
+
+### 1. Obtener el código
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/pvernocchi/employee-time-tracking.git
 cd employee-time-tracking
-
-# 2. Install PHP dependencies
-composer install --no-dev --optimize-autoloader
-
-# 3. Point your web server document root to the public/ directory
-#    e.g. /path/to/employee-time-tracking/public
-
-# 4. Open the app URL in your browser
-#    The web installer will launch automatically on first visit
 ```
 
-The built-in web installer at `/install` will guide you through:
+### 2. Instalar dependencias
 
-1. Database connection setup
-2. Application configuration (name, URL, timezone)
-3. Admin account creation
-4. Schema migration
+Para producción:
 
-For detailed deployment instructions, see the [Installation Guide](install.md).
-For upgrading existing deployments, see the [Update Guide](update.md).
+```bash
+composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+```
 
-### Manual Configuration (Alternative)
+Para desarrollo local:
 
-If you prefer to configure manually instead of using the web installer:
+```bash
+composer install
+```
+
+### 3. Preparar el servidor web
+
+Configura Apache para que la raíz del sitio apunte a:
+
+```text
+/path/to/employee-time-tracking/public
+```
+
+El archivo `public/index.php` actúa como controlador frontal y redirige al instalador cuando la aplicación aún no está configurada.
+
+### 4. Ejecutar el instalador web
+
+Abre la URL de la aplicación en el navegador. Si no existe `config/config.php` o la base de datos no está instalada, la aplicación redirige automáticamente a `/install`.
+
+El instalador solicita:
+
+1. Datos de la aplicación: nombre, URL y zona horaria.
+2. Credenciales de MySQL.
+3. Datos del primer usuario administrador.
+4. Confirmación para crear la configuración y aplicar migraciones.
+
+Para instrucciones más detalladas, consulta la [guía de instalación](install.md). Para actualizar una instalación existente, consulta la [guía de actualización](update.md).
+
+---
+
+## 💡 Ejemplos de uso
+
+Después de iniciar sesión:
+
+- Un **empleado** puede fichar desde `/clock`, revisar su jornada en `/timesheet` y solicitar permisos en `/leave/request`.
+- Un **responsable** puede revisar solicitudes en `/admin/leave` y consultar informes de equipo en `/admin/reports`.
+- Un **administrador** puede gestionar empleados en `/admin/employees`, configurar seguridad en `/admin/security` y revisar cumplimiento en `/compliance`.
+- Un **inspector** puede acceder a vistas de solo lectura y exportaciones desde `/inspector`.
+
+---
+
+## 🧭 Estructura del proyecto
+
+```text
+employee-time-tracking/
+├── config/                  # Configuración de ejemplo y configuración local
+├── cron/                    # Tareas programadas de notificaciones
+├── database/
+│   ├── schema.sql           # Esquema base
+│   └── migrations/          # Migraciones incrementales
+├── public/                  # Raíz web del servidor
+│   ├── index.php            # Controlador frontal
+│   └── assets/              # Recursos estáticos
+├── src/
+│   ├── Controllers/         # Controladores HTTP
+│   ├── Core/                # Autenticación, base de datos, router y servicios
+│   ├── Lang/                # Traducciones
+│   └── Views/               # Plantillas PHP renderizadas en servidor
+├── .github/workflows/       # Automatización de despliegue
+├── composer.json            # Dependencias y autoload PSR-4
+├── install.md               # Guía de instalación
+└── update.md                # Guía de actualización
+```
+
+---
+
+## ⚙️ Configuración y despliegue
+
+La configuración base se encuentra en [`config/config.example.php`](config/config.example.php). El instalador crea `config/config.php`; si necesitas configurar manualmente, copia el ejemplo y ajusta valores de aplicación, base de datos, sesión, cumplimiento y SMTP.
 
 ```bash
 cp config/config.example.php config/config.php
 ```
 
-Edit `config/config.php` to set your database credentials, app URL, timezone, and compliance thresholds. Then import the schema:
+También puedes importar el esquema base si decides no usar el instalador:
 
 ```bash
-mysql -u your_user -p your_database < database/schema.sql
+mysql -u usuario -p nombre_base_datos < database/schema.sql
 ```
 
----
-
-## User Roles
-
-| Role | Access |
-| --- | --- |
-| **Admin** | Full access — employee management, compliance dashboard, security settings |
-| **Manager** | Team reports, leave approvals, workforce overview |
-| **Employee** | Clock in/out, timesheets, leave requests, self-service export |
-| **Inspector** | Read-only inspection views and official attendance exports |
+El repositorio incluye un flujo de GitHub Actions en [`.github/workflows/ftp-deploy.yml`](.github/workflows/ftp-deploy.yml) que instala dependencias de producción y despliega por FTPS usando secretos del repositorio.
 
 ---
 
-## Project Structure
+## ✅ Validación en desarrollo
 
-```text
-employee-time-tracking/
-├── config/                  # App configuration (config.example.php)
-│
-├── database/
-│   ├── schema.sql           # Full database schema
-│   └── migrations/          # Incremental schema migrations
-│
-├── public/                  # Web root (point your server here)
-│   ├── index.php            # Front controller
-│   └── assets/              # CSS, JS, and flag icons
-│
-├── src/
-│   ├── Controllers/         # Request handlers
-│   ├── Core/                # Router, Database, Auth, I18n, Services
-│   ├── Lang/                # Translation files (es, en, ca, eu, gl)
-│   └── Views/               # Server-rendered PHP templates
-│
-├── .github/workflows/       # CI/CD (FTP deployment)
-├── composer.json
-├── install.md               # Installation guide
-└── update.md                # Upgrade guide
+No hay scripts dedicados de prueba en Composer. Para validar cambios PHP, ejecuta comprobaciones de sintaxis:
+
+```bash
+find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
 ```
 
----
-
-## Deployment
-
-The repository includes a GitHub Actions workflow that runs `composer install` and deploys over **FTPS**, making it suitable for shared-hosting environments. See `.github/workflows/` for the workflow configuration.
+Si modificas vistas o flujos de usuario, prueba manualmente los roles afectados antes de abrir un pull request.
 
 ---
 
-## Security
+## 🆘 Dónde obtener ayuda
 
-- **CSRF tokens** on all forms
-- **Password hashing** with `PASSWORD_DEFAULT` (bcrypt)
-- **Prepared statements** for all database queries
-- **Session timeout** handling with configurable lifetime
-- **Output escaping** in all views
-- **Multi-factor authentication** — TOTP authenticator apps and WebAuthn/FIDO2 hardware keys
-- **Admin-configurable security policies** — enforce MFA, manage user credentials
+- 📖 Revisa la [guía de instalación](install.md) y la [guía de actualización](update.md).
+- 🧩 Consulta [`config/config.example.php`](config/config.example.php) para conocer las opciones disponibles.
+- 🐞 Para errores o solicitudes de mejora, abre un issue en el repositorio del proyecto.
+- 🔐 Para dudas de seguridad o autenticación multifactor, revisa las pantallas de administración y las opciones de `/admin/security`.
 
 ---
 
-## Getting Help
+## 🤝 Mantenimiento y contribuciones
 
-- **Issues** — [Open an issue](https://github.com/pvernocchi/employee-time-tracking/issues) for bug reports or feature requests
-- **Installation problems** — Review the [Installation Guide](install.md) troubleshooting section
-- **Configuration reference** — See [`config/config.example.php`](config/config.example.php) for all available settings and their defaults
+El proyecto es mantenido por [@pvernocchi](https://github.com/pvernocchi).
 
----
+Las contribuciones son bienvenidas. Antes de enviar cambios:
 
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit changes, report bugs, and suggest improvements.
-
----
-
-## License
-
-This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
+1. Lee [`CONTRIBUTING.md`](CONTRIBUTING.md).
+2. Mantén los pull requests enfocados en un único objetivo.
+3. Valida la sintaxis PHP de los archivos modificados.
+4. Añade migraciones en `database/migrations/` cuando cambies el esquema.
+5. Actualiza traducciones en `src/Lang/` si añades texto visible para usuarios.
 
 ---
 
-## Maintainers
+## 📄 Licencia
 
-This project is maintained by [@pvernocchi](https://github.com/pvernocchi).
+Este proyecto se distribuye bajo la **Licencia Pública General de GNU v3.0**. Consulta [`LICENSE`](LICENSE) para más información.
