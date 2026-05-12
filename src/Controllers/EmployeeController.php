@@ -257,7 +257,11 @@ class EmployeeController
     {
         $db->query('UPDATE users SET manager_id = NULL WHERE manager_id = ?', [$managerId]);
 
-        $teamMemberIds = array_values(array_unique(array_filter($teamMemberIds, static fn(int $memberId): bool => $memberId > 0 && $memberId !== $managerId)));
+        $validTeamMemberIds = array_filter(
+            $teamMemberIds,
+            static fn(int $memberId): bool => $memberId > 0 && $memberId !== $managerId
+        );
+        $teamMemberIds = array_values(array_unique($validTeamMemberIds));
         if ($teamMemberIds === []) {
             return;
         }
