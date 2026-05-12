@@ -6,8 +6,7 @@ This guide covers first-time setup of Employee Time Tracking.
 
 - Upload the full project to your hosting account.
 - Point your domain/subdomain document root to:
-  - `/home/runner/work/employee-time-tracking/employee-time-tracking/public` (in this repository layout)
-  - or the `public/` folder path on your server.
+  - the `public/` folder inside your deployed project (for example `/path/to/your/project/public`).
 
 ## 2) Install PHP dependencies
 
