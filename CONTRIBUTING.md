@@ -1,89 +1,87 @@
-# Contributing to Employee Time Tracking
+# Contribuir a Employee Time Tracking
 
-Thank you for your interest in contributing! This document provides guidelines to help you get started.
+¡Gracias por tu interés en contribuir! Este documento proporciona directrices para ayudarte a empezar.
 
-> 🇪🇸 [Versión en español](CONTRIBUTING.es.md)
+## Cómo contribuir
 
-## How to Contribute
+### Reportar errores
 
-### Reporting Bugs
+1. Revisa los [issues existentes](https://github.com/pvernocchi/employee-time-tracking/issues) para evitar duplicados
+2. Abre un nuevo issue con un título y descripción claros
+3. Incluye pasos para reproducir el error, comportamiento esperado y comportamiento real
+4. Indica tu versión de PHP, versión de MySQL y entorno del servidor
 
-1. Check the [existing issues](https://github.com/pvernocchi/employee-time-tracking/issues) to avoid duplicates
-2. Open a new issue with a clear title and description
-3. Include steps to reproduce, expected behavior, and actual behavior
-4. Mention your PHP version, MySQL version, and server environment
+### Sugerir funcionalidades
 
-### Suggesting Features
+Abre un issue con la etiqueta **feature request**. Describe el caso de uso y cómo la funcionalidad beneficiaría a los usuarios.
 
-Open an issue with the **feature request** label. Describe the use case and how the feature would benefit users.
+### Enviar cambios
 
-### Submitting Changes
-
-1. Fork the repository
-2. Create a feature branch from `main`:
+1. Haz un fork del repositorio
+2. Crea una rama de funcionalidad desde `main`:
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/nombre-de-tu-funcionalidad
    ```
-3. Make your changes following the coding standards below
-4. Test your changes locally
-5. Commit with clear, descriptive messages
-6. Push to your fork and open a pull request
+3. Realiza tus cambios siguiendo los estándares de código descritos a continuación
+4. Prueba tus cambios localmente
+5. Haz commit con mensajes claros y descriptivos
+6. Haz push a tu fork y abre un pull request
 
-## Development Setup
+## Configuración del entorno de desarrollo
 
-### Prerequisites
+### Requisitos previos
 
 - PHP 8.1+
 - MySQL 5.7+
-- Apache with `mod_rewrite`
+- Apache con `mod_rewrite`
 - Composer
 
-### Local Environment
+### Entorno local
 
 ```bash
-git clone https://github.com/your-fork/employee-time-tracking.git
+git clone https://github.com/tu-fork/employee-time-tracking.git
 cd employee-time-tracking
 composer install
 cp config/config.example.php config/config.php
-# Edit config/config.php with your local database credentials
-# Import database/schema.sql into your MySQL instance
-# Point your local web server to the public/ directory
+# Edita config/config.php con tus credenciales de base de datos local
+# Importa database/schema.sql en tu instancia de MySQL
+# Apunta tu servidor web local al directorio public/
 ```
 
-### Validation
+### Validación
 
-Run PHP syntax checks across the codebase:
+Ejecuta comprobaciones de sintaxis PHP en todo el código:
 
 ```bash
 find src/ public/ config/ -name "*.php" -exec php -l {} \;
 ```
 
-## Coding Standards
+## Estándares de código
 
-- **PHP 8.1+** — use modern PHP features (typed properties, named arguments, match expressions, etc.)
-- **PSR-4 autoloading** — all classes live under the `App\` namespace in `src/`
-- **No external frameworks** — keep the vanilla PHP approach
-- **Prepared statements** — always use parameterized queries for database access
-- **Output escaping** — escape all user-generated content in views
-- **CSRF protection** — include CSRF tokens on all forms
+- **PHP 8.1+** — usa funcionalidades modernas de PHP (propiedades tipadas, argumentos con nombre, expresiones match, etc.)
+- **Autoloading PSR-4** — todas las clases viven bajo el namespace `App\` en `src/`
+- **Sin frameworks externos** — mantén el enfoque de PHP puro
+- **Consultas preparadas** — usa siempre consultas parametrizadas para el acceso a base de datos
+- **Escapado de salida** — escapa todo el contenido generado por usuarios en las vistas
+- **Protección CSRF** — incluye tokens CSRF en todos los formularios
 
-## Project Structure
+## Estructura del proyecto
 
-- `src/Controllers/` — request handlers
-- `src/Core/` — framework-level services (Router, Database, Auth, I18n, etc.)
-- `src/Views/` — server-rendered PHP templates
-- `src/Lang/` — translation files
-- `database/migrations/` — incremental schema migrations
-- `public/` — web root with front controller and static assets
+- `src/Controllers/` — controladores de peticiones
+- `src/Core/` — servicios a nivel de framework (Router, Database, Auth, I18n, etc.)
+- `src/Views/` — plantillas PHP renderizadas en servidor
+- `src/Lang/` — archivos de traducción
+- `database/migrations/` — migraciones incrementales del esquema
+- `public/` — raíz web con controlador frontal y recursos estáticos
 
-## Pull Request Guidelines
+## Directrices para Pull Requests
 
-- Keep PRs focused on a single concern
-- Ensure PHP syntax is valid (`php -l`) for all changed files
-- Update translations in `src/Lang/` if you add or change user-facing strings
-- Add database migrations in `database/migrations/` for schema changes — do not modify `schema.sql` directly
-- Test with multiple user roles (admin, manager, employee, inspector) if your changes affect access control
+- Mantén los PRs enfocados en un solo tema
+- Asegúrate de que la sintaxis PHP es válida (`php -l`) para todos los archivos modificados
+- Actualiza las traducciones en `src/Lang/` si añades o cambias cadenas visibles para el usuario
+- Añade migraciones de base de datos en `database/migrations/` para cambios de esquema — no modifiques `schema.sql` directamente
+- Prueba con múltiples roles de usuario (admin, manager, empleado, inspector) si tus cambios afectan al control de acceso
 
-## License
+## Licencia
 
-By contributing, you agree that your contributions will be licensed under the [GNU General Public License v3.0](LICENSE).
+Al contribuir, aceptas que tus contribuciones serán licenciadas bajo la [Licencia Pública General de GNU v3.0](LICENSE).
