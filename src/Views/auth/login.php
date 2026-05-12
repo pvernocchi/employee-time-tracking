@@ -22,6 +22,43 @@
             <input type="password" id="password" name="password" required placeholder="••••••••">
         </div>
 
+        <?php if (($captchaProvider ?? 'none') === 'cloudflare' && !empty($captchaSiteKey)): ?>
+        <div class="form-group">
+            <div class="cf-turnstile" data-sitekey="<?= htmlspecialchars($captchaSiteKey) ?>"></div>
+        </div>
+        <?php elseif (($captchaProvider ?? 'none') === 'recaptcha' && !empty($captchaSiteKey)): ?>
+            <?php if (($recaptchaVersion ?? 'v2') === 'v2'): ?>
+            <div class="form-group">
+                <div class="g-recaptcha" data-sitekey="<?= htmlspecialchars($captchaSiteKey) ?>"></div>
+            </div>
+            <?php else: ?>
+            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+            <?php endif; ?>
+        <?php endif; ?>
+
         <button type="submit" class="btn btn-primary btn-block"><?= htmlspecialchars($t('auth.sign_in_button')) ?></button>
     </form>
 </div>
+
+<?php if (($captchaProvider ?? 'none') === 'cloudflare' && !empty($captchaSiteKey)): ?>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<?php elseif (($captchaProvider ?? 'none') === 'recaptcha' && !empty($captchaSiteKey)): ?>
+    <?php if (($recaptchaVersion ?? 'v2') === 'v2'): ?>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <?php else: ?>
+<script src="https://www.google.com/recaptcha/api.js?render=<?= htmlspecialchars($captchaSiteKey) ?>"></script>
+<script>
+document.querySelector('.auth-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    grecaptcha.ready(function() {
+        grecaptcha.execute(<?= json_encode($captchaSiteKey) ?>, {action: 'login'}).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+            form.submit();
+        });
+    });
+});
+</script>
+    <?php endif; ?>
+<?php endif; ?>
+
