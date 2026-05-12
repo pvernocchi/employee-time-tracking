@@ -154,6 +154,14 @@ $router->get('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::
 $router->post('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::class, 'saveSmtpSettings'], $adminMiddleware);
 $router->post('/admin/settings/smtp/test', [\App\Controllers\AdminSettingsController::class, 'testSmtp'], $adminMiddleware);
 
+// Admin: Leave Policy
+$router->get('/admin/settings/leave-policy', [\App\Controllers\LeavePolicyController::class, 'index'], $adminMiddleware);
+$router->get('/admin/settings/leave-policy/create', [\App\Controllers\LeavePolicyController::class, 'create'], $adminMiddleware);
+$router->post('/admin/settings/leave-policy', [\App\Controllers\LeavePolicyController::class, 'store'], $adminMiddleware);
+$router->get('/admin/settings/leave-policy/{id}/edit', [\App\Controllers\LeavePolicyController::class, 'edit'], $adminMiddleware);
+$router->post('/admin/settings/leave-policy/{id}', [\App\Controllers\LeavePolicyController::class, 'update'], $adminMiddleware);
+$router->post('/admin/settings/leave-policy/{id}/delete', [\App\Controllers\LeavePolicyController::class, 'delete'], $adminMiddleware);
+
 // Admin: Employee Management
 $router->get('/admin/employees', [\App\Controllers\EmployeeController::class, 'index'], $adminMiddleware);
 $router->get('/admin/employees/create', [\App\Controllers\EmployeeController::class, 'create'], $adminMiddleware);
