@@ -23,8 +23,14 @@
                     <li><a href="/admin/employees">Employees</a></li>
                     <li><a href="/admin/leave">Leave Requests</a></li>
                     <li><a href="/admin/reports">Reports</a></li>
+                    <?php if (\App\Core\Auth::isAdmin()): ?>
+                    <li><a href="/compliance">Compliance</a></li>
+                    <?php endif; ?>
                 </ul>
             </li>
+            <?php endif; ?>
+            <?php if (\App\Core\Auth::isInspector()): ?>
+            <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>">Inspector</a></li>
             <?php endif; ?>
         </ul>
         <div class="nav-user">

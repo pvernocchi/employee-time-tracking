@@ -5,9 +5,17 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Database;
 use App\Core\View;
+use App\Core\ComplianceService;
 
 class ClockController
 {
+    private ComplianceService $compliance;
+
+    public function __construct()
+    {
+        $this->compliance = new ComplianceService();
+    }
+
     public function index(): void
     {
         $db = Database::getInstance();
@@ -25,9 +33,13 @@ class ClockController
             [$userId, $today]
         );
 
+        // Get compliance warnings
+        $complianceWarnings = $this->compliance->getComplianceAlerts($userId);
+
         View::render('dashboard.clock', [
             'activeEntry' => $activeEntry,
             'entries' => $entries,
+            'complianceWarnings' => $complianceWarnings,
         ]);
     }
 
@@ -55,8 +67,20 @@ class ClockController
             exit;
         }
 
-        $db->insert('time_entries', [
+        // Check 12h rest period (warn but don't block)
+        $restWarnings = $this->compliance->checkRestBetweenDays($userId, date('Y-m-d'));
+        if (!empty($restWarnings)) {
+            $_SESSION['flash_warning'] = $restWarnings[0]['message'];
+        }
+
+        $entryId = $db->insert('time_entries', [
             'user_id' => $userId,
+            'clock_in' => date('Y-m-d H:i:s'),
+            'status' => 'active',
+        ]);
+
+        // Audit log
+        $this->compliance->logAudit($entryId, $userId, 'create', null, [
             'clock_in' => date('Y-m-d H:i:s'),
             'status' => 'active',
         ]);
@@ -79,7 +103,7 @@ class ClockController
         $userId = Auth::id();
 
         $active = $db->fetchOne(
-            'SELECT id FROM time_entries WHERE user_id = ? AND status = "active"',
+            'SELECT * FROM time_entries WHERE user_id = ? AND status = "active"',
             [$userId]
         );
 
@@ -91,13 +115,31 @@ class ClockController
 
         $breakMinutes = (int) ($_POST['break_minutes'] ?? 0);
         $notes = trim($_POST['notes'] ?? '');
+        $clockOut = date('Y-m-d H:i:s');
 
         $db->update('time_entries', [
-            'clock_out' => date('Y-m-d H:i:s'),
+            'clock_out' => $clockOut,
             'break_minutes' => $breakMinutes,
             'notes' => $notes,
             'status' => 'completed',
         ], 'id = ?', [$active['id']]);
+
+        // Audit log
+        $this->compliance->logAudit($active['id'], $userId, 'edit', 
+            ['status' => 'active', 'clock_out' => null],
+            ['status' => 'completed', 'clock_out' => $clockOut, 'break_minutes' => $breakMinutes]
+        );
+
+        // Check daily hours and break compliance
+        $today = date('Y-m-d');
+        $dailyWarnings = $this->compliance->checkDailyHours($userId, $today);
+        $breakWarnings = $this->compliance->checkBreakCompliance($userId, $today);
+
+        $warnings = array_merge($dailyWarnings, $breakWarnings);
+        if (!empty($warnings)) {
+            $messages = array_map(fn($w) => $w['message'], $warnings);
+            $_SESSION['flash_warning'] = implode(' | ', $messages);
+        }
 
         $_SESSION['flash_success'] = 'Clocked out successfully!';
         header('Location: /clock');

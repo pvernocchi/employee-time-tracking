@@ -92,6 +92,24 @@ $router->post('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController
 // Admin: Reports
 $router->get('/admin/reports', [\App\Controllers\ReportController::class, 'index'], $managerMiddleware);
 $router->get('/admin/reports/export', [\App\Controllers\ReportController::class, 'export'], $managerMiddleware);
+$router->get('/admin/reports/overtime', [\App\Controllers\ReportController::class, 'overtime'], $managerMiddleware);
+$router->get('/admin/reports/violations', [\App\Controllers\ReportController::class, 'violations'], $managerMiddleware);
+
+// Compliance
+$router->get('/compliance', [\App\Controllers\ComplianceController::class, 'dashboard'], $adminMiddleware);
+$router->get('/compliance/audit', [\App\Controllers\ComplianceController::class, 'auditLog'], $adminMiddleware);
+$router->get('/compliance/export-inspection', [\App\Controllers\ComplianceController::class, 'exportForInspection'], $adminMiddleware);
+$router->get('/compliance/privacy', [\App\Controllers\ComplianceController::class, 'privacyNotice'], $authMiddleware);
+$router->post('/compliance/consent', [\App\Controllers\ComplianceController::class, 'dataProtectionConsent'], $authMiddleware);
+
+// Inspector
+$inspectorMiddleware = [Auth::class . '::requireInspector'];
+$router->get('/inspector', [\App\Controllers\InspectorController::class, 'index'], $inspectorMiddleware);
+$router->get('/inspector/employee/{id}', [\App\Controllers\InspectorController::class, 'viewEmployee'], $inspectorMiddleware);
+$router->get('/inspector/export', [\App\Controllers\InspectorController::class, 'export'], $inspectorMiddleware);
+
+// Employee self-export (Art. 34.9 ET)
+$router->get('/timesheet/export', [\App\Controllers\TimesheetController::class, 'exportOwn'], $authMiddleware);
 
 // Dispatch request
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

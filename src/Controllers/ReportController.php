@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Database;
 use App\Core\View;
+use App\Core\ComplianceService;
 
 class ReportController
 {
@@ -52,6 +53,58 @@ class ReportController
                 'endDate' => $endDate,
             ]);
         }
+    }
+
+    public function overtime(): void
+    {
+        $db = Database::getInstance();
+        $compliance = new ComplianceService();
+
+        $year = (int) ($_GET['year'] ?? date('Y'));
+
+        $employees = $db->fetchAll(
+            'SELECT id, first_name, last_name, department FROM users WHERE is_active = 1 AND role != "inspector" ORDER BY last_name'
+        );
+
+        $overtimeData = [];
+        foreach ($employees as $employee) {
+            $hours = $compliance->getOvertimeHoursForYear($employee['id'], $year);
+            $overtimeData[] = [
+                'employee' => $employee,
+                'overtime_hours' => $hours,
+                'limit_exceeded' => $hours > 80,
+            ];
+        }
+
+        View::render('reports.overtime', [
+            'overtimeData' => $overtimeData,
+            'year' => $year,
+        ]);
+    }
+
+    public function violations(): void
+    {
+        $db = Database::getInstance();
+        $compliance = new ComplianceService();
+
+        $employees = $db->fetchAll(
+            'SELECT id, first_name, last_name, department FROM users WHERE is_active = 1 AND role != "inspector" ORDER BY last_name'
+        );
+
+        $allViolations = [];
+        foreach ($employees as $employee) {
+            $alerts = $compliance->getComplianceAlerts($employee['id']);
+            if (!empty($alerts)) {
+                $allViolations[] = [
+                    'employee' => $employee,
+                    'violations' => $alerts,
+                ];
+            }
+        }
+
+        View::render('reports.violations', [
+            'allViolations' => $allViolations,
+        ]);
     }
 
     private function exportCsv(array $entries, string $startDate, string $endDate): void
