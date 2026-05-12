@@ -369,6 +369,8 @@ a:hover { text-decoration: underline; }
 }
 
 .language-switch-item {
+    display: inline-flex;
+    align-items: center;
     gap: 0.35rem;
 }
 

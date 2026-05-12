@@ -33,7 +33,7 @@
             <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.inspector')) ?></a></li>
             <?php endif; ?>
             <li class="nav-dropdown nav-dropdown-right">
-                <?php $currentLocaleMeta = $localeMeta($currentLocale ?? 'es'); ?>
+                <?php $currentLocaleMeta = $localeMeta($currentLocale); ?>
                 <a href="#">
                     <img src="<?= htmlspecialchars($currentLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
                     <?= htmlspecialchars($currentLocaleMeta['abbr']) ?> ▾
