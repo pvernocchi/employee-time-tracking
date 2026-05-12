@@ -10,6 +10,8 @@ return [
         'name' => 'Employee Time Tracker',
         'url' => 'http://localhost',
         'timezone' => 'Europe/Madrid',
+        'default_locale' => 'es',
+        'supported_locales' => ['es', 'en'],
     ],
 
     'database' => [

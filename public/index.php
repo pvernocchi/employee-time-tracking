@@ -14,6 +14,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\I18n;
 use App\Core\Router;
 use App\Core\SetupManager;
 use App\Core\View;
@@ -27,6 +28,8 @@ date_default_timezone_set($config['app']['timezone'] ?? 'Europe/Madrid');
 // Initialize session
 session_name($config['session']['name'] ?? 'ett_session');
 session_start();
+
+I18n::init($config['app'] ?? []);
 
 // Check session timeout
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > ($config['session']['lifetime'] ?? 3600))) {

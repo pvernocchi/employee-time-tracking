@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'app.name' => 'Employee Time Tracker',
+    'app.short_name' => 'Time Tracker',
+    'nav.dashboard' => 'Dashboard',
+    'nav.clock' => 'Clock In/Out',
+    'nav.timesheet' => 'Timesheet',
+    'nav.leave' => 'Leave',
+    'nav.admin' => 'Admin',
+    'nav.employees' => 'Employees',
+    'nav.leave_requests' => 'Leave Requests',
+    'nav.reports' => 'Reports',
+    'nav.compliance' => 'Compliance',
+    'nav.inspector' => 'Inspector',
+    'nav.logout' => 'Logout',
+    'layout.language' => 'Language',
+    'auth.login_page_title' => 'Login - :app',
+    'auth.sign_in' => 'Sign in to your account',
+    'auth.email_address' => 'Email Address',
+    'auth.password' => 'Password',
+    'auth.sign_in_button' => 'Sign In',
+    'flash.invalid_request_try_again' => 'Invalid request. Please try again.',
+    'flash.enter_email_password' => 'Please enter email and password.',
+    'flash.invalid_email_or_password' => 'Invalid email or password.',
+];
