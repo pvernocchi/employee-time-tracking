@@ -8,6 +8,8 @@ class I18n
 
     private static array $translations = [];
 
+    private static array $contentTranslationPatterns = [];
+
     private static array $supportedLocales = ['es', 'en', 'ca', 'eu', 'gl'];
 
     private static array $localeMeta = [
@@ -196,7 +198,6 @@ class I18n
             'Active' => 'Actiu',
             'Inactive' => 'Inactiu',
             'Cancel' => 'Cancel·lar',
-            'Status' => 'Estat',
             'Department' => 'Departament',
         ],
         'eu' => [
@@ -321,6 +322,8 @@ class I18n
             return $content;
         }
 
+        $patterns = self::getContentTranslationPatterns(self::$locale, $translations);
+
         $parts = preg_split('/(<[^>]+>)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
         if ($parts === false) {
             return $content;
@@ -328,11 +331,37 @@ class I18n
 
         foreach ($parts as $index => $part) {
             if ($part !== '' && $part[0] !== '<') {
-                $parts[$index] = strtr($part, $translations);
+                foreach ($patterns as $pattern => $replacement) {
+                    $part = preg_replace($pattern, $replacement, $part) ?? $part;
+                }
+                $parts[$index] = $part;
             }
         }
 
         return implode('', $parts);
+    }
+
+    private static function getContentTranslationPatterns(string $locale, array $translations): array
+    {
+        if (isset(self::$contentTranslationPatterns[$locale])) {
+            return self::$contentTranslationPatterns[$locale];
+        }
+
+        uksort($translations, static fn (string $a, string $b): int => strlen($b) <=> strlen($a));
+
+        $patterns = [];
+        foreach ($translations as $source => $target) {
+            $escaped = preg_quote($source, '/');
+            $startsWithWord = preg_match('/^[\p{L}\p{N}]/u', $source) === 1;
+            $endsWithWord = preg_match('/[\p{L}\p{N}]$/u', $source) === 1;
+            $prefix = $startsWithWord ? '(?<![\p{L}\p{N}])' : '';
+            $suffix = $endsWithWord ? '(?![\p{L}\p{N}])' : '';
+            $patterns["/{$prefix}{$escaped}{$suffix}/u"] = $target;
+        }
+
+        self::$contentTranslationPatterns[$locale] = $patterns;
+
+        return $patterns;
     }
 
     private static function loadTranslations(string $locale): array
