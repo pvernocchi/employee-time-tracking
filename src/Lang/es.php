@@ -13,6 +13,7 @@ return [
     'nav.reports' => 'Informes',
     'nav.compliance' => 'Cumplimiento',
     'nav.inspector' => 'Inspector',
+    'nav.settings' => 'Configuración',
     'nav.logout' => 'Cerrar sesión',
     'layout.language' => 'Idioma',
     'layout.enable_dark_mode' => 'Activar modo oscuro',

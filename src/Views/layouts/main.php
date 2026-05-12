@@ -25,6 +25,7 @@
                     <li><a href="/admin/reports"><?= htmlspecialchars($t('nav.reports')) ?></a></li>
                     <?php if (\App\Core\Auth::isAdmin()): ?>
                     <li><a href="/compliance"><?= htmlspecialchars($t('nav.compliance')) ?></a></li>
+                    <li><a href="/admin/settings/smtp"><?= htmlspecialchars($t('nav.settings')) ?></a></li>
                     <?php endif; ?>
                 </ul>
             </li>

@@ -13,6 +13,7 @@ return [
     'nav.reports' => 'Txostenak',
     'nav.compliance' => 'Betetzea',
     'nav.inspector' => 'Ikuskatzailea',
+    'nav.settings' => 'Ezarpenak',
     'nav.logout' => 'Saioa itxi',
     'layout.language' => 'Hizkuntza',
     'layout.enable_dark_mode' => 'Gaitu modu iluna',

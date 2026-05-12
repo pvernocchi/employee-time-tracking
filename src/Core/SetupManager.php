@@ -209,6 +209,11 @@ class SetupManager
         $config['database']['pass'] = (string) ($input['db_pass'] ?? '');
         $config['database']['charset'] = $dbCharset !== '' ? $dbCharset : 'utf8mb4';
 
+        // Auto-generate an SMTP encryption secret on first install if none exists
+        if (empty($config['smtp']['secret'])) {
+            $config['smtp']['secret'] = bin2hex(random_bytes(32));
+        }
+
         return $config;
     }
 

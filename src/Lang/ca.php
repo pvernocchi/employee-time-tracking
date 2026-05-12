@@ -13,6 +13,7 @@ return [
     'nav.reports' => 'Informes',
     'nav.compliance' => 'Compliment',
     'nav.inspector' => 'Inspector',
+    'nav.settings' => 'Configuració',
     'nav.logout' => 'Tancar sessió',
     'layout.language' => 'Idioma',
     'layout.enable_dark_mode' => 'Activa el mode fosc',
