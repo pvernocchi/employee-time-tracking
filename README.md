@@ -35,25 +35,18 @@ Or upload the `vendor/` folder generated locally.
 
 ### 3. Create Database
 
-1. In cPanel → MySQL Databases, create a new database and user
-2. Import `database/schema.sql` via phpMyAdmin
+In cPanel → MySQL Databases, create a new database and user.
 
-### 4. Configure
+### 4. Run the Web Installer
 
-```bash
-cp config/config.example.php config/config.php
-```
+1. Browse to your site after uploading the files
+2. Fill in the installer form with your application URL, database credentials, and first admin account
+3. The installer will:
+   - create `config/config.php`
+   - run all pending database migrations
+   - create the first administrator if the database has no users yet
 
-Edit `config/config.php` with your database credentials:
-```php
-'database' => [
-    'host' => 'localhost',
-    'name' => 'your_cpanel_prefix_timetracking',
-    'user' => 'your_cpanel_prefix_dbuser',
-    'pass' => 'your_password',
-    'charset' => 'utf8mb4',
-],
-```
+If you are connecting this release to an older database, the installer/upgrader will detect the existing tables and register/apply the required database updates automatically.
 
 ### 5. Set Document Root
 
@@ -68,11 +61,7 @@ View::setPath(__DIR__ . '/src/Views');
 
 ### 6. Login
 
-Default admin credentials:
-- **Email:** admin@company.com
-- **Password:** admin123
-
-⚠️ **Change this immediately after first login!**
+Use the administrator account created during setup.
 
 ## Directory Structure
 
@@ -80,7 +69,8 @@ Default admin credentials:
 ├── config/
 │   └── config.example.php    # Configuration template
 ├── database/
-│   └── schema.sql            # MySQL schema
+│   ├── schema.sql            # MySQL schema snapshot
+│   └── migrations/           # Versioned database upgrades
 ├── public/                   # Document root (web-accessible)
 │   ├── .htaccess             # URL rewriting
 │   ├── index.php             # Front controller
@@ -111,6 +101,7 @@ Default admin credentials:
 - Works with standard Apache + mod_rewrite
 - Minimal resource usage — no framework overhead
 - Composer is only needed for PSR-4 autoloading
+- Database upgrades run automatically through the browser when a release includes new migrations
 
 ## Security
 

@@ -12,31 +12,30 @@ ini_set('log_errors', '1');
 // Load autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load configuration
-$config = require __DIR__ . '/../config/config.php';
+use App\Core\Auth;
+use App\Core\Database;
+use App\Core\Router;
+use App\Core\SetupManager;
+use App\Core\View;
+
+$setupManager = new SetupManager(dirname(__DIR__));
+$config = $setupManager->loadConfig();
 
 // Set timezone
-date_default_timezone_set($config['app']['timezone']);
+date_default_timezone_set($config['app']['timezone'] ?? 'Europe/Madrid');
 
 // Initialize session
-session_name($config['session']['name']);
+session_name($config['session']['name'] ?? 'ett_session');
 session_start();
 
 // Check session timeout
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $config['session']['lifetime'])) {
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > ($config['session']['lifetime'] ?? 3600))) {
     session_unset();
     session_destroy();
     session_start();
 }
 $_SESSION['last_activity'] = time();
 
-// Initialize database
-use App\Core\Database;
-use App\Core\Router;
-use App\Core\View;
-use App\Core\Auth;
-
-Database::getInstance($config['database']);
 View::setPath(__DIR__ . '/../src/Views');
 
 // CSRF protection
@@ -46,6 +45,37 @@ if (empty($_SESSION['csrf_token'])) {
 
 // Initialize router
 $router = new Router();
+$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+
+// ----- Setup Routes -----
+$router->get('/install', [\App\Controllers\SetupController::class, 'install']);
+$router->post('/install', [\App\Controllers\SetupController::class, 'processInstall']);
+$router->get('/install/upgrade', [\App\Controllers\SetupController::class, 'upgrade']);
+$router->post('/install/upgrade', [\App\Controllers\SetupController::class, 'processUpgrade']);
+
+$setupStatus = $setupManager->getStatus($setupManager->configExists() ? $config : null);
+
+if (!$setupStatus['configExists'] || !$setupStatus['databaseConnected'] || !$setupStatus['isInstalled']) {
+    if (!str_starts_with($requestPath, '/install')) {
+        header('Location: /install');
+        exit;
+    }
+
+    $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+    exit;
+}
+
+if ($setupStatus['needsUpgrade']) {
+    if (!str_starts_with($requestPath, '/install/upgrade')) {
+        header('Location: /install/upgrade');
+        exit;
+    }
+
+    $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+    exit;
+}
+
+Database::getInstance($config['database']);
 
 // ----- Public Routes -----
 $router->get('/login', [\App\Controllers\AuthController::class, 'showLogin']);
