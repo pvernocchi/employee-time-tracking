@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
 
     steps:
       - name: Checkout code
@@ -57,60 +56,6 @@ jobs:
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Generate release notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEW_TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          set -euo pipefail
-
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
-          if [ -n "$PREVIOUS_TAG" ]; then
-            RANGE="$PREVIOUS_TAG..HEAD"
-          else
-            RANGE="HEAD"
-          fi
-
-          TAB=$(printf '\t')
-          PRS_FILE=$(mktemp)
-          SORTED_PRS_FILE=$(mktemp)
-
-          for SHA in $(git rev-list --reverse "$RANGE"); do
-            gh api \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "/repos/${GITHUB_REPOSITORY}/commits/${SHA}/pulls" \
-              --jq '.[] | select(.merged_at != null) | [.number, .title, .html_url, .user.login] | @tsv' >> "$PRS_FILE"
-          done
-
-          sort -t "$TAB" -k1,1n -u "$PRS_FILE" > "$SORTED_PRS_FILE"
-
-          {
-            echo "## What's Changed"
-            if [ -s "$SORTED_PRS_FILE" ]; then
-              while IFS="$TAB" read -r NUMBER TITLE URL AUTHOR; do
-                echo "- ${TITLE} by @${AUTHOR} in ${URL}"
-              done < "$SORTED_PRS_FILE"
-            else
-              echo "- No merged pull requests found for this release."
-            fi
-
-            echo
-            echo "## Contributors"
-            if [ -s "$SORTED_PRS_FILE" ]; then
-              cut -f4 "$SORTED_PRS_FILE" | sort -fu | while read -r AUTHOR; do
-                echo "- @${AUTHOR}"
-              done
-            else
-              echo "- No pull request contributors found for this release."
-            fi
-
-            if [ -n "$PREVIOUS_TAG" ]; then
-              echo
-              echo "**Full Changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${PREVIOUS_TAG}...${NEW_TAG}"
-            fi
-          } > release-notes.md
-
       - name: Commit VERSION file
         run: |
           git config user.name "github-actions[bot]"
@@ -129,7 +74,7 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: Release ${{ steps.version.outputs.tag }}
-          body_path: release-notes.md
+          generate_release_notes: true
 
   deploy:
     name: Deploy after release
