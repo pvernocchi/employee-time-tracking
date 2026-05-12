@@ -75,6 +75,12 @@ return [
     'profile.back_to_employees' => 'Volver a empregados',
     'profile.cancel' => 'Cancelar',
     'profile.employee_not_found' => 'Empregado non atopado.',
+    'profile.daily_hours' => 'Horas/día',
+    'profile.weekly_hours' => 'Horas semanais',
+    'profile.schedule_error_invalid_range' => 'O horario de :day non é válido: a hora de saída debe ser posterior á de entrada.',
+    'profile.schedule_error_daily_max' => 'O horario de :day supera o máximo legal diario de :max horas.',
+    'profile.schedule_error_weekly_max' => 'A suma semanal do horario supera o máximo legal de :max horas.',
+    'profile.schedule_error_min_rest' => 'Non se cumpre o descanso mínimo de :min horas entre :prev_day e :day.',
 
     'nav.notifications' => '🔔 Notificacións',
     'notifications.admin_title' => 'Notificacións por correo electrónico',

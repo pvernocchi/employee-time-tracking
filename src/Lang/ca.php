@@ -75,6 +75,12 @@ return [
     'profile.back_to_employees' => 'Tornar a empleats',
     'profile.cancel' => 'Cancel·lar',
     'profile.employee_not_found' => 'Empleat no trobat.',
+    'profile.daily_hours' => 'Hores/dia',
+    'profile.weekly_hours' => 'Hores setmanals',
+    'profile.schedule_error_invalid_range' => 'L\'horari de :day no és vàlid: l\'hora de sortida ha de ser posterior a la d\'entrada.',
+    'profile.schedule_error_daily_max' => 'L\'horari de :day supera el màxim legal diari de :max hores.',
+    'profile.schedule_error_weekly_max' => 'La suma setmanal de l\'horari supera el màxim legal de :max hores.',
+    'profile.schedule_error_min_rest' => 'No es compleix el descans mínim de :min hores entre :prev_day i :day.',
 
     'nav.notifications' => '🔔 Notificacions',
     'notifications.admin_title' => 'Notificacions per correu electrònic',
