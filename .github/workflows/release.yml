@@ -71,6 +71,7 @@ jobs:
             RANGE="HEAD"
           fi
 
+          TAB=$(printf '\t')
           PRS_FILE=$(mktemp)
           SORTED_PRS_FILE=$(mktemp)
 
@@ -82,12 +83,12 @@ jobs:
               --jq '.[] | select(.merged_at != null) | [.number, .title, .html_url, .user.login] | @tsv' >> "$PRS_FILE"
           done
 
-          sort -t "$(printf '\t')" -k1,1n -u "$PRS_FILE" > "$SORTED_PRS_FILE"
+          sort -t "$TAB" -k1,1n -u "$PRS_FILE" > "$SORTED_PRS_FILE"
 
           {
             echo "## What's Changed"
             if [ -s "$SORTED_PRS_FILE" ]; then
-              while IFS="$(printf '\t')" read -r NUMBER TITLE URL AUTHOR; do
+              while IFS="$TAB" read -r NUMBER TITLE URL AUTHOR; do
                 echo "- ${TITLE} by @${AUTHOR} in ${URL}"
               done < "$SORTED_PRS_FILE"
             else
