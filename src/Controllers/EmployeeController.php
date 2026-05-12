@@ -261,14 +261,14 @@ class EmployeeController
             $teamMemberIds,
             static fn(int $memberId): bool => $memberId > 0 && $memberId !== $managerId
         );
-        $teamMemberIds = array_values(array_unique($validTeamMemberIds));
-        if ($teamMemberIds === []) {
+        $filteredTeamMemberIds = array_values(array_unique($validTeamMemberIds));
+        if ($filteredTeamMemberIds === []) {
             return;
         }
 
-        $placeholderCount = count($teamMemberIds);
+        $placeholderCount = count($filteredTeamMemberIds);
         $placeholders = implode(',', array_fill(0, $placeholderCount, '?'));
-        $params = array_merge([$managerId], $teamMemberIds);
+        $params = array_merge([$managerId], $filteredTeamMemberIds);
 
         $db->query(
             "UPDATE users SET manager_id = ? WHERE id IN ({$placeholders}) AND role IN ('employee', 'manager')",

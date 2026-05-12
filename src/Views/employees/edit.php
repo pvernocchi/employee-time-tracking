@@ -103,8 +103,6 @@
             const role = roleSelect.value;
             const isEmployee = role === 'employee';
             const isManager = role === 'manager';
-            const isInspector = role === 'inspector';
-            const isAdmin = role === 'admin';
 
             const showManagerField = isEmployee || isManager;
             const showTeamMembersField = isManager;
