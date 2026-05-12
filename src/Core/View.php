@@ -26,7 +26,7 @@ class View
 
         ob_start();
         require $viewFile;
-        $content = ob_get_clean();
+        $content = I18n::translateContent((string) ob_get_clean());
 
         if ($layout) {
             $layoutFile = self::$viewsPath . '/layouts/' . $layout . '.php';
