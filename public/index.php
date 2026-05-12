@@ -154,6 +154,10 @@ $router->get('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::
 $router->post('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::class, 'saveSmtpSettings'], $adminMiddleware);
 $router->post('/admin/settings/smtp/test', [\App\Controllers\AdminSettingsController::class, 'testSmtp'], $adminMiddleware);
 
+// Admin: Settings (Notifications)
+$router->get('/admin/settings/notifications', [\App\Controllers\AdminSettingsController::class, 'notificationSettings'], $adminMiddleware);
+$router->post('/admin/settings/notifications', [\App\Controllers\AdminSettingsController::class, 'saveNotificationSettings'], $adminMiddleware);
+
 // Admin: Leave Policy
 $router->get('/admin/settings/leave-policy', [\App\Controllers\LeavePolicyController::class, 'index'], $adminMiddleware);
 $router->get('/admin/settings/leave-policy/create', [\App\Controllers\LeavePolicyController::class, 'create'], $adminMiddleware);
@@ -203,6 +207,7 @@ $router->post('/mfa/remove/{id}', [\App\Controllers\MfaController::class, 'remov
 $router->get('/profile', [\App\Controllers\UserProfileController::class, 'index'], $authMiddleware);
 $router->post('/profile/preferences', [\App\Controllers\UserProfileController::class, 'savePreferences'], $authMiddleware);
 $router->post('/profile/schedule', [\App\Controllers\UserProfileController::class, 'saveSchedule'], $authMiddleware);
+$router->post('/profile/notifications', [\App\Controllers\UserProfileController::class, 'saveNotificationPreferences'], $authMiddleware);
 $router->post('/profile/password', [\App\Controllers\UserProfileController::class, 'changePassword'], $authMiddleware);
 
 // Admin: Employee work schedule

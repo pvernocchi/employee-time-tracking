@@ -28,6 +28,7 @@
                     <li><a href="/admin/security"><?= htmlspecialchars($t('nav.security')) ?></a></li>
                     <li><a href="/admin/settings/leave-policy"><?= htmlspecialchars($t('nav.leave_policy')) ?></a></li>
                     <li><a href="/admin/settings/smtp"><?= htmlspecialchars($t('nav.settings')) ?></a></li>
+                    <li><a href="/admin/settings/notifications"><?= htmlspecialchars($t('nav.notifications')) ?></a></li>
                     <?php endif; ?>
                 </ul>
             </li>
