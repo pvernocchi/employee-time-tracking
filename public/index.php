@@ -1,0 +1,97 @@
+<?php
+/**
+ * Front Controller - Entry Point
+ * All requests are routed through this file.
+ */
+
+// Error reporting (disable display in production)
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+// Load autoloader
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Load configuration
+$config = require __DIR__ . '/../config/config.php';
+
+// Set timezone
+date_default_timezone_set($config['app']['timezone']);
+
+// Initialize session
+session_name($config['session']['name']);
+session_start();
+
+// Check session timeout
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $config['session']['lifetime'])) {
+    session_unset();
+    session_destroy();
+    session_start();
+}
+$_SESSION['last_activity'] = time();
+
+// Initialize database
+use App\Core\Database;
+use App\Core\Router;
+use App\Core\View;
+use App\Core\Auth;
+
+Database::getInstance($config['database']);
+View::setPath(__DIR__ . '/../src/Views');
+
+// CSRF protection
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Initialize router
+$router = new Router();
+
+// ----- Public Routes -----
+$router->get('/login', [\App\Controllers\AuthController::class, 'showLogin']);
+$router->post('/login', [\App\Controllers\AuthController::class, 'login']);
+$router->get('/logout', [\App\Controllers\AuthController::class, 'logout']);
+
+// ----- Protected Routes -----
+$authMiddleware = [Auth::class . '::requireLogin'];
+$adminMiddleware = [Auth::class . '::requireAdmin'];
+$managerMiddleware = [Auth::class . '::requireManager'];
+
+// Dashboard
+$router->get('/', [\App\Controllers\DashboardController::class, 'index'], $authMiddleware);
+$router->get('/dashboard', [\App\Controllers\DashboardController::class, 'index'], $authMiddleware);
+
+// Clock In/Out
+$router->get('/clock', [\App\Controllers\ClockController::class, 'index'], $authMiddleware);
+$router->post('/clock/in', [\App\Controllers\ClockController::class, 'clockIn'], $authMiddleware);
+$router->post('/clock/out', [\App\Controllers\ClockController::class, 'clockOut'], $authMiddleware);
+
+// Timesheet
+$router->get('/timesheet', [\App\Controllers\TimesheetController::class, 'index'], $authMiddleware);
+$router->get('/timesheet/weekly', [\App\Controllers\TimesheetController::class, 'weekly'], $authMiddleware);
+$router->get('/timesheet/monthly', [\App\Controllers\TimesheetController::class, 'monthly'], $authMiddleware);
+
+// Leave Management
+$router->get('/leave', [\App\Controllers\LeaveController::class, 'index'], $authMiddleware);
+$router->get('/leave/request', [\App\Controllers\LeaveController::class, 'showRequest'], $authMiddleware);
+$router->post('/leave/request', [\App\Controllers\LeaveController::class, 'submitRequest'], $authMiddleware);
+$router->post('/leave/cancel/{id}', [\App\Controllers\LeaveController::class, 'cancel'], $authMiddleware);
+
+// Admin: Leave approval
+$router->get('/admin/leave', [\App\Controllers\LeaveController::class, 'adminIndex'], $managerMiddleware);
+$router->post('/admin/leave/approve/{id}', [\App\Controllers\LeaveController::class, 'approve'], $managerMiddleware);
+$router->post('/admin/leave/reject/{id}', [\App\Controllers\LeaveController::class, 'reject'], $managerMiddleware);
+
+// Admin: Employee Management
+$router->get('/admin/employees', [\App\Controllers\EmployeeController::class, 'index'], $adminMiddleware);
+$router->get('/admin/employees/create', [\App\Controllers\EmployeeController::class, 'create'], $adminMiddleware);
+$router->post('/admin/employees/create', [\App\Controllers\EmployeeController::class, 'store'], $adminMiddleware);
+$router->get('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'edit'], $adminMiddleware);
+$router->post('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'update'], $adminMiddleware);
+
+// Admin: Reports
+$router->get('/admin/reports', [\App\Controllers\ReportController::class, 'index'], $managerMiddleware);
+$router->get('/admin/reports/export', [\App\Controllers\ReportController::class, 'export'], $managerMiddleware);
+
+// Dispatch request
+$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
