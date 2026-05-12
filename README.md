@@ -91,7 +91,6 @@ employee-time-tracking/
 ├── .github/workflows/      # FTP deployment workflow
 ├── composer.json
 ├── README.md
-└── ceadme.md
 ```
 
 ---
