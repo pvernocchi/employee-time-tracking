@@ -4,6 +4,22 @@
     <h1>Clock In / Out</h1>
 </div>
 
+<?php if (!empty($complianceWarnings)): ?>
+<div class="alert alert-warning">
+    <strong>⚠️ Compliance Alerts:</strong>
+    <ul style="margin: 0.5rem 0 0 1rem;">
+        <?php foreach ($complianceWarnings as $warning): ?>
+            <li><?= htmlspecialchars($warning['message']) ?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+<?php if (!empty($_SESSION['flash_warning'])): ?>
+    <div class="alert alert-warning"><?= htmlspecialchars($_SESSION['flash_warning']) ?></div>
+    <?php unset($_SESSION['flash_warning']); ?>
+<?php endif; ?>
+
 <?php if ($activeEntry): ?>
 <div class="card card-highlight">
     <h2>🟢 You are clocked in</h2>

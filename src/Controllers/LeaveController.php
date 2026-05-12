@@ -55,7 +55,7 @@ class LeaveController
         $reason = trim($_POST['reason'] ?? '');
 
         // Validation
-        $validTypes = ['vacation', 'sick', 'personal', 'unpaid', 'other'];
+        $validTypes = ['vacation', 'sick', 'personal', 'unpaid', 'maternity', 'paternity', 'marriage', 'bereavement', 'moving', 'jury_duty', 'other'];
         if (!in_array($leaveType, $validTypes)) {
             $_SESSION['flash_error'] = 'Invalid leave type.';
             header('Location: /leave/request');

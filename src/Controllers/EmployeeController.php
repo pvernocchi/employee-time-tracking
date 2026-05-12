@@ -62,12 +62,12 @@ class EmployeeController
             exit;
         }
 
-        $validRoles = ['admin', 'manager', 'employee'];
+        $validRoles = ['admin', 'manager', 'employee', 'inspector'];
         if (!in_array($role, $validRoles)) {
             $role = 'employee';
         }
 
-        $db->insert('users', [
+        $newUserId = $db->insert('users', [
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'first_name' => $firstName,
@@ -75,6 +75,16 @@ class EmployeeController
             'role' => $role,
             'department' => $department ?: null,
             'hourly_rate' => $hourlyRate ? (float) $hourlyRate : null,
+        ]);
+
+        // Auto-create leave balances with default vacation days (Art. 38 ET)
+        $currentYear = date('Y');
+        $db->insert('leave_balances', [
+            'user_id' => $newUserId,
+            'leave_type' => 'vacation',
+            'year' => $currentYear,
+            'total_days' => 22,
+            'used_days' => 0,
         ]);
 
         $_SESSION['flash_success'] = 'Employee created successfully.';
@@ -124,7 +134,7 @@ class EmployeeController
             $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
         }
 
-        $validRoles = ['admin', 'manager', 'employee'];
+        $validRoles = ['admin', 'manager', 'employee', 'inspector'];
         if (!in_array($data['role'], $validRoles)) {
             $data['role'] = 'employee';
         }

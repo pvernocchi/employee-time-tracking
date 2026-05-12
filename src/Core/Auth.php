@@ -100,4 +100,20 @@ class Auth
         }
         return true;
     }
+
+    public static function isInspector(): bool
+    {
+        return in_array(self::role(), ['admin', 'inspector']);
+    }
+
+    public static function requireInspector(): bool
+    {
+        self::requireLogin();
+        if (!self::isInspector()) {
+            http_response_code(403);
+            echo '<h1>403 - Access Denied</h1>';
+            exit;
+        }
+        return true;
+    }
 }
