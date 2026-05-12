@@ -468,7 +468,8 @@ class LeaveController
         }
 
         $days = 0.0;
-        for ($current = $start; $current <= $end; $current = $current->add(new \DateInterval('P1D'))) {
+        $oneDayInterval = new \DateInterval('P1D');
+        for ($current = $start; $current <= $end; $current = $current->add($oneDayInterval)) {
             $weekDay = (int) $current->format('N');
             if ($weekDay >= 6) {
                 continue;

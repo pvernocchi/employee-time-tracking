@@ -1,4 +1,7 @@
-<?php $title = 'Leave Management'; ?>
+<?php
+$title = 'Leave Management';
+$formatDays = static fn(float $value): string => rtrim(rtrim(number_format($value, 1), '0'), '.');
+?>
 
 <div class="page-header">
     <h1>Leave Management</h1>
@@ -37,9 +40,9 @@
             <?php foreach ($categoryTracking as $category): ?>
             <tr>
                 <td><?= htmlspecialchars($category['name']) ?></td>
-                <td><?= rtrim(rtrim(number_format((float) $category['total_days'], 1), '0'), '.') ?></td>
-                <td><?= rtrim(rtrim(number_format((float) $category['used_days'], 1), '0'), '.') ?></td>
-                <td><?= rtrim(rtrim(number_format((float) $category['available_days'], 1), '0'), '.') ?></td>
+                <td><?= $formatDays((float) $category['total_days']) ?></td>
+                <td><?= $formatDays((float) $category['used_days']) ?></td>
+                <td><?= $formatDays((float) $category['available_days']) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
@@ -72,7 +75,7 @@
                 <td><?= ucfirst($request['leave_type']) ?></td>
                 <td><?= date('M j, Y', strtotime($request['start_date'])) ?></td>
                 <td><?= date('M j, Y', strtotime($request['end_date'])) ?></td>
-                <td><?= rtrim(rtrim(number_format((float) $request['calculated_days'], 1), '0'), '.') ?></td>
+                <td><?= $formatDays((float) $request['calculated_days']) ?></td>
                 <td><span class="badge badge-<?= $request['status'] ?>"><?= ucfirst($request['status']) ?></span></td>
                 <td><?= $request['reviewer_first'] ? htmlspecialchars($request['reviewer_first'] . ' ' . $request['reviewer_last']) : '—' ?></td>
                 <td>
