@@ -8,6 +8,9 @@ use App\Core\View;
 
 class LeaveController
 {
+    private const VALID_TYPES = ['vacation', 'sick', 'personal', 'unpaid', 'maternity', 'paternity', 'marriage', 'bereavement', 'moving', 'jury_duty', 'other'];
+    private const MANAGEABLE_STATUSES = ['pending', 'approved'];
+
     public function index(): void
     {
         $db = Database::getInstance();
@@ -35,7 +38,18 @@ class LeaveController
 
     public function showRequest(): void
     {
-        View::render('leave.request');
+        View::render('leave.request', [
+            'request' => [
+                'leave_type' => '',
+                'start_date' => '',
+                'end_date' => '',
+                'reason' => '',
+                'status' => 'pending',
+            ],
+            'formAction' => '/leave/request',
+            'pageTitle' => 'Request Leave',
+            'submitLabel' => 'Submit Request',
+        ]);
     }
 
     public function submitRequest(): void
@@ -55,8 +69,7 @@ class LeaveController
         $reason = trim($_POST['reason'] ?? '');
 
         // Validation
-        $validTypes = ['vacation', 'sick', 'personal', 'unpaid', 'maternity', 'paternity', 'marriage', 'bereavement', 'moving', 'jury_duty', 'other'];
-        if (!in_array($leaveType, $validTypes)) {
+        if (!in_array($leaveType, self::VALID_TYPES, true)) {
             $_SESSION['flash_error'] = 'Invalid leave type.';
             header('Location: /leave/request');
             exit;
@@ -82,6 +95,81 @@ class LeaveController
         exit;
     }
 
+    public function showEdit(string $id): void
+    {
+        $request = $this->findManageableRequest((int) $id);
+
+        if (!$request) {
+            $_SESSION['flash_error'] = 'Leave request not found or cannot be modified.';
+            header('Location: /leave');
+            exit;
+        }
+
+        View::render('leave.request', [
+            'request' => $request,
+            'formAction' => "/leave/edit/{$request['id']}",
+            'pageTitle' => 'Edit Leave Request',
+            'submitLabel' => $request['status'] === 'approved' ? 'Update Request and Resubmit' : 'Update Request',
+        ]);
+    }
+
+    public function update(string $id): void
+    {
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['flash_error'] = 'Invalid request.';
+            header("Location: /leave/edit/{$id}");
+            exit;
+        }
+
+        $db = Database::getInstance();
+        $request = $this->findManageableRequest((int) $id);
+
+        if (!$request) {
+            $_SESSION['flash_error'] = 'Leave request not found or cannot be modified.';
+            header('Location: /leave');
+            exit;
+        }
+
+        $leaveType = $_POST['leave_type'] ?? '';
+        $startDate = $_POST['start_date'] ?? '';
+        $endDate = $_POST['end_date'] ?? '';
+        $reason = trim($_POST['reason'] ?? '');
+
+        if (!in_array($leaveType, self::VALID_TYPES, true)) {
+            $_SESSION['flash_error'] = 'Invalid leave type.';
+            header("Location: /leave/edit/{$id}");
+            exit;
+        }
+
+        if (empty($startDate) || empty($endDate) || strtotime($endDate) < strtotime($startDate)) {
+            $_SESSION['flash_error'] = 'Invalid date range.';
+            header("Location: /leave/edit/{$id}");
+            exit;
+        }
+
+        $data = [
+            'leave_type' => $leaveType,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'reason' => $reason,
+        ];
+
+        if ($request['status'] === 'approved') {
+            $data['status'] = 'pending';
+            $data['reviewed_by'] = null;
+            $data['reviewed_at'] = null;
+            $data['review_notes'] = null;
+        }
+
+        $db->update('leave_requests', $data, 'id = ? AND user_id = ?', [(int) $id, Auth::id()]);
+
+        $_SESSION['flash_success'] = $request['status'] === 'approved'
+            ? 'Leave request updated and sent for review again.'
+            : 'Leave request updated.';
+        header('Location: /leave');
+        exit;
+    }
+
     public function cancel(string $id): void
     {
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -91,12 +179,7 @@ class LeaveController
         }
 
         $db = Database::getInstance();
-        $userId = Auth::id();
-
-        $request = $db->fetchOne(
-            'SELECT * FROM leave_requests WHERE id = ? AND user_id = ? AND status = "pending"',
-            [(int) $id, $userId]
-        );
+        $request = $this->findManageableRequest((int) $id);
 
         if (!$request) {
             $_SESSION['flash_error'] = 'Leave request not found or cannot be cancelled.';
@@ -109,6 +192,29 @@ class LeaveController
         $_SESSION['flash_success'] = 'Leave request cancelled.';
         header('Location: /leave');
         exit;
+    }
+
+    private function findManageableRequest(int $id): ?array
+    {
+        $db = Database::getInstance();
+        $placeholders = implode(', ', array_fill(0, count(self::MANAGEABLE_STATUSES), '?'));
+        $today = $this->today();
+
+        return $db->fetchOne(
+            "SELECT * FROM leave_requests WHERE id = ? AND user_id = ? AND status IN ({$placeholders}) AND end_date >= ?",
+            array_merge([$id, Auth::id()], self::MANAGEABLE_STATUSES, [$today])
+        );
+    }
+
+    private function today(): string
+    {
+        static $today = null;
+
+        if ($today === null) {
+            $today = date('Y-m-d');
+        }
+
+        return $today;
     }
 
     public function adminIndex(): void

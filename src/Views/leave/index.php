@@ -26,6 +26,7 @@
     <?php if (empty($requests)): ?>
         <p class="text-muted">No leave requests found.</p>
     <?php else: ?>
+    <?php $today = strtotime(date('Y-m-d')); ?>
     <table class="table">
         <thead>
             <tr>
@@ -40,6 +41,7 @@
         </thead>
         <tbody>
             <?php foreach ($requests as $request): ?>
+            <?php $canManage = in_array($request['status'], ['pending', 'approved'], true) && strtotime($request['end_date']) >= $today; ?>
             <tr>
                 <td><?= ucfirst($request['leave_type']) ?></td>
                 <td><?= date('M j, Y', strtotime($request['start_date'])) ?></td>
@@ -48,7 +50,8 @@
                 <td><span class="badge badge-<?= $request['status'] ?>"><?= ucfirst($request['status']) ?></span></td>
                 <td><?= $request['reviewer_first'] ? htmlspecialchars($request['reviewer_first'] . ' ' . $request['reviewer_last']) : '—' ?></td>
                 <td>
-                    <?php if ($request['status'] === 'pending'): ?>
+                    <?php if ($canManage): ?>
+                    <a href="/leave/edit/<?= $request['id'] ?>" class="btn btn-sm btn-outline">Edit Request</a>
                     <form method="POST" action="/leave/cancel/<?= $request['id'] ?>" class="inline-form">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Cancel this request?')">Cancel</button>
