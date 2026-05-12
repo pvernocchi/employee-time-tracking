@@ -46,7 +46,7 @@ El proyecto incluye funcionalidades orientadas al cumplimiento de las siguientes
 | --- | --- |
 | **Real Decreto-ley 8/2019**, que introduce el registro obligatorio de jornada | Registro diario de entrada/salida, auditoría de cambios, conservación configurable y exportaciones preparadas para inspección. |
 | **Estatuto de los Trabajadores, art. 34.9** | Registro de jornada por persona trabajadora, disponibilidad de registros, portal de inspector y exportación individual de horas. |
-| **Estatuto de los Trabajadores, art. 34** | Alertas para jornada diaria máxima de 9 horas, jornada semanal de 40 horas, descanso mínimo entre jornadas de 12 horas y pausa mínima de 15 minutos cuando la jornada supera 6 horas. |
+| **Estatuto de los Trabajadores, art. 34** | Alertas para jornada diaria ordinaria máxima de 9 horas, jornada semanal ordinaria media de 40 horas, descanso mínimo entre jornadas de 12 horas y pausa mínima de 15 minutos cuando la jornada supera 6 horas, sin perjuicio de excepciones o distribuciones pactadas legalmente. |
 | **Estatuto de los Trabajadores, art. 35.2** | Control del límite anual de 80 horas extraordinarias y avisos cuando se aproxima o se supera. |
 | **Estatuto de los Trabajadores, art. 37.3** | Catálogo de permisos retribuidos estatutarios, como matrimonio, fallecimiento de familiar, mudanza y cumplimiento de deber público. |
 | **Estatuto de los Trabajadores, art. 38** | Gestión de vacaciones con mínimo estatutario configurable de 22 días laborables. |
