@@ -7,6 +7,8 @@
 
 A lightweight **vanilla PHP** time-tracking platform for teams that need simple attendance management, leave workflows, and compliance reporting aligned with Spanish labor law.
 
+> 🇪🇸 [Versión en español](README.es.md)
+
 ---
 
 ## Why This Project?

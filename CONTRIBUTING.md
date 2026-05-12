@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing! This document provides guidelines to help you get started.
 
+> 🇪🇸 [Versión en español](CONTRIBUTING.es.md)
+
 ## How to Contribute
 
 ### Reporting Bugs
