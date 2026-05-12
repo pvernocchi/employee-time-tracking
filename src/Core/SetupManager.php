@@ -292,7 +292,9 @@ class SetupManager
 
     private function hasTable(PDO $pdo, string $table): bool
     {
-        $stmt = $pdo->prepare('SHOW TABLES LIKE :table');
+        $stmt = $pdo->prepare(
+            'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = :table'
+        );
         $stmt->execute([':table' => $table]);
 
         return (bool) $stmt->fetchColumn();
