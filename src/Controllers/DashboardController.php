@@ -34,7 +34,7 @@ class DashboardController
                 $todayHours += ($diff / 3600) - ($entry['break_minutes'] / 60);
             } elseif ($entry['status'] === 'active') {
                 $diff = time() - strtotime($entry['clock_in']);
-                $todayHours += $diff / 3600;
+                $todayHours += ($diff / 3600) - ($entry['break_minutes'] / 60);
             }
         }
 

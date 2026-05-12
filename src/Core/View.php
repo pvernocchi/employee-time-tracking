@@ -13,7 +13,7 @@ class View
 
     public static function render(string $view, array $data = [], string $layout = 'main'): void
     {
-        extract($data);
+        extract($data, EXTR_SKIP);
 
         $viewFile = self::$viewsPath . '/' . str_replace('.', '/', $view) . '.php';
         if (!file_exists($viewFile)) {

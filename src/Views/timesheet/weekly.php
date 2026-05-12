@@ -48,7 +48,7 @@
                         <span class="text-muted">—</span>
                     <?php endif; ?>
                 </td>
-                <td><strong><?= $day['totalHours'] ? round($day['totalHours'], 2) : '—' ?></strong></td>
+                <td><strong><?= $day['totalHours'] > 0 ? round($day['totalHours'], 2) : '—' ?></strong></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

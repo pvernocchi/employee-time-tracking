@@ -23,7 +23,8 @@ function initLiveDuration() {
     const startTime = el.dataset.start;
     if (!startTime) return;
 
-    const start = new Date(startTime + ' UTC').getTime();
+    // Parse the server timestamp as-is (matches server timezone set in PHP config)
+    const start = new Date(startTime.replace(' ', 'T')).getTime();
 
     function update() {
         const now = Date.now();
