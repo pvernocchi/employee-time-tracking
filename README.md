@@ -110,6 +110,10 @@ employee-time-tracking/
 composer install --no-dev --optimize-autoloader
 ```
 
+For standalone operational guides, see:
+- [`install.md`](install.md)
+- [`update.md`](update.md)
+
 ### 3️⃣ Configure the app
 
 Copy the example config:

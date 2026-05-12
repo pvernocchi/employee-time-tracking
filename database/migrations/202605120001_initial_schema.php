@@ -1,33 +1,26 @@
--- Employee Time Tracking System
--- Database Schema for MySQL 5.7+ / PHP 8.1
--- Compliant with Spanish Labor Law (Real Decreto-ley 8/2019, Art. 34.9 ET)
+<?php
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
--- --------------------------------------------------------
--- Schema migrations
--- --------------------------------------------------------
+return [
+    'version' => '202605120001',
+    'name' => 'Initial application schema with migration tracking',
+    'statements' => [
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `schema_migrations` (
   `version` VARCHAR(20) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `applied_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- App metadata
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `app_meta` (
   `meta_key` VARCHAR(100) NOT NULL,
   `meta_value` TEXT NOT NULL,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`meta_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Users table
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL,
@@ -42,11 +35,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Time entries (clock in/out)
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `time_entries` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -67,11 +58,9 @@ CREATE TABLE IF NOT EXISTS `time_entries` (
   CONSTRAINT `fk_time_entries_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_time_entries_approver` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_time_entries_editor` FOREIGN KEY (`edited_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Leave requests
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `leave_requests` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -90,11 +79,9 @@ CREATE TABLE IF NOT EXISTS `leave_requests` (
   KEY `idx_status` (`status`),
   CONSTRAINT `fk_leave_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_leave_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Leave balances
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `leave_balances` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -105,11 +92,9 @@ CREATE TABLE IF NOT EXISTS `leave_balances` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_user_type_year` (`user_id`, `leave_type`, `year`),
   CONSTRAINT `fk_balance_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Audit log (Art. 34.9 ET - immutability/traceability)
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `audit_log` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `time_entry_id` INT UNSIGNED NOT NULL,
@@ -125,11 +110,9 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   KEY `idx_audit_created` (`created_at`),
   CONSTRAINT `fk_audit_entry` FOREIGN KEY (`time_entry_id`) REFERENCES `time_entries` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Compliance settings
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `compliance_settings` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `setting_key` VARCHAR(100) NOT NULL,
@@ -137,11 +120,9 @@ CREATE TABLE IF NOT EXISTS `compliance_settings` (
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `setting_key` (`setting_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Data protection consents (LOPDGDD)
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 CREATE TABLE IF NOT EXISTS `data_protection_consents` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -151,11 +132,9 @@ CREATE TABLE IF NOT EXISTS `data_protection_consents` (
   PRIMARY KEY (`id`),
   KEY `idx_consent_user` (`user_id`),
   CONSTRAINT `fk_consent_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Default compliance settings (Spanish labor law)
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL,
+        <<<'SQL'
 INSERT INTO `compliance_settings` (`setting_key`, `setting_value`) VALUES
 ('daily_max_hours', '9'),
 ('weekly_max_hours', '40'),
@@ -164,4 +143,9 @@ INSERT INTO `compliance_settings` (`setting_key`, `setting_value`) VALUES
 ('break_after_hours', '6'),
 ('min_break_minutes', '15'),
 ('record_retention_years', '4'),
-('default_vacation_days', '22');
+('default_vacation_days', '22')
+ON DUPLICATE KEY UPDATE `setting_key` = `setting_key`
+SQL,
+    ],
+]
+;

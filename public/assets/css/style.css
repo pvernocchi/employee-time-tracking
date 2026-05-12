@@ -330,6 +330,7 @@ a:hover { text-decoration: underline; }
 }
 
 .auth-container { width: 100%; max-width: 400px; padding: 1rem; }
+.auth-container-wide { max-width: 960px; }
 
 .auth-card {
     background: white;
@@ -341,6 +342,35 @@ a:hover { text-decoration: underline; }
 .auth-header { text-align: center; margin-bottom: 1.5rem; }
 .auth-header h1 { font-size: 1.5rem; }
 .auth-header p { color: var(--gray-500); margin-top: 0.5rem; }
+
+.setup-card {
+    padding: 2rem;
+}
+
+.setup-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.setup-section {
+    margin-bottom: 1.75rem;
+}
+
+.setup-section h2,
+.setup-status-grid h2 {
+    margin-bottom: 0.75rem;
+}
+
+.setup-list {
+    padding-left: 1.25rem;
+    color: var(--gray-700);
+}
+
+.setup-list li + li {
+    margin-top: 0.35rem;
+}
 
 /* Footer */
 .footer {
