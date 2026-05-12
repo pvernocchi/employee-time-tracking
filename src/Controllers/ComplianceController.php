@@ -170,8 +170,8 @@ class ComplianceController
 
         $db = Database::getInstance();
         $userId = Auth::id();
-        $consentType = trim($_POST['consent_type'] ?? 'time_tracking_registro_jornada');
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+        $consentType = trim($_POST['consent_type'] ?? 'time_tracking_privacy_notice');
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
 
         $db->insert('data_protection_consents', [
             'user_id' => $userId,

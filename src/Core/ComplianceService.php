@@ -161,7 +161,7 @@ class ComplianceService
 
     public function logAudit(int $timeEntryId, int $userId, string $action, ?array $oldValues = null, ?array $newValues = null): void
     {
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
 
         $this->db->insert('audit_log', [
             'time_entry_id' => $timeEntryId,
