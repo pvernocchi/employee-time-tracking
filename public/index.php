@@ -81,6 +81,28 @@ if ($setupStatus['needsUpgrade']) {
 
 Database::getInstance($config['database']);
 
+// Load user preferences into session
+if (Auth::check() && empty($_SESSION['user_prefs_loaded'])) {
+    try {
+        $userPrefs = Database::getInstance()->fetchOne(
+            'SELECT timezone, locale, theme FROM user_preferences WHERE user_id = ?',
+            [Auth::id()]
+        );
+        if ($userPrefs) {
+            $_SESSION['user_timezone'] = $userPrefs['timezone'];
+            $_SESSION['lang'] = $userPrefs['locale'];
+            $_SESSION['user_theme'] = $userPrefs['theme'];
+        }
+    } catch (\Exception $e) {
+        // Table may not exist yet (pre-migration)
+    }
+    $_SESSION['user_prefs_loaded'] = true;
+}
+
+if (!empty($_SESSION['user_timezone'])) {
+    date_default_timezone_set($_SESSION['user_timezone']);
+}
+
 // Initialise SMTP encryption secret (used to encrypt stored SMTP passwords)
 SmtpMailer::setSecret($config['smtp']['secret'] ?? '');
 
@@ -168,6 +190,16 @@ $router->post('/mfa/enroll/totp', [\App\Controllers\MfaController::class, 'store
 $router->post('/mfa/webauthn/register-challenge', [\App\Controllers\MfaController::class, 'webAuthnRegisterChallenge']);
 $router->post('/mfa/webauthn/register-verify', [\App\Controllers\MfaController::class, 'webAuthnRegisterVerify']);
 $router->post('/mfa/remove/{id}', [\App\Controllers\MfaController::class, 'removeMfaMethod'], $authMiddleware);
+
+// User Profile
+$router->get('/profile', [\App\Controllers\UserProfileController::class, 'index'], $authMiddleware);
+$router->post('/profile/preferences', [\App\Controllers\UserProfileController::class, 'savePreferences'], $authMiddleware);
+$router->post('/profile/schedule', [\App\Controllers\UserProfileController::class, 'saveSchedule'], $authMiddleware);
+$router->post('/profile/password', [\App\Controllers\UserProfileController::class, 'changePassword'], $authMiddleware);
+
+// Admin: Employee work schedule
+$router->get('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSchedule'], $adminMiddleware);
+$router->post('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSaveSchedule'], $adminMiddleware);
 
 // Admin: Security settings
 $router->get('/admin/security', [\App\Controllers\SecurityController::class, 'settings'], $adminMiddleware);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?= htmlspecialchars($currentLocale ?? 'es') ?>">
+<html lang="<?= htmlspecialchars($currentLocale ?? 'es') ?>"<?php if (!empty($_SESSION['user_theme']) && $_SESSION['user_theme'] === 'dark'): ?> data-theme="dark"<?php endif; ?>>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,7 +61,7 @@
                 class="theme-toggle"
                 aria-label="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
                 title="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
-                aria-pressed="false"
+                aria-pressed="<?= (!empty($_SESSION['user_theme']) && $_SESSION['user_theme'] === 'dark') ? 'true' : 'false' ?>"
                 data-label-dark="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
                 data-label-light="<?= htmlspecialchars($t('layout.enable_light_mode')) ?>"
             >
@@ -69,6 +69,7 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"></path>
                 </svg>
             </button>
+            <a href="/profile" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.profile')) ?>">👤</a>
             <a href="/mfa/setup" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.mfa_setup')) ?>">🔑</a>
             <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>
