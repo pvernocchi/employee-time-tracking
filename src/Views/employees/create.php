@@ -88,6 +88,7 @@
         const managerField = document.getElementById('manager-field');
         const managerSelect = document.getElementById('manager_id');
         const teamMembersField = document.getElementById('team-members-field');
+        const teamMembersSelect = document.getElementById('team_member_ids');
 
         function updateRoleFields() {
             if (!roleSelect || !managerField || !teamMembersField || !managerSelect) return;
@@ -108,8 +109,8 @@
             }
 
             teamMembersField.style.display = showTeamMembersField ? '' : 'none';
-            if (!showTeamMembersField) {
-                Array.from(document.getElementById('team_member_ids').options).forEach((option) => {
+            if (!showTeamMembersField && teamMembersSelect) {
+                Array.from(teamMembersSelect.options).forEach((option) => {
                     option.selected = false;
                 });
             }
