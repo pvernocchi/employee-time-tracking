@@ -6,6 +6,9 @@ use PHPMailer\PHPMailer\Exception as MailerException;
 
 class NotificationService
 {
+    private const REMINDER_HOUR = 9;
+    private const SECONDS_PER_DAY = 86400;
+
     private SmtpMailer $mailer;
 
     public function __construct(?SmtpMailer $mailer = null)
@@ -37,7 +40,7 @@ class NotificationService
         $leaveType = ucfirst(str_replace('_', ' ', $leaveRequest['leave_type']));
         $startDate = date('M j, Y', strtotime($leaveRequest['start_date']));
         $endDate = date('M j, Y', strtotime($leaveRequest['end_date']));
-        $days = (strtotime($leaveRequest['end_date']) - strtotime($leaveRequest['start_date'])) / 86400 + 1;
+        $days = (strtotime($leaveRequest['end_date']) - strtotime($leaveRequest['start_date'])) / self::SECONDS_PER_DAY + 1;
         $reason = htmlspecialchars($leaveRequest['reason'] ?? '—');
 
         $subject = "New Leave Request from {$employeeName}";
@@ -84,51 +87,7 @@ HTML;
      */
     public function sendDailyPendingHoursRemindersAtLocalNine(): int
     {
-        if (!$this->mailer->isEnabled()) {
-            return 0;
-        }
-
-        $db = Database::getInstance();
-        $emailsSent = 0;
-
-        $managers = $db->fetchAll(
-            "SELECT u.id, u.email, u.first_name, u.last_name
-             FROM users u
-             WHERE u.role IN ('manager', 'admin') AND u.is_active = 1"
-        );
-
-        foreach ($managers as $manager) {
-            $tz = $this->getManagerTimezone($db, (int) $manager['id']);
-            $mgrTz = new \DateTimeZone($tz);
-            $now = new \DateTimeImmutable('now', $mgrTz);
-
-            // Only proceed if the current hour in the manager's timezone is 9
-            if ((int) $now->format('G') !== 9) {
-                continue;
-            }
-
-            $yesterday = $now->modify('-1 day')->format('Y-m-d');
-
-            $pendingEntries = $db->fetchAll(
-                "SELECT te.id, te.clock_in, te.clock_out, te.break_minutes, te.status,
-                        u.first_name, u.last_name
-                 FROM time_entries te
-                 JOIN users u ON te.user_id = u.id
-                 WHERE u.manager_id = ?
-                   AND DATE(te.clock_in) = ?
-                   AND te.status IN ('completed', 'edited')
-                 ORDER BY u.last_name, u.first_name, te.clock_in",
-                [$manager['id'], $yesterday]
-            );
-
-            if (empty($pendingEntries)) {
-                continue;
-            }
-
-            $emailsSent += $this->sendPendingHoursEmail($manager, $pendingEntries, $yesterday);
-        }
-
-        return $emailsSent;
+        return $this->processPendingHoursReminders(true);
     }
 
     /**
@@ -139,6 +98,16 @@ HTML;
      */
     public function sendDailyPendingHoursReminders(): int
     {
+        return $this->processPendingHoursReminders(false);
+    }
+
+    /**
+     * Core logic shared by both reminder methods.
+     *
+     * @param bool $checkHour When true, only send if the manager's local hour equals REMINDER_HOUR.
+     */
+    private function processPendingHoursReminders(bool $checkHour): int
+    {
         if (!$this->mailer->isEnabled()) {
             return 0;
         }
@@ -146,35 +115,20 @@ HTML;
         $db = Database::getInstance();
         $emailsSent = 0;
 
-        // Find all active managers and admins
-        $managers = $db->fetchAll(
-            "SELECT u.id, u.email, u.first_name, u.last_name
-             FROM users u
-             WHERE u.role IN ('manager', 'admin') AND u.is_active = 1"
-        );
+        $managers = $this->getActiveManagers($db);
 
         foreach ($managers as $manager) {
-            // Determine the manager's timezone
             $tz = $this->getManagerTimezone($db, (int) $manager['id']);
-
-            // Calculate "yesterday" in the manager's timezone
             $mgrTz = new \DateTimeZone($tz);
             $now = new \DateTimeImmutable('now', $mgrTz);
+
+            if ($checkHour && (int) $now->format('G') !== self::REMINDER_HOUR) {
+                continue;
+            }
+
             $yesterday = $now->modify('-1 day')->format('Y-m-d');
 
-            // Fetch completed (but not approved) time entries from yesterday
-            // for employees managed by this manager
-            $pendingEntries = $db->fetchAll(
-                "SELECT te.id, te.clock_in, te.clock_out, te.break_minutes, te.status,
-                        u.first_name, u.last_name
-                 FROM time_entries te
-                 JOIN users u ON te.user_id = u.id
-                 WHERE u.manager_id = ?
-                   AND DATE(te.clock_in) = ?
-                   AND te.status IN ('completed', 'edited')
-                 ORDER BY u.last_name, u.first_name, te.clock_in",
-                [$manager['id'], $yesterday]
-            );
+            $pendingEntries = $this->getPendingEntriesForManager($db, (int) $manager['id'], $yesterday);
 
             if (empty($pendingEntries)) {
                 continue;
@@ -265,6 +219,36 @@ HTML;
         } catch (MailerException $e) {
             return 0;
         }
+    }
+
+    /**
+     * Get all active managers and admins.
+     */
+    private function getActiveManagers(Database $db): array
+    {
+        return $db->fetchAll(
+            "SELECT u.id, u.email, u.first_name, u.last_name
+             FROM users u
+             WHERE u.role IN ('manager', 'admin') AND u.is_active = 1"
+        );
+    }
+
+    /**
+     * Fetch completed (non-approved) time entries for a manager's employees on a given date.
+     */
+    private function getPendingEntriesForManager(Database $db, int $managerId, string $date): array
+    {
+        return $db->fetchAll(
+            "SELECT te.id, te.clock_in, te.clock_out, te.break_minutes, te.status,
+                    u.first_name, u.last_name
+             FROM time_entries te
+             JOIN users u ON te.user_id = u.id
+             WHERE u.manager_id = ?
+               AND DATE(te.clock_in) = ?
+               AND te.status IN ('completed', 'edited')
+             ORDER BY u.last_name, u.first_name, te.clock_in",
+            [$managerId, $date]
+        );
     }
 
     /**
