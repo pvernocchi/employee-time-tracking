@@ -18,7 +18,7 @@ This application helps organizations track working time with a classic server-re
 - 🛡️ **Compliance dashboard** with audit visibility and labor inspection exports
 - 🧾 **Inspector access** for read-only record review and export
 - 🔐 **Role-based access control** for admin, manager, employee, and inspector users
-- 🌍 **Multilingual interface** with Spanish and English language switch
+- 🌍 **Multilingual interface** with Spanish, English, Catalan, Basque, and Galician language switch
 
 ---
 

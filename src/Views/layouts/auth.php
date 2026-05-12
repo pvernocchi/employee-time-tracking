@@ -11,7 +11,11 @@
         <div class="language-switch">
             <span class="language-switch-label"><?= htmlspecialchars($t('layout.language')) ?>:</span>
             <?php foreach ($supportedLocales ?? [] as $locale): ?>
-                <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm <?= ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline' ?>"><?= strtoupper(htmlspecialchars($locale)) ?></a>
+                <?php $itemLocaleMeta = $localeMeta($locale); ?>
+                <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm language-switch-item <?= ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline' ?>">
+                    <img src="<?= htmlspecialchars($itemLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
+                    <?= htmlspecialchars($itemLocaleMeta['abbr']) ?>
+                </a>
             <?php endforeach; ?>
         </div>
         <?php if (!empty($_SESSION['flash_success'])): ?>

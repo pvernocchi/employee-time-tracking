@@ -32,12 +32,26 @@
             <?php if (\App\Core\Auth::isInspector()): ?>
             <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.inspector')) ?></a></li>
             <?php endif; ?>
+            <li class="nav-dropdown nav-dropdown-right">
+                <?php $currentLocaleMeta = $localeMeta($currentLocale ?? 'es'); ?>
+                <a href="#">
+                    <img src="<?= htmlspecialchars($currentLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
+                    <?= htmlspecialchars($currentLocaleMeta['abbr']) ?> ▾
+                </a>
+                <ul class="dropdown-menu locale-menu">
+                    <?php foreach ($supportedLocales ?? [] as $locale): ?>
+                        <?php $itemLocaleMeta = $localeMeta($locale); ?>
+                        <li>
+                            <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="<?= ($locale === ($currentLocale ?? '')) ? 'active' : '' ?>">
+                                <img src="<?= htmlspecialchars($itemLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
+                                <?= htmlspecialchars($itemLocaleMeta['abbr']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
         </ul>
         <div class="nav-user">
-            <span><?= htmlspecialchars($t('layout.language')) ?>:</span>
-            <?php foreach ($supportedLocales ?? [] as $locale): ?>
-                <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm <?= ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline' ?>"><?= strtoupper(htmlspecialchars($locale)) ?></a>
-            <?php endforeach; ?>
             <span><?= htmlspecialchars(\App\Core\Auth::user()['first_name'] ?? '') ?></span>
             <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>

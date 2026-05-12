@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'app.name' => 'Employee Time Tracker',
+    'app.short_name' => 'Time Tracker',
+    'nav.dashboard' => 'Arbela',
+    'nav.clock' => 'Sarrera/irteera markatu',
+    'nav.timesheet' => 'Lanaldia',
+    'nav.leave' => 'Baimenak',
+    'nav.admin' => 'Administrazioa',
+    'nav.employees' => 'Langileak',
+    'nav.leave_requests' => 'Eskaerak',
+    'nav.reports' => 'Txostenak',
+    'nav.compliance' => 'Betetzea',
+    'nav.inspector' => 'Ikuskatzailea',
+    'nav.logout' => 'Saioa itxi',
+    'layout.language' => 'Hizkuntza',
+    'auth.login_page_title' => 'Sarbidea - :app',
+    'auth.sign_in' => 'Hasi saioa zure kontuan',
+    'auth.email_address' => 'Helbide elektronikoa',
+    'auth.password' => 'Pasahitza',
+    'auth.sign_in_button' => 'Hasi saioa',
+    'flash.invalid_request_try_again' => 'Eskaera baliogabea. Saiatu berriro.',
+    'flash.enter_email_password' => 'Sartu helbide elektronikoa eta pasahitza.',
+    'flash.invalid_email_or_password' => 'Helbide elektroniko edo pasahitz baliogabea.',
+];

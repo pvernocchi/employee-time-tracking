@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'app.name' => 'Employee Time Tracker',
+    'app.short_name' => 'Time Tracker',
+    'nav.dashboard' => 'Panel',
+    'nav.clock' => 'Fichaxe entrada/saída',
+    'nav.timesheet' => 'Xornada',
+    'nav.leave' => 'Permisos',
+    'nav.admin' => 'Administración',
+    'nav.employees' => 'Empregados',
+    'nav.leave_requests' => 'Solicitudes',
+    'nav.reports' => 'Informes',
+    'nav.compliance' => 'Cumprimento',
+    'nav.inspector' => 'Inspector',
+    'nav.logout' => 'Pechar sesión',
+    'layout.language' => 'Idioma',
+    'auth.login_page_title' => 'Acceso - :app',
+    'auth.sign_in' => 'Accede á túa conta',
+    'auth.email_address' => 'Correo electrónico',
+    'auth.password' => 'Contrasinal',
+    'auth.sign_in_button' => 'Iniciar sesión',
+    'flash.invalid_request_try_again' => 'Solicitude non válida. Téntao de novo.',
+    'flash.enter_email_password' => 'Introduce correo e contrasinal.',
+    'flash.invalid_email_or_password' => 'Correo ou contrasinal non válidos.',
+];

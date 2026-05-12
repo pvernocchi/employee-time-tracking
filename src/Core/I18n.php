@@ -8,7 +8,15 @@ class I18n
 
     private static array $translations = [];
 
-    private static array $supportedLocales = ['es', 'en'];
+    private static array $supportedLocales = ['es', 'en', 'ca', 'eu', 'gl'];
+
+    private static array $localeMeta = [
+        'es' => ['abbr' => 'ES', 'flag' => '/assets/flags/es.svg'],
+        'en' => ['abbr' => 'EN', 'flag' => '/assets/flags/en.svg'],
+        'ca' => ['abbr' => 'CA', 'flag' => '/assets/flags/ca.svg'],
+        'eu' => ['abbr' => 'EU', 'flag' => '/assets/flags/eu.svg'],
+        'gl' => ['abbr' => 'GL', 'flag' => '/assets/flags/gl.svg'],
+    ];
 
     public static function init(array $appConfig = []): void
     {
@@ -55,6 +63,14 @@ class I18n
     public static function getSupportedLocales(): array
     {
         return self::$supportedLocales;
+    }
+
+    public static function getLocaleMeta(string $locale): array
+    {
+        return self::$localeMeta[$locale] ?? [
+            'abbr' => strtoupper($locale),
+            'flag' => '/assets/flags/' . $locale . '.svg',
+        ];
     }
 
     public static function urlWithLang(string $locale): string

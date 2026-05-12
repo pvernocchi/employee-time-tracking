@@ -11,7 +11,7 @@ return [
         'url' => 'http://localhost',
         'timezone' => 'Europe/Madrid',
         'default_locale' => 'es',
-        'supported_locales' => ['es', 'en'],
+        'supported_locales' => ['es', 'en', 'ca', 'eu', 'gl'],
     ],
 
     'database' => [
