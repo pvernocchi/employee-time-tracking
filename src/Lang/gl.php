@@ -17,6 +17,7 @@ return [
     'nav.settings' => '⚙️ Configuración',
     'nav.leave_policy' => '📋 Política de permisos',
     'nav.mfa_setup' => '🔐 Autenticación de dous factores',
+    'nav.logout' => 'Pechar sesión',
     'layout.language' => 'Idioma',
     'layout.enable_dark_mode' => 'Activar modo escuro',
     'layout.enable_light_mode' => 'Activar modo claro',
