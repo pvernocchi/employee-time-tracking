@@ -85,6 +85,12 @@ $router->get('/login', [\App\Controllers\AuthController::class, 'showLogin']);
 $router->post('/login', [\App\Controllers\AuthController::class, 'login']);
 $router->get('/logout', [\App\Controllers\AuthController::class, 'logout']);
 
+// MFA verification (during login – no full auth required)
+$router->get('/mfa/verify', [\App\Controllers\MfaController::class, 'showVerify']);
+$router->post('/mfa/verify', [\App\Controllers\MfaController::class, 'verify']);
+$router->post('/mfa/webauthn/auth-challenge', [\App\Controllers\MfaController::class, 'webAuthnAuthChallenge']);
+$router->post('/mfa/webauthn/auth-verify', [\App\Controllers\MfaController::class, 'webAuthnAuthVerify']);
+
 // ----- Protected Routes -----
 $authMiddleware = [Auth::class . '::requireLogin'];
 $adminMiddleware = [Auth::class . '::requireAdmin'];
@@ -143,6 +149,21 @@ $router->get('/inspector/export', [\App\Controllers\InspectorController::class, 
 
 // Employee self-export (Art. 34.9 ET)
 $router->get('/timesheet/export', [\App\Controllers\TimesheetController::class, 'exportOwn'], $authMiddleware);
+
+// MFA self-service (user must be logged in)
+$router->get('/mfa/setup', [\App\Controllers\MfaController::class, 'showSetup'], $authMiddleware);
+$router->get('/mfa/enroll/totp', [\App\Controllers\MfaController::class, 'showTotpEnroll']);
+$router->post('/mfa/enroll/totp', [\App\Controllers\MfaController::class, 'storeTotpEnroll']);
+$router->post('/mfa/webauthn/register-challenge', [\App\Controllers\MfaController::class, 'webAuthnRegisterChallenge']);
+$router->post('/mfa/webauthn/register-verify', [\App\Controllers\MfaController::class, 'webAuthnRegisterVerify']);
+$router->post('/mfa/remove/{id}', [\App\Controllers\MfaController::class, 'removeMfaMethod'], $authMiddleware);
+
+// Admin: Security settings
+$router->get('/admin/security', [\App\Controllers\SecurityController::class, 'settings'], $adminMiddleware);
+$router->post('/admin/security', [\App\Controllers\SecurityController::class, 'saveSettings'], $adminMiddleware);
+$router->get('/admin/security/users/{id}/mfa', [\App\Controllers\SecurityController::class, 'userMfaIndex'], $adminMiddleware);
+$router->post('/admin/security/users/{id}/mfa/toggle', [\App\Controllers\SecurityController::class, 'toggleUserMfaRequired'], $adminMiddleware);
+$router->post('/admin/security/mfa/{id}/revoke', [\App\Controllers\SecurityController::class, 'revokeMfaMethod'], $adminMiddleware);
 
 // Dispatch request
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

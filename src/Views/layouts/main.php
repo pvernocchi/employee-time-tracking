@@ -25,6 +25,7 @@
                     <li><a href="/admin/reports"><?= htmlspecialchars($t('nav.reports')) ?></a></li>
                     <?php if (\App\Core\Auth::isAdmin()): ?>
                     <li><a href="/compliance"><?= htmlspecialchars($t('nav.compliance')) ?></a></li>
+                    <li><a href="/admin/security"><?= htmlspecialchars($t('nav.security')) ?></a></li>
                     <?php endif; ?>
                 </ul>
             </li>
@@ -69,6 +70,7 @@
         </ul>
         <div class="nav-user">
             <span><?= htmlspecialchars(\App\Core\Auth::user()['first_name'] ?? '') ?></span>
+            <a href="/mfa/setup" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.mfa_setup')) ?>">🔑</a>
             <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>
     </nav>
