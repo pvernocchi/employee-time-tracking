@@ -38,6 +38,25 @@ Employee Time Tracking está diseñado para organizaciones que quieren una soluc
 
 ---
 
+## ⚖️ Normativas españolas cubiertas
+
+El proyecto incluye funcionalidades orientadas al cumplimiento de las siguientes obligaciones laborales y de protección de datos aplicables en España. La adecuación legal final depende de la configuración, las políticas internas y el uso que haga cada organización.
+
+| Normativa o referencia | Soporte incluido en la aplicación |
+| --- | --- |
+| **Real Decreto-ley 8/2019**, que introduce el registro obligatorio de jornada | Registro diario de entrada/salida, auditoría de cambios, conservación configurable y exportaciones preparadas para inspección. |
+| **Estatuto de los Trabajadores, art. 34.9** | Registro de jornada por persona trabajadora, disponibilidad de registros, portal de inspector y exportación individual de horas. |
+| **Estatuto de los Trabajadores, art. 34** | Alertas para jornada diaria máxima de 9 horas, jornada semanal de 40 horas, descanso mínimo entre jornadas de 12 horas y pausa mínima de 15 minutos cuando la jornada supera 6 horas. |
+| **Estatuto de los Trabajadores, art. 35.2** | Control del límite anual de **80 horas extraordinarias** y avisos cuando se aproxima o se supera. |
+| **Estatuto de los Trabajadores, art. 37.3** | Catálogo de permisos retribuidos estatutarios, como matrimonio, fallecimiento de familiar, mudanza y cumplimiento de deber público. |
+| **Estatuto de los Trabajadores, art. 38** | Gestión de vacaciones con mínimo estatutario configurable de 22 días laborables. |
+| **Estatuto de los Trabajadores, art. 48 y 48.4** | Categorías de permisos de maternidad y paternidad/nacimiento y cuidado de menor con mínimos estatutarios. |
+| **RGPD, art. 6.1.b y 6.1.c** | Aviso de protección de datos con base jurídica por relación laboral y cumplimiento de obligación legal. |
+| **Ley Orgánica 3/2018 (LOPDGDD)** | Registro de consentimiento/conocimiento del aviso de privacidad, derechos de las personas trabajadoras y trazabilidad con dirección IP. |
+| **Criterios de conservación para inspección laboral** | Retención de registros de jornada durante 4 años y exportaciones para Inspección de Trabajo y Seguridad Social. |
+
+---
+
 ## 📦 Requisitos
 
 Antes de empezar, asegúrate de tener:
