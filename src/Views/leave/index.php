@@ -21,6 +21,32 @@
 </div>
 <?php endif; ?>
 
+<?php if (!empty($categoryTracking)): ?>
+<div class="card">
+    <h2>Balance by Leave Category</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Available</th>
+                <th>Used</th>
+                <th>Remaining</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($categoryTracking as $category): ?>
+            <tr>
+                <td><?= htmlspecialchars($category['name']) ?></td>
+                <td><?= rtrim(rtrim(number_format((float) $category['total_days'], 1), '0'), '.') ?></td>
+                <td><?= rtrim(rtrim(number_format((float) $category['used_days'], 1), '0'), '.') ?></td>
+                <td><?= rtrim(rtrim(number_format((float) $category['available_days'], 1), '0'), '.') ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<?php endif; ?>
+
 <div class="card">
     <h2>My Leave Requests</h2>
     <?php if (empty($requests)): ?>
@@ -46,7 +72,7 @@
                 <td><?= ucfirst($request['leave_type']) ?></td>
                 <td><?= date('M j, Y', strtotime($request['start_date'])) ?></td>
                 <td><?= date('M j, Y', strtotime($request['end_date'])) ?></td>
-                <td><?= (strtotime($request['end_date']) - strtotime($request['start_date'])) / 86400 + 1 ?></td>
+                <td><?= rtrim(rtrim(number_format((float) $request['calculated_days'], 1), '0'), '.') ?></td>
                 <td><span class="badge badge-<?= $request['status'] ?>"><?= ucfirst($request['status']) ?></span></td>
                 <td><?= $request['reviewer_first'] ? htmlspecialchars($request['reviewer_first'] . ' ' . $request['reviewer_last']) : '—' ?></td>
                 <td>

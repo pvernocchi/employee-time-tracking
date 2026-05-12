@@ -23,6 +23,7 @@
             <tr>
                 <th>Categoría</th>
                 <th>Días legales</th>
+                <th>24/12 y 31/12</th>
                 <th>Estatuto de los Trabajadores</th>
                 <th>Acciones</th>
             </tr>
@@ -37,6 +38,7 @@
                     echo $days > 0 ? rtrim(rtrim(number_format($days, 1), '0'), '.') : '—';
                     ?>
                 </td>
+                <td><?= ($policy['dec_24_31_deduction'] ?? 'full') === 'half' ? 'Medio día' : 'Día completo' ?></td>
                 <td>
                     <?php if ($policy['is_statutory']): ?>
                         <span class="badge badge-active" title="Según el Estatuto de los Trabajadores">⚖️ Sí</span>

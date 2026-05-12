@@ -11,11 +11,14 @@ class LeaveController
 {
     private const VALID_TYPES = ['vacation', 'sick', 'personal', 'unpaid', 'maternity', 'paternity', 'marriage', 'bereavement', 'moving', 'jury_duty', 'other'];
     private const MANAGEABLE_STATUSES = ['pending', 'approved'];
+    private const DECEMBER_SPECIAL_DATES = ['12-24', '12-31'];
 
     public function index(): void
     {
         $db = Database::getInstance();
         $userId = Auth::id();
+        $year = (int) date('Y');
+        $vacationDecemberDeduction = $this->getVacationDecemberDeduction($db);
 
         $requests = $db->fetchAll(
             'SELECT lr.*, u.first_name as reviewer_first, u.last_name as reviewer_last 
@@ -25,15 +28,19 @@ class LeaveController
              ORDER BY lr.created_at DESC',
             [$userId]
         );
+        $this->appendCalculatedDays($requests, $vacationDecemberDeduction);
 
         $balances = $db->fetchAll(
             'SELECT * FROM leave_balances WHERE user_id = ? AND year = ?',
-            [$userId, date('Y')]
+            [$userId, $year]
         );
+
+        $categoryTracking = $this->buildCategoryTracking($db, $userId, $year, $vacationDecemberDeduction);
 
         View::render('leave.index', [
             'requests' => $requests,
             'balances' => $balances,
+            'categoryTracking' => $categoryTracking,
         ]);
     }
 
@@ -277,6 +284,7 @@ class LeaveController
         $sql .= ' ORDER BY lr.created_at DESC';
 
         $requests = $db->fetchAll($sql, $params);
+        $this->appendCalculatedDays($requests, $this->getVacationDecemberDeduction($db));
 
         View::render('leave.admin', [
             'requests' => $requests,
@@ -358,5 +366,123 @@ class LeaveController
         $_SESSION['flash_success'] = 'Leave request rejected.';
         header('Location: /admin/leave');
         exit;
+    }
+
+    private function appendCalculatedDays(array &$requests, float $vacationDecemberDeduction): void
+    {
+        foreach ($requests as &$request) {
+            $request['calculated_days'] = $this->calculateRequestDays(
+                (string) ($request['leave_type'] ?? ''),
+                (string) ($request['start_date'] ?? ''),
+                (string) ($request['end_date'] ?? ''),
+                $vacationDecemberDeduction
+            );
+        }
+        unset($request);
+    }
+
+    private function buildCategoryTracking(Database $db, int $userId, int $year, float $vacationDecemberDeduction): array
+    {
+        try {
+            $policies = $db->fetchAll(
+                'SELECT category_key, name, legal_days FROM leave_policy WHERE is_active = 1 ORDER BY is_statutory DESC, name ASC'
+            );
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        if ($policies === []) {
+            return [];
+        }
+
+        $yearStart = sprintf('%d-01-01', $year);
+        $yearEnd = sprintf('%d-12-31', $year);
+        $approvedRequests = $db->fetchAll(
+            'SELECT leave_type, start_date, end_date
+             FROM leave_requests
+             WHERE user_id = ? AND status = "approved" AND start_date <= ? AND end_date >= ?',
+            [$userId, $yearEnd, $yearStart]
+        );
+
+        $usedByCategory = [];
+        foreach ($approvedRequests as $request) {
+            $effectiveStart = max((string) $request['start_date'], $yearStart);
+            $effectiveEnd = min((string) $request['end_date'], $yearEnd);
+            $leaveType = (string) $request['leave_type'];
+            $usedByCategory[$leaveType] = ($usedByCategory[$leaveType] ?? 0.0) + $this->calculateRequestDays(
+                $leaveType,
+                $effectiveStart,
+                $effectiveEnd,
+                $vacationDecemberDeduction
+            );
+        }
+
+        $tracking = [];
+        foreach ($policies as $policy) {
+            $categoryKey = (string) $policy['category_key'];
+            $totalDays = (float) $policy['legal_days'];
+            $usedDays = round((float) ($usedByCategory[$categoryKey] ?? 0.0), 1);
+            $tracking[] = [
+                'category_key' => $categoryKey,
+                'name' => (string) $policy['name'],
+                'total_days' => $totalDays,
+                'used_days' => $usedDays,
+                'available_days' => round($totalDays - $usedDays, 1),
+            ];
+        }
+
+        return $tracking;
+    }
+
+    private function getVacationDecemberDeduction(Database $db): float
+    {
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        try {
+            $policy = $db->fetchOne(
+                'SELECT dec_24_31_deduction FROM leave_policy WHERE category_key = "vacation" LIMIT 1'
+            );
+            $cached = (($policy['dec_24_31_deduction'] ?? 'full') === 'half') ? 0.5 : 1.0;
+        } catch (\Throwable $e) {
+            $cached = 1.0;
+        }
+
+        return $cached;
+    }
+
+    private function calculateRequestDays(string $leaveType, string $startDate, string $endDate, float $vacationDecemberDeduction): float
+    {
+        $start = \DateTimeImmutable::createFromFormat('Y-m-d', $startDate);
+        $end = \DateTimeImmutable::createFromFormat('Y-m-d', $endDate);
+
+        if (!$start || !$end || $end < $start) {
+            return 0.0;
+        }
+
+        if ($leaveType !== 'vacation') {
+            return (float) ((int) $start->diff($end)->format('%a') + 1);
+        }
+
+        $days = 0.0;
+        for ($current = $start; $current <= $end; $current = $current->add(new \DateInterval('P1D'))) {
+            $weekDay = (int) $current->format('N');
+            if ($weekDay >= 6) {
+                continue;
+            }
+
+            $monthDay = $current->format('m-d');
+            if (in_array($monthDay, self::DECEMBER_SPECIAL_DATES, true)) {
+                $days += $vacationDecemberDeduction;
+                continue;
+            }
+
+            $days += 1.0;
+        }
+
+        return round($days, 1);
     }
 }

@@ -7,6 +7,9 @@ use App\Core\View;
 
 class LeavePolicyController
 {
+    private const DECEMBER_DEDUCTION_FULL = 'full';
+    private const DECEMBER_DEDUCTION_HALF = 'half';
+
     public function index(): void
     {
         $db = Database::getInstance();
@@ -29,6 +32,7 @@ class LeavePolicyController
         $name = trim($_POST['name'] ?? '');
         $legalDays = (float) ($_POST['legal_days'] ?? 0);
         $isStatutory = isset($_POST['is_statutory']) ? 1 : 0;
+        $decemberDeduction = $this->sanitizeDecemberDeduction($_POST['dec_24_31_deduction'] ?? self::DECEMBER_DEDUCTION_FULL);
 
         if ($name === '') {
             $_SESSION['flash_error'] = 'El nombre es obligatorio.';
@@ -56,6 +60,7 @@ class LeavePolicyController
             'legal_days'         => $legalDays,
             'is_statutory'       => $isStatutory,
             'min_statutory_days' => $isStatutory ? $legalDays : 0,
+            'dec_24_31_deduction' => $decemberDeduction,
         ]);
 
         $_SESSION['flash_success'] = 'Categoría creada correctamente.';
@@ -91,6 +96,7 @@ class LeavePolicyController
         }
 
         $legalDays = (float) ($_POST['legal_days'] ?? 0);
+        $decemberDeduction = $this->sanitizeDecemberDeduction($_POST['dec_24_31_deduction'] ?? ($policy['dec_24_31_deduction'] ?? self::DECEMBER_DEDUCTION_FULL));
 
         if ($legalDays < 0) {
             $_SESSION['flash_error'] = 'Los días deben ser un número positivo o cero.';
@@ -109,7 +115,10 @@ class LeavePolicyController
                 exit;
             }
 
-            $db->update('leave_policy', ['legal_days' => $legalDays], 'id = ?', [(int) $id]);
+            $db->update('leave_policy', [
+                'legal_days' => $legalDays,
+                'dec_24_31_deduction' => $decemberDeduction,
+            ], 'id = ?', [(int) $id]);
         } else {
             $name = trim($_POST['name'] ?? '');
             $isStatutory = isset($_POST['is_statutory']) ? 1 : 0;
@@ -125,6 +134,7 @@ class LeavePolicyController
                 'legal_days'         => $legalDays,
                 'is_statutory'       => $isStatutory,
                 'min_statutory_days' => $isStatutory ? $legalDays : 0,
+                'dec_24_31_deduction' => $decemberDeduction,
             ];
 
             $db->update('leave_policy', $data, 'id = ?', [(int) $id]);
@@ -184,5 +194,12 @@ class LeavePolicyController
         $key = preg_replace('/[^a-z0-9]+/', '_', $key);
         $key = trim($key, '_');
         return substr($key ?: 'category', 0, 50);
+    }
+
+    private function sanitizeDecemberDeduction(string $value): string
+    {
+        return in_array($value, [self::DECEMBER_DEDUCTION_FULL, self::DECEMBER_DEDUCTION_HALF], true)
+            ? $value
+            : self::DECEMBER_DEDUCTION_FULL;
     }
 }
