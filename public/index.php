@@ -118,6 +118,8 @@ $router->get('/timesheet/monthly', [\App\Controllers\TimesheetController::class,
 $router->get('/leave', [\App\Controllers\LeaveController::class, 'index'], $authMiddleware);
 $router->get('/leave/request', [\App\Controllers\LeaveController::class, 'showRequest'], $authMiddleware);
 $router->post('/leave/request', [\App\Controllers\LeaveController::class, 'submitRequest'], $authMiddleware);
+$router->get('/leave/edit/{id}', [\App\Controllers\LeaveController::class, 'showEdit'], $authMiddleware);
+$router->post('/leave/edit/{id}', [\App\Controllers\LeaveController::class, 'update'], $authMiddleware);
 $router->post('/leave/cancel/{id}', [\App\Controllers\LeaveController::class, 'cancel'], $authMiddleware);
 
 // Admin: Leave approval
