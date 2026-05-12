@@ -3,6 +3,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Theme toggle
+    initThemeToggle();
+
     // Live duration counter for active clock-in
     initLiveDuration();
 
@@ -12,6 +15,51 @@ document.addEventListener('DOMContentLoaded', function() {
     // Date validation for leave requests
     initDateValidation();
 });
+
+/**
+ * Theme toggle (light/dark)
+ */
+function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    const root = document.documentElement;
+    const storageKey = 'theme';
+
+    function setTheme(theme) {
+        const isDark = theme === 'dark';
+        if (isDark) {
+            root.setAttribute('data-theme', 'dark');
+        } else {
+            root.removeAttribute('data-theme');
+        }
+
+        const label = isDark ? toggle.dataset.labelLight : toggle.dataset.labelDark;
+        if (label) {
+            toggle.setAttribute('aria-label', label);
+            toggle.setAttribute('title', label);
+        }
+        toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    }
+
+    let savedTheme = 'light';
+    try {
+        savedTheme = localStorage.getItem(storageKey) === 'dark' ? 'dark' : 'light';
+    } catch (e) {
+        savedTheme = 'light';
+    }
+    setTheme(savedTheme);
+
+    toggle.addEventListener('click', function() {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        setTheme(nextTheme);
+        try {
+            localStorage.setItem(storageKey, nextTheme);
+        } catch (e) {
+            // Ignore storage failures
+        }
+    });
+}
 
 /**
  * Live duration counter

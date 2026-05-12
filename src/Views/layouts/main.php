@@ -32,6 +32,22 @@
             <?php if (\App\Core\Auth::isInspector()): ?>
             <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.inspector')) ?></a></li>
             <?php endif; ?>
+            <li>
+                <button
+                    type="button"
+                    id="theme-toggle"
+                    class="theme-toggle"
+                    aria-label="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                    title="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                    aria-pressed="false"
+                    data-label-dark="<?= htmlspecialchars($t('layout.enable_dark_mode')) ?>"
+                    data-label-light="<?= htmlspecialchars($t('layout.enable_light_mode')) ?>"
+                >
+                    <svg class="theme-toggle-icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                        <path d="M12 3a1 1 0 0 1 1 1 7 7 0 1 0 7 7 1 1 0 1 1 2 0 9 9 0 1 1-9-9 1 1 0 0 1-1 1Z" fill="currentColor"></path>
+                    </svg>
+                </button>
+            </li>
             <li class="nav-dropdown nav-dropdown-right">
                 <?php $currentLocaleMeta = $localeMeta($currentLocale); ?>
                 <a href="#">

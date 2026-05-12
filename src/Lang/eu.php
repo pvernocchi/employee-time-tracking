@@ -15,6 +15,8 @@ return [
     'nav.inspector' => 'Ikuskatzailea',
     'nav.logout' => 'Saioa itxi',
     'layout.language' => 'Hizkuntza',
+    'layout.enable_dark_mode' => 'Gaitu modu iluna',
+    'layout.enable_light_mode' => 'Gaitu modu argia',
     'auth.login_page_title' => 'Sarbidea - :app',
     'auth.sign_in' => 'Hasi saioa zure kontuan',
     'auth.email_address' => 'Helbide elektronikoa',

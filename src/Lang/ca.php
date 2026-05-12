@@ -15,6 +15,8 @@ return [
     'nav.inspector' => 'Inspector',
     'nav.logout' => 'Tancar sessió',
     'layout.language' => 'Idioma',
+    'layout.enable_dark_mode' => 'Activa el mode fosc',
+    'layout.enable_light_mode' => 'Activa el mode clar',
     'auth.login_page_title' => 'Accés - :app',
     'auth.sign_in' => 'Accedeix al teu compte',
     'auth.email_address' => 'Correu electrònic',

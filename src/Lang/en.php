@@ -15,6 +15,8 @@ return [
     'nav.inspector' => 'Inspector',
     'nav.logout' => 'Logout',
     'layout.language' => 'Language',
+    'layout.enable_dark_mode' => 'Enable dark mode',
+    'layout.enable_light_mode' => 'Enable light mode',
     'auth.login_page_title' => 'Login - :app',
     'auth.sign_in' => 'Sign in to your account',
     'auth.email_address' => 'Email Address',
