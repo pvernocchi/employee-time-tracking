@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Database;
 use App\Core\I18n;
+use App\Core\NotificationService;
 use App\Core\View;
 
 class UserProfileController
@@ -33,6 +34,9 @@ class UserProfileController
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
         $schedule = self::loadSchedule($db, (int) $user['id']);
 
+        $notifService = new NotificationService();
+        $notifPrefs = $notifService->getUserPreferences((int) $user['id']);
+
         View::render('profile.index', [
             'user' => $user,
             'prefs' => $prefs ?: ['timezone' => 'Europe/Madrid', 'locale' => I18n::getLocale(), 'theme' => 'light'],
@@ -40,6 +44,7 @@ class UserProfileController
             'supportedLocales' => I18n::getSupportedLocales(),
             'schedule' => $schedule,
             'daysOfWeek' => self::DAYS_OF_WEEK,
+            'notifPrefs' => $notifPrefs,
         ]);
     }
 
@@ -204,6 +209,34 @@ class UserProfileController
 
         $_SESSION['flash_success'] = I18n::translate('profile.schedule_saved');
         header("Location: /admin/employees/{$id}/schedule");
+        exit;
+    }
+
+    /**
+     * Save user notification preferences from profile page.
+     */
+    public function saveNotificationPreferences(): void
+    {
+        Auth::requireLogin();
+
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['flash_error'] = I18n::translate('flash.invalid_request_try_again');
+            header('Location: /profile');
+            exit;
+        }
+
+        $userId = Auth::id();
+        $service = new NotificationService();
+        $prefs = [];
+
+        foreach (array_keys(NotificationService::NOTIFICATION_TYPES) as $key) {
+            $prefs[$key] = isset($_POST[$key]);
+        }
+
+        $service->saveUserPreferences($userId, $prefs);
+
+        $_SESSION['flash_success'] = I18n::translate('notifications.preferences_saved');
+        header('Location: /profile');
         exit;
     }
 

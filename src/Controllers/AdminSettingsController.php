@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\NotificationService;
 use App\Core\SmtpMailer;
 use App\Core\View;
 use PHPMailer\PHPMailer\Exception as MailerException;
@@ -114,6 +115,40 @@ class AdminSettingsController
         }
 
         header('Location: /admin/settings/smtp');
+        exit;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Notification settings                                              */
+    /* ------------------------------------------------------------------ */
+
+    public function notificationSettings(): void
+    {
+        $service = new NotificationService();
+
+        View::render('admin.settings.notifications', [
+            'settings' => $service->getAdminSettings(),
+        ]);
+    }
+
+    public function saveNotificationSettings(): void
+    {
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['flash_error'] = 'Invalid request.';
+            header('Location: /admin/settings/notifications');
+            exit;
+        }
+
+        $settings = [];
+        foreach (array_keys(NotificationService::NOTIFICATION_TYPES) as $key) {
+            $settings[$key] = isset($_POST[$key]) ? '1' : '0';
+        }
+
+        $service = new NotificationService();
+        $service->saveAdminSettings($settings);
+
+        $_SESSION['flash_success'] = \App\Core\I18n::translate('notifications.settings_saved');
+        header('Location: /admin/settings/notifications');
         exit;
     }
 }

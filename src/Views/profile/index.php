@@ -114,6 +114,36 @@ function toggleDayRow(dayIdx, checked) {
 }
 </script>
 
+<!-- Notification Preferences -->
+<form method="POST" action="/profile/notifications">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+    <div class="card mt-2">
+        <h2>🔔 <?= htmlspecialchars($t('notifications.preferences_title')) ?></h2>
+        <p class="text-muted"><?= htmlspecialchars($t('notifications.preferences_description')) ?></p>
+
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="clock_in_reminder" value="1"
+                    <?= !empty($notifPrefs['clock_in_reminder']) ? 'checked' : '' ?>>
+                <?= htmlspecialchars($t('notifications.clock_in_reminder')) ?>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="clock_out_reminder" value="1"
+                    <?= !empty($notifPrefs['clock_out_reminder']) ? 'checked' : '' ?>>
+                <?= htmlspecialchars($t('notifications.clock_out_reminder')) ?>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-actions mt-2">
+        <button type="submit" class="btn btn-primary"><?= htmlspecialchars($t('notifications.save_preferences')) ?></button>
+    </div>
+</form>
+
 <!-- Change Password -->
 <form method="POST" action="/profile/password">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
