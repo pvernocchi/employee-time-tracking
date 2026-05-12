@@ -1,116 +1,213 @@
-# Employee Time Tracking System
+# ⏱️ Employee Time Tracking
 
-A lightweight, vanilla PHP employee time tracking application designed for shared hosting environments (Namecheap Stellar / cPanel).
+> A lightweight **vanilla PHP** time-tracking platform for teams that need simple attendance management, leave workflows, and labor-law-oriented compliance reporting.
 
-## Features
+---
 
-- **Clock In/Out** — One-click time tracking with break and notes support
-- **Timesheet Management** — Weekly and monthly views of hours worked
-- **Admin Dashboard** — Overview of workforce activity
-- **Employee Self-Service** — Personal dashboard, time history
-- **Leave/Absence Tracking** — Request, approve, reject leave with balance tracking
-- **Reporting & Exports** — CSV export of timesheets with date/employee filters
+## ✨ What this app does
 
-## Requirements
+This application helps organizations track working time with a classic server-rendered PHP stack that fits well on shared hosting.
+
+### 🌟 Core capabilities
+
+- 🕒 **Clock in / clock out** with break minutes and notes
+- 📅 **Weekly and monthly timesheets**
+- 🏖️ **Leave request workflow** for employees and managers
+- 👥 **Employee administration** for admins
+- 📊 **Reports and CSV exports** for management
+- 🛡️ **Compliance dashboard** with audit visibility and labor inspection exports
+- 🧾 **Inspector access** for read-only record review and export
+- 🔐 **Role-based access control** for admin, manager, employee, and inspector users
+
+---
+
+## 🧩 Application overview
+
+| Area | What it covers |
+| --- | --- |
+| 🏠 Dashboard | Personal stats, active status, pending leave, and manager overview cards |
+| ⏱️ Time Tracking | Start and stop shifts, add breaks, save notes, see same-day entries |
+| 📆 Timesheets | Weekly breakdowns and monthly summaries of worked hours |
+| 🌴 Leave | Submit, review, approve, reject, and cancel leave requests |
+| 📈 Reporting | Export filtered timesheet data to CSV or review it in-browser |
+| ⚖️ Compliance | Monitor alerts, inspect audit activity, and prepare inspection exports |
+| 🕵️ Inspector Portal | Browse employee records and export official attendance data |
+
+---
+
+## 👤 User roles
+
+| Role | Access |
+| --- | --- |
+| 👨‍💼 **Admin** | Full access, employee management, compliance dashboard |
+| 🧑‍💼 **Manager** | Reports, leave approvals, workforce overview |
+| 👷 **Employee** | Clocking, timesheets, leave requests, self export |
+| 🕵️ **Inspector** | Read-only inspection views and exports |
+
+---
+
+## ⚖️ Compliance-focused features
+
+This project is built around **Spanish labor-law-oriented tracking**, including:
+
+- 🇪🇸 Support for **Real Decreto-ley 8/2019** / **Art. 34.9 ET**
+- ⏳ Daily hour checks
+- 📆 Weekly hour checks
+- ➕ Annual overtime monitoring
+- 😴 Minimum rest-between-days alerts
+- ☕ Break compliance alerts
+- 📝 Audit log entries for time-entry creation and edits
+- 📤 CSV exports for inspections and employee self-service
+- 🗃️ Record retention settings in configuration
+
+---
+
+## 🏗️ Tech stack
+
+| Layer | Technology |
+| --- | --- |
+| Backend | 🐘 PHP 8.1+ |
+| Database | 🐬 MySQL 5.7+ |
+| Frontend | 🎨 Server-rendered PHP views, CSS, small JavaScript helpers |
+| Routing | 🛣️ Custom router |
+| Auth | 🔐 Session-based authentication |
+| Deployment | 🚀 Shared hosting / FTP-friendly |
+
+---
+
+## 📁 Project structure
+
+```text
+employee-time-tracking/
+├── config/                 # App and compliance configuration
+├── database/               # SQL schema and seed data
+├── public/                 # Web root and static assets
+│   ├── assets/css/         # Styling
+│   └── assets/js/          # Frontend helpers
+├── src/
+│   ├── Controllers/        # Request handlers
+│   ├── Core/               # Router, DB, auth, views, compliance service
+│   └── Views/              # UI templates
+├── .github/workflows/      # FTP deployment workflow
+├── composer.json
+├── README.md
+```
+
+---
+
+## 🚀 Quick start
+
+### 1️⃣ Requirements
 
 - PHP 8.1+
 - MySQL 5.7+
-- Apache with mod_rewrite (standard on shared hosting)
-- Composer (for autoloading)
+- Apache with `mod_rewrite`
+- Composer
 
-## Installation
+### 2️⃣ Install dependencies
 
-For step-by-step standalone docs, see:
-- [`install.md`](install.md)
-- [`update.md`](update.md)
-
-### 1. Upload Files
-
-Upload all files to your hosting via FTP or cPanel File Manager. The `public/` directory should be your document root (or point your domain to it via cPanel).
-
-### 2. Install Dependencies
-
-Via cPanel Terminal or SSH (if available):
 ```bash
 composer install --no-dev --optimize-autoloader
 ```
 
-Or upload the `vendor/` folder generated locally.
+For standalone operational guides, see:
+- [`install.md`](install.md)
+- [`update.md`](update.md)
 
-### 3. Create Database
+### 3️⃣ Configure the app
 
-In cPanel → MySQL Databases, create a new database and user.
+Copy the example config:
 
-### 4. Run the Web Installer
-
-1. Browse to your site after uploading the files
-2. Fill in the installer form with your application URL, database credentials, and first admin account
-3. The installer will:
-   - create `config/config.php`
-   - run all pending database migrations
-   - create the first administrator if the database has no users yet
-
-If you are connecting this release to an older database, the installer/upgrader will detect the existing tables and register/apply the required database updates automatically.
-
-### 5. Set Document Root
-
-In cPanel, point your domain to the `public/` directory. If you can't change the document root, move the contents of `public/` to your web root and update the path in `index.php`:
-
-```php
-require_once __DIR__ . '/vendor/autoload.php';
-$config = require __DIR__ . '/config/config.php';
-// ...
-View::setPath(__DIR__ . '/src/Views');
+```bash
+cp config/config.example.php config/config.php
 ```
 
-### 6. Login
+Then update:
 
-Use the administrator account created during setup.
+- 🌐 App URL
+- 🕓 Timezone
+- 🗄️ Database credentials
+- ⚖️ Compliance settings
+- 🔒 Session settings
 
-## Directory Structure
+### 4️⃣ Import the database
 
-```
-├── config/
-│   └── config.example.php    # Configuration template
-├── database/
-│   ├── schema.sql            # MySQL schema snapshot
-│   └── migrations/           # Versioned database upgrades
-├── public/                   # Document root (web-accessible)
-│   ├── .htaccess             # URL rewriting
-│   ├── index.php             # Front controller
-│   └── assets/
-│       ├── css/style.css
-│       └── js/app.js
-├── src/
-│   ├── Core/                 # Framework (Router, DB, Auth, View)
-│   ├── Controllers/          # Request handlers
-│   └── Views/                # PHP templates
-├── vendor/                   # Composer autoloader (generated)
-├── composer.json
-└── README.md
+Load the schema from:
+
+```text
+database/schema.sql
 ```
 
-## User Roles
+### 5️⃣ Point the web server to `public/`
 
-| Role | Permissions |
-|------|------------|
-| **Employee** | Clock in/out, view own timesheet, request leave |
-| **Manager** | All employee permissions + approve/reject leave, view reports |
-| **Admin** | All manager permissions + manage employees, full system access |
+The front controller lives here:
 
-## Shared Hosting Notes
+```text
+public/index.php
+```
 
-- No CLI access required after initial setup
-- No cron jobs needed (all operations are request-driven)
-- Works with standard Apache + mod_rewrite
-- Minimal resource usage — no framework overhead
-- Composer is only needed for PSR-4 autoloading
-- Database upgrades run automatically through the browser when a release includes new migrations
+---
 
-## Security
+## 🔑 Default login
 
-- CSRF protection on all forms
-- Password hashing with bcrypt (PASSWORD_DEFAULT)
-- Prepared statements for all database queries (SQL injection prevention)
-- Session timeout after 1 hour of inactivity
-- Input validation and output escaping (XSS prevention)
+> ⚠️ Change these credentials immediately after first login.
+
+- **Email:** `admin@company.com`
+- **Password:** `admin123`
+
+---
+
+## 🛣️ Main routes
+
+| Route group | Purpose |
+| --- | --- |
+| `/login`, `/logout` | Authentication |
+| `/dashboard` | Main user dashboard |
+| `/clock` | Clock-in / clock-out workflow |
+| `/timesheet` | Weekly and monthly timesheets |
+| `/leave` | Employee leave requests |
+| `/admin/*` | Employee admin, leave review, reports |
+| `/compliance/*` | Compliance dashboard, audit, inspection export |
+| `/inspector/*` | Inspector-facing records and exports |
+
+---
+
+## 📤 Export options
+
+The application includes multiple CSV export paths:
+
+- 📄 Management timesheet reports
+- 👤 Employee self-export of own records
+- 🏛️ Inspection-ready attendance export
+- 🧾 Compliance export with edit metadata
+
+---
+
+## 🔐 Security notes
+
+- CSRF tokens on forms
+- Password hashing with `PASSWORD_DEFAULT`
+- Prepared database queries through the DB layer
+- Session timeout handling
+- Output escaping in views
+
+---
+
+## ☁️ Deployment note
+
+The repository includes a GitHub Actions workflow that installs Composer dependencies and deploys over **FTPS**, making it friendly for shared-hosting environments.
+
+---
+
+## 🎯 Best fit for
+
+- Small and mid-sized teams
+- Shared-hosting PHP deployments
+- Attendance tracking projects
+- Organizations that need audit visibility and compliance exports
+
+---
+
+## 💙 Final impression
+
+If you want a **simple, framework-free, role-aware time tracking system** with compliance-oriented reporting, this project already provides the core building blocks in a straightforward PHP structure.
