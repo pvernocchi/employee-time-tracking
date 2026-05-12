@@ -26,6 +26,7 @@
     <?php if (empty($requests)): ?>
         <p class="text-muted">No leave requests found.</p>
     <?php else: ?>
+    <?php $today = strtotime(date('Y-m-d')); ?>
     <table class="table">
         <thead>
             <tr>
@@ -40,7 +41,7 @@
         </thead>
         <tbody>
             <?php foreach ($requests as $request): ?>
-            <?php $canManage = in_array($request['status'], ['pending', 'approved'], true) && strtotime($request['end_date']) >= strtotime(date('Y-m-d')); ?>
+            <?php $canManage = in_array($request['status'], ['pending', 'approved'], true) && strtotime($request['end_date']) >= $today; ?>
             <tr>
                 <td><?= ucfirst($request['leave_type']) ?></td>
                 <td><?= date('M j, Y', strtotime($request['start_date'])) ?></td>

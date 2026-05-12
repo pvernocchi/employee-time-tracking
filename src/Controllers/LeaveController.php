@@ -198,11 +198,23 @@ class LeaveController
     {
         $db = Database::getInstance();
         $placeholders = implode(', ', array_fill(0, count(self::MANAGEABLE_STATUSES), '?'));
+        $today = $this->today();
 
         return $db->fetchOne(
             "SELECT * FROM leave_requests WHERE id = ? AND user_id = ? AND status IN ({$placeholders}) AND end_date >= ?",
-            array_merge([$id, Auth::id()], self::MANAGEABLE_STATUSES, [date('Y-m-d')])
+            array_merge([$id, Auth::id()], self::MANAGEABLE_STATUSES, [$today])
         );
+    }
+
+    private function today(): string
+    {
+        static $today = null;
+
+        if ($today === null) {
+            $today = date('Y-m-d');
+        }
+
+        return $today;
     }
 
     public function adminIndex(): void
