@@ -268,9 +268,6 @@ class EmployeeController
 
         $placeholderCount = count($teamMemberIds);
         $placeholders = implode(',', array_fill(0, $placeholderCount, '?'));
-        if (substr_count($placeholders, '?') !== $placeholderCount) {
-            throw new \RuntimeException('Invalid team member placeholder count.');
-        }
         $params = array_merge([$managerId], $teamMemberIds);
 
         $db->query(

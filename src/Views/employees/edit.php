@@ -115,7 +115,7 @@
             }
 
             teamMembersField.style.display = showTeamMembersField ? '' : 'none';
-            if (!showTeamMembersField && (isAdmin || isInspector || isEmployee)) {
+            if (!showTeamMembersField) {
                 Array.from(document.getElementById('team_member_ids').options).forEach((option) => {
                     option.selected = false;
                 });
