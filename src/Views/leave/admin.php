@@ -35,7 +35,7 @@
                 <td><?= ucfirst($request['leave_type']) ?></td>
                 <td><?= date('M j', strtotime($request['start_date'])) ?></td>
                 <td><?= date('M j', strtotime($request['end_date'])) ?></td>
-                <td><?= (strtotime($request['end_date']) - strtotime($request['start_date'])) / 86400 + 1 ?></td>
+                <td><?= rtrim(rtrim(number_format((float) $request['calculated_days'], 1), '0'), '.') ?></td>
                 <td><span class="badge badge-<?= $request['status'] ?>"><?= ucfirst($request['status']) ?></span></td>
                 <td>
                     <?php if ($request['status'] === 'pending'): ?>

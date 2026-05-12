@@ -59,6 +59,18 @@ $formAction = $isEdit
         </div>
 
         <div class="form-group">
+            <label for="dec_24_31_deduction">Descuento de vacaciones para 24 y 31 de diciembre</label>
+            <select id="dec_24_31_deduction" name="dec_24_31_deduction">
+                <?php $decemberDeduction = $isEdit ? ($policy['dec_24_31_deduction'] ?? 'full') : 'full'; ?>
+                <option value="full" <?= $decemberDeduction === 'full' ? 'selected' : '' ?>>Día completo</option>
+                <option value="half" <?= $decemberDeduction === 'half' ? 'selected' : '' ?>>Medio día</option>
+            </select>
+            <small class="text-muted">
+                Se aplica al cálculo de solicitudes de vacaciones en días laborables 24/12 y 31/12.
+            </small>
+        </div>
+
+        <div class="form-group">
             <label class="checkbox-label">
                 <?php if ($isStatutory): ?>
                     <input type="checkbox" checked disabled>
