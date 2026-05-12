@@ -234,10 +234,6 @@ class EmployeeController
                 header("Location: /admin/employees/edit/{$id}");
                 exit;
             }
-        } elseif ($data['role'] === 'employee') {
-            $_SESSION['flash_error'] = 'Employees must have a manager assigned.';
-            header("Location: /admin/employees/edit/{$id}");
-            exit;
         }
 
         if (!in_array($data['role'], ['employee', 'manager'], true)) {
