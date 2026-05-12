@@ -26,7 +26,7 @@ function initThemeToggle() {
     const root = document.documentElement;
     const iconPath = toggle.querySelector('.theme-toggle-icon path');
     const storageKey = 'theme';
-    const moonPath = 'M12 3a1 1 0 0 1 1 1 7 7 0 1 0 7 7 1 1 0 1 1 2 0 9 9 0 1 1-9-9 1 1 0 0 1-1 1Z';
+    const moonPath = 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z';
     const sunPath = 'M12 4a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1Zm0 13a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1Zm8-5a1 1 0 0 1 0 2h-1a1 1 0 1 1 0-2h1ZM6 12a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2h1Zm10.243-5.657a1 1 0 0 1 1.414 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707ZM8.464 14.12a1 1 0 0 1 0 1.415l-.707.707a1 1 0 0 1-1.414-1.415l.707-.707a1 1 0 0 1 1.414 0Zm9.193 2.122a1 1 0 0 1-1.414 0l-.707-.707a1 1 0 0 1 1.414-1.414l.707.707a1 1 0 0 1 0 1.414ZM8.464 8.465A1 1 0 0 1 7.05 8.465l-.707-.708A1 1 0 0 1 7.757 6.34l.707.707a1 1 0 0 1 0 1.414ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z';
 
     function setTheme(theme) {
