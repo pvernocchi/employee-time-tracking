@@ -20,6 +20,10 @@ A lightweight, vanilla PHP employee time tracking application designed for share
 
 ## Installation
 
+For step-by-step standalone docs, see:
+- [`install.md`](install.md)
+- [`update.md`](update.md)
+
 ### 1. Upload Files
 
 Upload all files to your hosting via FTP or cPanel File Manager. The `public/` directory should be your document root (or point your domain to it via cPanel).
