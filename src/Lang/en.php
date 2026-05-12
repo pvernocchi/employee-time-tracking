@@ -17,6 +17,7 @@ return [
     'nav.settings' => '⚙️ Settings',
     'nav.leave_policy' => '📋 Leave Policy',
     'nav.mfa_setup' => '🔐 Two-Factor Authentication',
+    'nav.logout' => 'Sign out',
     'layout.language' => 'Language',
     'layout.enable_dark_mode' => 'Enable dark mode',
     'layout.enable_light_mode' => 'Enable light mode',

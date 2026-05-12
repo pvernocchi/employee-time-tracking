@@ -17,6 +17,7 @@ return [
     'nav.settings' => '⚙️ Ezarpenak',
     'nav.leave_policy' => '📋 Baimenen politika',
     'nav.mfa_setup' => '🔐 Bi faktoreko autentifikazioa',
+    'nav.logout' => 'Saioa itxi',
     'layout.language' => 'Hizkuntza',
     'layout.enable_dark_mode' => 'Gaitu modu iluna',
     'layout.enable_light_mode' => 'Gaitu modu argia',
