@@ -39,6 +39,18 @@
                     <option value="employee" <?= $employee['role'] === 'employee' ? 'selected' : '' ?>>Employee</option>
                     <option value="manager" <?= $employee['role'] === 'manager' ? 'selected' : '' ?>>Manager</option>
                     <option value="admin" <?= $employee['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                    <option value="inspector" <?= $employee['role'] === 'inspector' ? 'selected' : '' ?>>Inspector</option>
+                </select>
+            </div>
+            <div class="form-group" id="manager-field">
+                <label for="manager_id">Manager</label>
+                <select name="manager_id" id="manager_id">
+                    <option value="">Select manager...</option>
+                    <?php foreach ($managers as $manager): ?>
+                        <option value="<?= (int) $manager['id'] ?>" <?= (int) ($employee['manager_id'] ?? 0) === (int) $manager['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($manager['first_name'] . ' ' . $manager['last_name']) ?> (<?= htmlspecialchars(ucfirst($manager['role'])) ?>)
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
@@ -49,6 +61,18 @@
                 <label for="hourly_rate">Hourly Rate ($)</label>
                 <input type="number" name="hourly_rate" id="hourly_rate" step="0.01" min="0" value="<?= $employee['hourly_rate'] ?? '' ?>">
             </div>
+        </div>
+
+        <div class="form-group" id="team-members-field" style="display: none;">
+            <label for="team_member_ids">Team Members</label>
+            <select name="team_member_ids[]" id="team_member_ids" multiple size="8">
+                <?php foreach ($teamCandidates as $teamMember): ?>
+                    <option value="<?= (int) $teamMember['id'] ?>" <?= in_array((int) $teamMember['id'], $assignedTeamIds, true) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($teamMember['first_name'] . ' ' . $teamMember['last_name']) ?> (<?= htmlspecialchars(ucfirst($teamMember['role'])) ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <small>Hold Ctrl/Cmd to select multiple members.</small>
         </div>
 
         <div class="form-group">
@@ -64,3 +88,40 @@
         </div>
     </form>
 </div>
+
+<script>
+    (function () {
+        const roleSelect = document.getElementById('role');
+        const managerField = document.getElementById('manager-field');
+        const managerSelect = document.getElementById('manager_id');
+        const teamMembersField = document.getElementById('team-members-field');
+        const teamMembersSelect = document.getElementById('team_member_ids');
+
+        function updateRoleFields() {
+            if (!roleSelect || !managerField || !teamMembersField || !managerSelect) return;
+
+            const role = roleSelect.value;
+            const isEmployee = role === 'employee';
+            const isManager = role === 'manager';
+
+            const showManagerField = isEmployee || isManager;
+            const showTeamMembersField = isManager;
+
+            managerField.style.display = showManagerField ? '' : 'none';
+            managerSelect.required = isEmployee;
+            if (!showManagerField) {
+                managerSelect.value = '';
+            }
+
+            teamMembersField.style.display = showTeamMembersField ? '' : 'none';
+            if (!showTeamMembersField && teamMembersSelect) {
+                Array.from(teamMembersSelect.options).forEach((option) => {
+                    option.selected = false;
+                });
+            }
+        }
+
+        roleSelect.addEventListener('change', updateRoleFields);
+        updateRoleFields();
+    })();
+</script>

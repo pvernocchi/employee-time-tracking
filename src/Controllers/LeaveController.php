@@ -114,6 +114,7 @@ class LeaveController
     public function adminIndex(): void
     {
         $db = Database::getInstance();
+        $reviewerId = Auth::id();
 
         $status = $_GET['status'] ?? 'pending';
         $validStatuses = ['pending', 'approved', 'rejected', 'all'];
@@ -123,11 +124,13 @@ class LeaveController
 
         $sql = 'SELECT lr.*, u.first_name, u.last_name, u.email, u.department 
                 FROM leave_requests lr 
-                JOIN users u ON lr.user_id = u.id';
-        $params = [];
+                JOIN users u ON lr.user_id = u.id
+                LEFT JOIN users um ON u.manager_id = um.id
+                WHERE (u.manager_id = ? OR um.manager_id = ?)';
+        $params = [$reviewerId, $reviewerId];
 
         if ($status !== 'all') {
-            $sql .= ' WHERE lr.status = ?';
+            $sql .= ' AND lr.status = ?';
             $params[] = $status;
         }
         $sql .= ' ORDER BY lr.created_at DESC';
@@ -149,10 +152,26 @@ class LeaveController
         }
 
         $db = Database::getInstance();
+        $reviewerId = Auth::id();
+
+        $request = $db->fetchOne(
+            'SELECT lr.id
+             FROM leave_requests lr
+             JOIN users u ON lr.user_id = u.id
+             LEFT JOIN users um ON u.manager_id = um.id
+             WHERE lr.id = ? AND lr.status = "pending" AND (u.manager_id = ? OR um.manager_id = ?)',
+            [(int) $id, $reviewerId, $reviewerId]
+        );
+
+        if (!$request) {
+            $_SESSION['flash_error'] = 'You are not allowed to approve this leave request.';
+            header('Location: /admin/leave');
+            exit;
+        }
 
         $db->update('leave_requests', [
             'status' => 'approved',
-            'reviewed_by' => Auth::id(),
+            'reviewed_by' => $reviewerId,
             'reviewed_at' => date('Y-m-d H:i:s'),
             'review_notes' => trim($_POST['notes'] ?? ''),
         ], 'id = ? AND status = "pending"', [(int) $id]);
@@ -171,10 +190,26 @@ class LeaveController
         }
 
         $db = Database::getInstance();
+        $reviewerId = Auth::id();
+
+        $request = $db->fetchOne(
+            'SELECT lr.id
+             FROM leave_requests lr
+             JOIN users u ON lr.user_id = u.id
+             LEFT JOIN users um ON u.manager_id = um.id
+             WHERE lr.id = ? AND lr.status = "pending" AND (u.manager_id = ? OR um.manager_id = ?)',
+            [(int) $id, $reviewerId, $reviewerId]
+        );
+
+        if (!$request) {
+            $_SESSION['flash_error'] = 'You are not allowed to reject this leave request.';
+            header('Location: /admin/leave');
+            exit;
+        }
 
         $db->update('leave_requests', [
             'status' => 'rejected',
-            'reviewed_by' => Auth::id(),
+            'reviewed_by' => $reviewerId,
             'reviewed_at' => date('Y-m-d H:i:s'),
             'review_notes' => trim($_POST['notes'] ?? ''),
         ], 'id = ? AND status = "pending"', [(int) $id]);
