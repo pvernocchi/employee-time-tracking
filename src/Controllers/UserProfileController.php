@@ -9,6 +9,16 @@ use App\Core\View;
 
 class UserProfileController
 {
+    private const DAYS_OF_WEEK = [
+        0 => 'monday',
+        1 => 'tuesday',
+        2 => 'wednesday',
+        3 => 'thursday',
+        4 => 'friday',
+        5 => 'saturday',
+        6 => 'sunday',
+    ];
+
     public function index(): void
     {
         Auth::requireLogin();
@@ -21,12 +31,15 @@ class UserProfileController
         );
 
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
+        $schedule = self::loadSchedule($db, (int) $user['id']);
 
         View::render('profile.index', [
             'user' => $user,
             'prefs' => $prefs ?: ['timezone' => 'Europe/Madrid', 'locale' => I18n::getLocale(), 'theme' => 'light'],
             'timezones' => $timezones,
             'supportedLocales' => I18n::getSupportedLocales(),
+            'schedule' => $schedule,
+            'daysOfWeek' => self::DAYS_OF_WEEK,
         ]);
     }
 
@@ -115,5 +128,140 @@ class UserProfileController
         $_SESSION['flash_success'] = I18n::translate('profile.password_changed');
         header('Location: /profile');
         exit;
+    }
+
+    public function saveSchedule(): void
+    {
+        Auth::requireLogin();
+
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['flash_error'] = I18n::translate('flash.invalid_request_try_again');
+            header('Location: /profile');
+            exit;
+        }
+
+        $userId = Auth::id();
+        $db = Database::getInstance();
+
+        self::upsertSchedule($db, $userId, $_POST);
+
+        $_SESSION['flash_success'] = I18n::translate('profile.schedule_saved');
+        header('Location: /profile');
+        exit;
+    }
+
+    /**
+     * Admin: show work schedule for a specific employee.
+     */
+    public function adminSchedule(string $id): void
+    {
+        Auth::requireAdmin();
+
+        $db = Database::getInstance();
+        $employee = $db->fetchOne(
+            'SELECT id, first_name, last_name, email FROM users WHERE id = ?',
+            [(int) $id]
+        );
+
+        if (!$employee) {
+            $_SESSION['flash_error'] = I18n::translate('profile.employee_not_found');
+            header('Location: /admin/employees');
+            exit;
+        }
+
+        $schedule = self::loadSchedule($db, (int) $id);
+
+        View::render('profile.schedule', [
+            'employee' => $employee,
+            'schedule' => $schedule,
+            'daysOfWeek' => self::DAYS_OF_WEEK,
+            'isAdmin' => true,
+        ]);
+    }
+
+    /**
+     * Admin: save work schedule for a specific employee.
+     */
+    public function adminSaveSchedule(string $id): void
+    {
+        Auth::requireAdmin();
+
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['flash_error'] = I18n::translate('flash.invalid_request_try_again');
+            header("Location: /admin/employees/{$id}/schedule");
+            exit;
+        }
+
+        $db = Database::getInstance();
+        $employee = $db->fetchOne('SELECT id FROM users WHERE id = ?', [(int) $id]);
+        if (!$employee) {
+            $_SESSION['flash_error'] = I18n::translate('profile.employee_not_found');
+            header('Location: /admin/employees');
+            exit;
+        }
+
+        self::upsertSchedule($db, (int) $id, $_POST);
+
+        $_SESSION['flash_success'] = I18n::translate('profile.schedule_saved');
+        header("Location: /admin/employees/{$id}/schedule");
+        exit;
+    }
+
+    /**
+     * Load the 7-day schedule for a user, keyed by day index (0–6).
+     */
+    private static function loadSchedule(Database $db, int $userId): array
+    {
+        $rows = $db->fetchAll(
+            'SELECT day_of_week, is_working, start_time, end_time FROM user_work_schedules WHERE user_id = ? ORDER BY day_of_week',
+            [$userId]
+        );
+
+        $schedule = [];
+        foreach ($rows as $row) {
+            $schedule[(int) $row['day_of_week']] = $row;
+        }
+
+        // Fill defaults for missing days (Mon–Fri working 09:00–17:00, Sat–Sun off)
+        for ($d = 0; $d < 7; $d++) {
+            if (!isset($schedule[$d])) {
+                $schedule[$d] = [
+                    'day_of_week' => $d,
+                    'is_working' => $d < 5 ? 1 : 0,
+                    'start_time' => '09:00',
+                    'end_time' => '17:00',
+                ];
+            }
+        }
+
+        ksort($schedule);
+        return $schedule;
+    }
+
+    /**
+     * Insert/update the 7-day schedule from POST data.
+     */
+    private static function upsertSchedule(Database $db, int $userId, array $post): void
+    {
+        for ($d = 0; $d < 7; $d++) {
+            $isWorking = !empty($post["working_{$d}"]) ? 1 : 0;
+
+            $startTime = trim($post["start_{$d}"] ?? '09:00');
+            $endTime = trim($post["end_{$d}"] ?? '17:00');
+
+            if (!preg_match('/^\d{2}:\d{2}$/', $startTime)) {
+                $startTime = '09:00';
+            }
+            if (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
+                $endTime = '17:00';
+            }
+
+            $db->query(
+                'INSERT INTO user_work_schedules (user_id, day_of_week, is_working, start_time, end_time)
+                 VALUES (?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE is_working = VALUES(is_working), start_time = VALUES(start_time), end_time = VALUES(end_time)',
+                [$userId, $d, $isWorking, $startTime, $endTime]
+            );
+        }
     }
 }

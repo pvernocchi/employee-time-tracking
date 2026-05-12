@@ -194,7 +194,12 @@ $router->post('/mfa/remove/{id}', [\App\Controllers\MfaController::class, 'remov
 // User Profile
 $router->get('/profile', [\App\Controllers\UserProfileController::class, 'index'], $authMiddleware);
 $router->post('/profile/preferences', [\App\Controllers\UserProfileController::class, 'savePreferences'], $authMiddleware);
+$router->post('/profile/schedule', [\App\Controllers\UserProfileController::class, 'saveSchedule'], $authMiddleware);
 $router->post('/profile/password', [\App\Controllers\UserProfileController::class, 'changePassword'], $authMiddleware);
+
+// Admin: Employee work schedule
+$router->get('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSchedule'], $adminMiddleware);
+$router->post('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSaveSchedule'], $adminMiddleware);
 
 // Admin: Security settings
 $router->get('/admin/security', [\App\Controllers\SecurityController::class, 'settings'], $adminMiddleware);
