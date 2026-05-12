@@ -134,7 +134,7 @@ class AdminSettingsController
     public function saveNotificationSettings(): void
     {
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['flash_error'] = 'Invalid request.';
+            $_SESSION['flash_error'] = \App\Core\I18n::translate('flash.invalid_request_try_again');
             header('Location: /admin/settings/notifications');
             exit;
         }

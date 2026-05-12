@@ -76,7 +76,7 @@ return [
     'profile.employee_not_found' => 'Empleado no encontrado.',
 
     'nav.notifications' => '🔔 Notificaciones',
-    'notifications.admin_title' => 'Notificaciones por E-mail',
+    'notifications.admin_title' => 'Notificaciones por e-mail',
     'notifications.admin_description' => 'Habilitar o deshabilitar las notificaciones por correo electrónico enviadas a empleados y managers.',
     'notifications.available_notifications' => 'Notificaciones disponibles',
     'notifications.clock_in_reminder' => 'Recordatorio de registro de entrada',
@@ -85,7 +85,7 @@ return [
     'notifications.clock_out_reminder_desc' => 'Enviar un recordatorio diario si el empleado no ha registrado la salida 10 minutos después del fin de su jornada.',
     'notifications.save_settings' => 'Guardar configuración',
     'notifications.settings_saved' => 'Configuración de notificaciones guardada correctamente.',
-    'notifications.preferences_title' => 'Notificaciones por E-mail',
+    'notifications.preferences_title' => 'Notificaciones por e-mail',
     'notifications.preferences_description' => 'Elige qué notificaciones por correo electrónico deseas recibir.',
     'notifications.save_preferences' => 'Guardar preferencias de notificaciones',
     'notifications.preferences_saved' => 'Preferencias de notificaciones guardadas correctamente.',
