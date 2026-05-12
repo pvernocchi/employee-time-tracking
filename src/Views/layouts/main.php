@@ -1,41 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= htmlspecialchars($currentLocale ?? 'es') ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title ?? 'Employee Time Tracker') ?></title>
+    <title><?= htmlspecialchars($title ?? $t('app.name')) ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-brand">
-            <a href="/dashboard">⏱️ Time Tracker</a>
+            <a href="/dashboard">⏱️ <?= htmlspecialchars($t('app.short_name')) ?></a>
         </div>
         <ul class="nav-links">
-            <li><a href="/dashboard" class="<?= ($_SERVER['REQUEST_URI'] === '/dashboard' || $_SERVER['REQUEST_URI'] === '/') ? 'active' : '' ?>">Dashboard</a></li>
-            <li><a href="/clock" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/clock') ? 'active' : '' ?>">Clock In/Out</a></li>
-            <li><a href="/timesheet" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/timesheet') ? 'active' : '' ?>">Timesheet</a></li>
-            <li><a href="/leave" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/leave') ? 'active' : '' ?>">Leave</a></li>
+            <li><a href="/dashboard" class="<?= ($_SERVER['REQUEST_URI'] === '/dashboard' || $_SERVER['REQUEST_URI'] === '/') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.dashboard')) ?></a></li>
+            <li><a href="/clock" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/clock') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.clock')) ?></a></li>
+            <li><a href="/timesheet" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/timesheet') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.timesheet')) ?></a></li>
+            <li><a href="/leave" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/leave') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.leave')) ?></a></li>
             <?php if (\App\Core\Auth::isManager()): ?>
             <li class="nav-dropdown">
-                <a href="#" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin') ? 'active' : '' ?>">Admin ▾</a>
+                <a href="#" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.admin')) ?> ▾</a>
                 <ul class="dropdown-menu">
-                    <li><a href="/admin/employees">Employees</a></li>
-                    <li><a href="/admin/leave">Leave Requests</a></li>
-                    <li><a href="/admin/reports">Reports</a></li>
+                    <li><a href="/admin/employees"><?= htmlspecialchars($t('nav.employees')) ?></a></li>
+                    <li><a href="/admin/leave"><?= htmlspecialchars($t('nav.leave_requests')) ?></a></li>
+                    <li><a href="/admin/reports"><?= htmlspecialchars($t('nav.reports')) ?></a></li>
                     <?php if (\App\Core\Auth::isAdmin()): ?>
-                    <li><a href="/compliance">Compliance</a></li>
+                    <li><a href="/compliance"><?= htmlspecialchars($t('nav.compliance')) ?></a></li>
                     <?php endif; ?>
                 </ul>
             </li>
             <?php endif; ?>
             <?php if (\App\Core\Auth::isInspector()): ?>
-            <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>">Inspector</a></li>
+            <li><a href="/inspector" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/inspector') ? 'active' : '' ?>"><?= htmlspecialchars($t('nav.inspector')) ?></a></li>
             <?php endif; ?>
+            <li class="nav-dropdown nav-dropdown-right">
+                <?php $currentLocaleMeta = $localeMeta($currentLocale); ?>
+                <a href="#">
+                    <img src="<?= htmlspecialchars($currentLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
+                    <?= htmlspecialchars($currentLocaleMeta['abbr']) ?> ▾
+                </a>
+                <ul class="dropdown-menu locale-menu">
+                    <?php foreach ($supportedLocales ?? [] as $locale): ?>
+                        <?php $itemLocaleMeta = $localeMeta($locale); ?>
+                        <li>
+                            <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="<?= ($locale === ($currentLocale ?? '')) ? 'active' : '' ?>">
+                                <img src="<?= htmlspecialchars($itemLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
+                                <?= htmlspecialchars($itemLocaleMeta['abbr']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
         </ul>
         <div class="nav-user">
             <span><?= htmlspecialchars(\App\Core\Auth::user()['first_name'] ?? '') ?></span>
-            <a href="/logout" class="btn btn-sm btn-outline">Logout</a>
+            <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>
     </nav>
 
@@ -54,7 +72,7 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; <?= date('Y') ?> Employee Time Tracker</p>
+        <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($t('app.name')) ?></p>
     </footer>
 
     <script src="/assets/js/app.js"></script>

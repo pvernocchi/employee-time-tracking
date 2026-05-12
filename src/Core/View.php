@@ -14,6 +14,10 @@ class View
     public static function render(string $view, array $data = [], string $layout = 'main'): void
     {
         extract($data, EXTR_SKIP);
+        $t = static fn (string $key, array $replacements = []): string => I18n::translate($key, $replacements);
+        $currentLocale = I18n::getLocale();
+        $supportedLocales = I18n::getSupportedLocales();
+        $localeMeta = static fn (string $locale): array => I18n::getLocaleMeta($locale);
 
         $viewFile = self::$viewsPath . '/' . str_replace('.', '/', $view) . '.php';
         if (!file_exists($viewFile)) {
@@ -38,6 +42,10 @@ class View
     public static function partial(string $view, array $data = []): void
     {
         extract($data);
+        $t = static fn (string $key, array $replacements = []): string => I18n::translate($key, $replacements);
+        $currentLocale = I18n::getLocale();
+        $supportedLocales = I18n::getSupportedLocales();
+        $localeMeta = static fn (string $locale): array => I18n::getLocaleMeta($locale);
         $viewFile = self::$viewsPath . '/' . str_replace('.', '/', $view) . '.php';
         if (file_exists($viewFile)) {
             require $viewFile;

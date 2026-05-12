@@ -105,6 +105,30 @@ a:hover { text-decoration: underline; }
     border-radius: 0;
 }
 
+.nav-dropdown-right .dropdown-menu {
+    left: auto;
+    right: 0;
+}
+
+.locale-menu a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.locale-menu a.active {
+    background: var(--gray-100);
+    color: var(--gray-900);
+}
+
+.flag-icon {
+    width: 18px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1px solid var(--gray-200);
+    flex-shrink: 0;
+}
+
 .nav-user {
     display: flex;
     align-items: center;
@@ -331,6 +355,24 @@ a:hover { text-decoration: underline; }
 
 .auth-container { width: 100%; max-width: 400px; padding: 1rem; }
 .auth-container-wide { max-width: 960px; }
+
+.language-switch {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.language-switch-label {
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+.language-switch-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
 
 .auth-card {
     background: white;
