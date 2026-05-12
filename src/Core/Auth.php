@@ -76,6 +76,13 @@ class Auth
             header('Location: /login');
             exit;
         }
+
+        // If mandatory MFA setup is pending, redirect to enrollment selection
+        if (!empty($_SESSION['mfa_setup_required'])) {
+            header('Location: /mfa/setup');
+            exit;
+        }
+
         return true;
     }
 
