@@ -15,7 +15,7 @@ return [
     'nav.security' => '🔒 Seguridade',
     'nav.inspector' => '🔍 Inspector',
     'nav.settings' => '⚙️ Configuración',
-    'nav.logout' => '🚪 Pechar sesión',
+    'nav.leave_policy' => '📋 Política de permisos',
     'nav.mfa_setup' => '🔐 Autenticación de dous factores',
     'layout.language' => 'Idioma',
     'layout.enable_dark_mode' => 'Activar modo escuro',

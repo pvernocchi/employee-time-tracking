@@ -5,7 +5,7 @@
  *
  * This script is meant to be executed periodically via cron (e.g. every 5 minutes).
  * Example crontab entry:
- *   0/5 * * * * /usr/bin/php /path/to/bin/send-notifications.php
+ *   0/5 * * * * /usr/bin/php /path/to/cron/send-notifications.php
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';

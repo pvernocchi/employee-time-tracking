@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '202605120006',
+    'version' => '202605120007',
     'name' => 'Notification settings and user notification preferences',
     'statements' => [
         <<<'SQL'
