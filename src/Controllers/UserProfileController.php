@@ -10,6 +10,10 @@ use App\Core\View;
 
 class UserProfileController
 {
+    private const DAILY_MAX_HOURS = 9.0;
+    private const WEEKLY_MAX_HOURS = 40.0;
+    private const MIN_REST_HOURS = 12.0;
+
     private const DAYS_OF_WEEK = [
         0 => 'monday',
         1 => 'tuesday',
@@ -148,7 +152,12 @@ class UserProfileController
         $userId = Auth::id();
         $db = Database::getInstance();
 
-        self::upsertSchedule($db, $userId, $_POST);
+        $error = self::upsertSchedule($db, $userId, $_POST);
+        if ($error !== null) {
+            $_SESSION['flash_error'] = $error;
+            header('Location: /profile');
+            exit;
+        }
 
         $_SESSION['flash_success'] = I18n::translate('profile.schedule_saved');
         header('Location: /profile');
@@ -205,7 +214,12 @@ class UserProfileController
             exit;
         }
 
-        self::upsertSchedule($db, (int) $id, $_POST);
+        $error = self::upsertSchedule($db, (int) $id, $_POST);
+        if ($error !== null) {
+            $_SESSION['flash_error'] = $error;
+            header("Location: /admin/employees/{$id}/schedule");
+            exit;
+        }
 
         $_SESSION['flash_success'] = I18n::translate('profile.schedule_saved');
         header("Location: /admin/employees/{$id}/schedule");
@@ -274,8 +288,10 @@ class UserProfileController
     /**
      * Insert/update the 7-day schedule from POST data.
      */
-    private static function upsertSchedule(Database $db, int $userId, array $post): void
+    private static function upsertSchedule(Database $db, int $userId, array $post): ?string
     {
+        $normalizedSchedule = [];
+
         for ($d = 0; $d < 7; $d++) {
             $isWorking = !empty($post["working_{$d}"]) ? 1 : 0;
 
@@ -289,12 +305,114 @@ class UserProfileController
                 $endTime = '17:00';
             }
 
+            $normalizedSchedule[$d] = [
+                'is_working' => $isWorking,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+            ];
+        }
+
+        $validationError = self::validateScheduleCompliance($normalizedSchedule);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        for ($d = 0; $d < 7; $d++) {
             $db->query(
                 'INSERT INTO user_work_schedules (user_id, day_of_week, is_working, start_time, end_time)
                  VALUES (?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE is_working = VALUES(is_working), start_time = VALUES(start_time), end_time = VALUES(end_time)',
-                [$userId, $d, $isWorking, $startTime, $endTime]
+                [$userId, $d, $normalizedSchedule[$d]['is_working'], $normalizedSchedule[$d]['start_time'], $normalizedSchedule[$d]['end_time']]
             );
         }
+
+        return null;
+    }
+
+    private static function validateScheduleCompliance(array $schedule): ?string
+    {
+        $dailyMaxMinutes = (int) round(self::DAILY_MAX_HOURS * 60);
+        $weeklyMaxMinutes = (int) round(self::WEEKLY_MAX_HOURS * 60);
+        $minRestMinutes = (int) round(self::MIN_REST_HOURS * 60);
+
+        $weeklyMinutes = 0;
+        $workingStarts = [];
+        $workingEnds = [];
+
+        for ($d = 0; $d < 7; $d++) {
+            if (empty($schedule[$d]['is_working'])) {
+                continue;
+            }
+
+            $startMinutes = self::timeToMinutes($schedule[$d]['start_time']);
+            $endMinutes = self::timeToMinutes($schedule[$d]['end_time']);
+
+            if ($startMinutes === null || $endMinutes === null || $endMinutes <= $startMinutes) {
+                return I18n::translate('profile.schedule_error_invalid_range', [
+                    'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                ]);
+            }
+
+            $dailyMinutes = $endMinutes - $startMinutes;
+            if ($dailyMinutes > $dailyMaxMinutes) {
+                return I18n::translate('profile.schedule_error_daily_max', [
+                    'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                    'max' => (string) self::DAILY_MAX_HOURS,
+                ]);
+            }
+
+            $weeklyMinutes += $dailyMinutes;
+            $workingStarts[$d] = ($d * 1440) + $startMinutes;
+            $workingEnds[$d] = ($d * 1440) + $endMinutes;
+        }
+
+        if ($weeklyMinutes > $weeklyMaxMinutes) {
+            return I18n::translate('profile.schedule_error_weekly_max', [
+                'max' => (string) self::WEEKLY_MAX_HOURS,
+            ]);
+        }
+
+        for ($d = 0; $d < 7; $d++) {
+            if (!isset($workingStarts[$d])) {
+                continue;
+            }
+
+            $previousDay = null;
+            for ($i = 1; $i <= 7; $i++) {
+                $candidate = ($d - $i + 7) % 7;
+                if (isset($workingEnds[$candidate])) {
+                    $previousDay = $candidate;
+                    break;
+                }
+            }
+
+            if ($previousDay === null || $previousDay === $d) {
+                continue;
+            }
+
+            $restMinutes = $workingStarts[$d] - $workingEnds[$previousDay];
+            if ($previousDay > $d) {
+                $restMinutes += 7 * 1440;
+            }
+
+            if ($restMinutes < $minRestMinutes) {
+                return I18n::translate('profile.schedule_error_min_rest', [
+                    'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                    'prev_day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$previousDay]),
+                    'min' => (string) self::MIN_REST_HOURS,
+                ]);
+            }
+        }
+
+        return null;
+    }
+
+    private static function timeToMinutes(string $time): ?int
+    {
+        if (!preg_match('/^([01]\d|2[0-3]):([0-5]\d)$/', $time, $matches)) {
+            return null;
+        }
+
+        return ((int) $matches[1] * 60) + (int) $matches[2];
     }
 }

@@ -75,6 +75,12 @@ return [
     'profile.back_to_employees' => 'Langileengana itzuli',
     'profile.cancel' => 'Ezeztatu',
     'profile.employee_not_found' => 'Langilea ez da aurkitu.',
+    'profile.daily_hours' => 'Orduak/egun',
+    'profile.weekly_hours' => 'Asteko orduak',
+    'profile.schedule_error_invalid_range' => ':day eguneko ordutegia baliogabea da: irteera-orduak sarrera-ordua baino geroagokoa izan behar du.',
+    'profile.schedule_error_daily_max' => ':day eguneko ordutegiak egunean legezko :max orduko gehienezkoa gainditzen du.',
+    'profile.schedule_error_weekly_max' => 'Asteko ordutegiaren baturak legezko :max orduko gehienezkoa gainditzen du.',
+    'profile.schedule_error_min_rest' => 'Ez da betetzen :prev_day eta :day artean gutxieneko :min orduko atsedena.',
 
     'nav.notifications' => '🔔 Jakinarazpenak',
     'notifications.admin_title' => 'E-mail bidezko jakinarazpenak',

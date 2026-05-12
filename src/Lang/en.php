@@ -75,6 +75,12 @@ return [
     'profile.back_to_employees' => 'Back to Employees',
     'profile.cancel' => 'Cancel',
     'profile.employee_not_found' => 'Employee not found.',
+    'profile.daily_hours' => 'Hours/day',
+    'profile.weekly_hours' => 'Weekly hours',
+    'profile.schedule_error_invalid_range' => 'The schedule for :day is invalid: end time must be later than start time.',
+    'profile.schedule_error_daily_max' => 'The schedule for :day exceeds the legal daily maximum of :max hours.',
+    'profile.schedule_error_weekly_max' => 'The weekly schedule total exceeds the legal maximum of :max hours.',
+    'profile.schedule_error_min_rest' => 'The minimum rest of :min hours between :prev_day and :day is not met.',
 
     'nav.notifications' => '🔔 Notifications',
     'notifications.admin_title' => 'Email Notifications',
