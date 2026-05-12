@@ -14,6 +14,7 @@ return [
     'nav.compliance' => 'Cumprimento',
     'nav.security' => 'Seguridade',
     'nav.inspector' => 'Inspector',
+    'nav.settings' => 'Configuración',
     'nav.logout' => 'Pechar sesión',
     'nav.mfa_setup' => 'Autenticación de dous factores',
     'layout.language' => 'Idioma',

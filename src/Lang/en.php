@@ -14,6 +14,7 @@ return [
     'nav.compliance' => 'Compliance',
     'nav.security' => 'Security',
     'nav.inspector' => 'Inspector',
+    'nav.settings' => 'Settings',
     'nav.logout' => 'Logout',
     'nav.mfa_setup' => 'Two-Factor Authentication',
     'layout.language' => 'Language',

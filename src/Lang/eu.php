@@ -14,6 +14,7 @@ return [
     'nav.compliance' => 'Betetzea',
     'nav.security' => 'Segurtasuna',
     'nav.inspector' => 'Ikuskatzailea',
+    'nav.settings' => 'Ezarpenak',
     'nav.logout' => 'Saioa itxi',
     'nav.mfa_setup' => 'Bi faktoreko autentifikazioa',
     'layout.language' => 'Hizkuntza',

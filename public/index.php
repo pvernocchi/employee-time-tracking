@@ -17,6 +17,7 @@ use App\Core\Database;
 use App\Core\I18n;
 use App\Core\Router;
 use App\Core\SetupManager;
+use App\Core\SmtpMailer;
 use App\Core\View;
 
 $setupManager = new SetupManager(dirname(__DIR__));
@@ -80,6 +81,9 @@ if ($setupStatus['needsUpgrade']) {
 
 Database::getInstance($config['database']);
 
+// Initialise SMTP encryption secret (used to encrypt stored SMTP passwords)
+SmtpMailer::setSecret($config['smtp']['secret'] ?? '');
+
 // ----- Public Routes -----
 $router->get('/login', [\App\Controllers\AuthController::class, 'showLogin']);
 $router->post('/login', [\App\Controllers\AuthController::class, 'login']);
@@ -120,6 +124,11 @@ $router->post('/leave/cancel/{id}', [\App\Controllers\LeaveController::class, 'c
 $router->get('/admin/leave', [\App\Controllers\LeaveController::class, 'adminIndex'], $managerMiddleware);
 $router->post('/admin/leave/approve/{id}', [\App\Controllers\LeaveController::class, 'approve'], $managerMiddleware);
 $router->post('/admin/leave/reject/{id}', [\App\Controllers\LeaveController::class, 'reject'], $managerMiddleware);
+
+// Admin: Settings (SMTP)
+$router->get('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::class, 'smtpSettings'], $adminMiddleware);
+$router->post('/admin/settings/smtp', [\App\Controllers\AdminSettingsController::class, 'saveSmtpSettings'], $adminMiddleware);
+$router->post('/admin/settings/smtp/test', [\App\Controllers\AdminSettingsController::class, 'testSmtp'], $adminMiddleware);
 
 // Admin: Employee Management
 $router->get('/admin/employees', [\App\Controllers\EmployeeController::class, 'index'], $adminMiddleware);

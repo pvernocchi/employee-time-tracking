@@ -14,6 +14,7 @@ return [
     'nav.compliance' => 'Compliment',
     'nav.security' => 'Seguretat',
     'nav.inspector' => 'Inspector',
+    'nav.settings' => 'Configuració',
     'nav.logout' => 'Tancar sessió',
     'nav.mfa_setup' => 'Autenticació de dos factors',
     'layout.language' => 'Idioma',

@@ -47,4 +47,15 @@ return [
         'rights' => 'Puede ejercer sus derechos de acceso, rectificación, supresión, portabilidad, limitación y oposición dirigiéndose a la dirección de la empresa.',
         'dpo_contact' => 'dpd@empresa.com',
     ],
+
+    // SMTP settings are managed from the admin panel (Admin → Settings → SMTP)
+    // and stored in the database. The log_path below is optional; leave it empty
+    // to use the default <app_root>/logs/smtp.log location.
+    'smtp' => [
+        'log_path' => '',
+        // A random secret used to encrypt the SMTP password stored in the database.
+        // Generate with: php -r "echo bin2hex(random_bytes(32));"
+        // If left empty, the password is stored without encryption.
+        'secret' => '',
+    ],
 ];
