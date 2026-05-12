@@ -80,6 +80,6 @@ class I18n
 
     private static function sanitizeLocale(string $locale): string
     {
-        return preg_replace('/[^a-z]/', '', strtolower($locale)) ?? '';
+        return preg_replace('/[^a-z]/', '', strtolower($locale));
     }
 }

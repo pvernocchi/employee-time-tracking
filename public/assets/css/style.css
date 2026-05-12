@@ -332,6 +332,18 @@ a:hover { text-decoration: underline; }
 .auth-container { width: 100%; max-width: 400px; padding: 1rem; }
 .auth-container-wide { max-width: 960px; }
 
+.language-switch {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.language-switch-label {
+    font-size: 0.9rem;
+    align-self: center;
+}
+
 .auth-card {
     background: white;
     border-radius: var(--radius);

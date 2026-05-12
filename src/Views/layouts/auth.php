@@ -8,8 +8,8 @@
 </head>
 <body class="<?= htmlspecialchars($bodyClass ?? 'auth-body') ?>">
     <div class="<?= htmlspecialchars($containerClass ?? 'auth-container') ?>">
-        <div style="display:flex; justify-content:flex-end; gap:0.35rem; margin-bottom:0.75rem;">
-            <span style="font-size:0.9rem; align-self:center;"><?= htmlspecialchars($t('layout.language')) ?>:</span>
+        <div class="language-switch">
+            <span class="language-switch-label"><?= htmlspecialchars($t('layout.language')) ?>:</span>
             <?php foreach ($supportedLocales ?? [] as $locale): ?>
                 <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm <?= ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline' ?>"><?= strtoupper(htmlspecialchars($locale)) ?></a>
             <?php endforeach; ?>
