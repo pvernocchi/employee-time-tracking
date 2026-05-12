@@ -18,7 +18,7 @@ $formAction = $isEdit
     <?php if ($isStatutory): ?>
     <div class="alert alert-warning" style="margin-bottom:1.5rem;">
         <strong>⚖️ Categoría del Estatuto de los Trabajadores</strong><br>
-        Esta categoría está protegida por ley. Sólo es posible aumentar los días legales;
+        Esta categoría está protegida por ley. Solo es posible aumentar los días legales;
         el nombre y la marca de estatuto no pueden modificarse, y la categoría no puede eliminarse.
         <?php if ((float) $policy['min_statutory_days'] > 0): ?>
             <br><small>Mínimo legal: <?= rtrim(rtrim(number_format((float) $policy['min_statutory_days'], 1), '0'), '.') ?> días.</small>

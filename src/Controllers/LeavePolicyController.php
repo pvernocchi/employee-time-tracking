@@ -47,7 +47,7 @@ class LeavePolicyController
 
         // Ensure uniqueness
         if ($db->fetchOne('SELECT id FROM leave_policy WHERE category_key = ?', [$categoryKey])) {
-            $categoryKey .= '_' . substr(bin2hex(random_bytes(4)), 0, 8);
+            $categoryKey .= '_' . bin2hex(random_bytes(4));
         }
 
         $db->insert('leave_policy', [
