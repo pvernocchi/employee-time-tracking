@@ -12,7 +12,8 @@
             <span class="language-switch-label"><?= htmlspecialchars($t('layout.language')) ?>:</span>
             <?php foreach ($supportedLocales ?? [] as $locale): ?>
                 <?php $itemLocaleMeta = $localeMeta($locale); ?>
-                <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm language-switch-item <?= ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline' ?>">
+                <?php $localeButtonClass = ($locale === ($currentLocale ?? '')) ? 'btn-primary' : 'btn-outline'; ?>
+                <a href="<?= htmlspecialchars(\App\Core\I18n::urlWithLang($locale)) ?>" class="btn btn-sm language-switch-item <?= $localeButtonClass ?>">
                     <img src="<?= htmlspecialchars($itemLocaleMeta['flag']) ?>" alt="" class="flag-icon" aria-hidden="true">
                     <?= htmlspecialchars($itemLocaleMeta['abbr']) ?>
                 </a>
