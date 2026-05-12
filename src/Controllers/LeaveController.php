@@ -436,22 +436,14 @@ class LeaveController
 
     private function getVacationDecemberDeduction(Database $db): float
     {
-        static $cached = null;
-
-        if ($cached !== null) {
-            return $cached;
-        }
-
         try {
             $policy = $db->fetchOne(
                 'SELECT dec_24_31_deduction FROM leave_policy WHERE category_key = "vacation" LIMIT 1'
             );
-            $cached = (($policy['dec_24_31_deduction'] ?? 'full') === 'half') ? 0.5 : 1.0;
+            return (($policy['dec_24_31_deduction'] ?? 'full') === 'half') ? 0.5 : 1.0;
         } catch (\Throwable $e) {
-            $cached = 1.0;
+            return 1.0;
         }
-
-        return $cached;
     }
 
     private function calculateRequestDays(string $leaveType, string $startDate, string $endDate, float $vacationDecemberDeduction): float
