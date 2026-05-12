@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\NotificationService;
 use App\Core\View;
 
 class LeaveController
@@ -90,6 +91,22 @@ class LeaveController
             'status' => 'pending',
         ]);
 
+        // Notify manager(s) by email
+        try {
+            $employee = $db->fetchOne('SELECT id, first_name, last_name, email FROM users WHERE id = ?', [$userId]);
+            if ($employee) {
+                $notification = new NotificationService();
+                $notification->notifyManagerLeaveRequest([
+                    'leave_type' => $leaveType,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'reason' => $reason,
+                ], $employee);
+            }
+        } catch (\Throwable $e) {
+            // Notification failure must not prevent the leave request from succeeding.
+        }
+
         $_SESSION['flash_success'] = 'Leave request submitted successfully.';
         header('Location: /leave');
         exit;
@@ -162,6 +179,24 @@ class LeaveController
         }
 
         $db->update('leave_requests', $data, 'id = ? AND user_id = ?', [(int) $id, Auth::id()]);
+
+        // Notify manager(s) when a request is resubmitted for review
+        if ($request['status'] === 'approved') {
+            try {
+                $employee = $db->fetchOne('SELECT id, first_name, last_name, email FROM users WHERE id = ?', [Auth::id()]);
+                if ($employee) {
+                    $notification = new NotificationService();
+                    $notification->notifyManagerLeaveRequest([
+                        'leave_type' => $leaveType,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'reason' => $reason,
+                    ], $employee);
+                }
+            } catch (\Throwable $e) {
+                // Notification failure must not break the update flow.
+            }
+        }
 
         $_SESSION['flash_success'] = $request['status'] === 'approved'
             ? 'Leave request updated and sent for review again.'
