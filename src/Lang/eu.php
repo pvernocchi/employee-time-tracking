@@ -15,7 +15,7 @@ return [
     'nav.security' => '🔒 Segurtasuna',
     'nav.inspector' => '🔍 Ikuskatzailea',
     'nav.settings' => '⚙️ Ezarpenak',
-    'nav.logout' => '🚪 Saioa itxi',
+    'nav.leave_policy' => '📋 Baimenen politika',
     'nav.mfa_setup' => '🔐 Bi faktoreko autentifikazioa',
     'layout.language' => 'Hizkuntza',
     'layout.enable_dark_mode' => 'Gaitu modu iluna',
