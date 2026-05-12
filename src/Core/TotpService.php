@@ -78,7 +78,9 @@ class TotpService
     private static function hotp(string $secret, int $counter): string
     {
         $key = self::base32Decode($secret);
-        // Big-endian 64-bit counter
+        // RFC 4226 requires an 8-byte big-endian counter.
+        // PHP's 'J' (64-bit big-endian) requires 64-bit integers; using two 'N' (32-bit) packs
+        // ensures correctness on both 32-bit and 64-bit PHP builds.
         $msg = pack('N*', 0) . pack('N*', $counter);
 
         $hash   = hash_hmac(self::ALGORITHM, $msg, $key, true);

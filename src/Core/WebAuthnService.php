@@ -11,6 +11,8 @@ use lbuchs\WebAuthn\Binary\ByteBuffer;
  */
 class WebAuthnService
 {
+    /** 8 bytes (64 bits) encoded as 16 hex characters → binary user ID for WebAuthn */
+    private const USER_ID_HEX_LENGTH = 16;
     private WebAuthn $webAuthn;
     private string $rpId;
 
@@ -43,7 +45,7 @@ class WebAuthnService
      */
     public function createRegistrationChallenge(int $userId, string $userName, string $userDisplayName): array
     {
-        $userIdBin = \hex2bin(\str_pad(\dechex($userId), 16, '0', STR_PAD_LEFT));
+        $userIdBin = \hex2bin(\str_pad(\dechex($userId), self::USER_ID_HEX_LENGTH, '0', STR_PAD_LEFT));
 
         $createArgs = $this->webAuthn->getCreateArgs(
             $userIdBin,

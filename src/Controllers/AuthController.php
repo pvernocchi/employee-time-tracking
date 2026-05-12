@@ -82,9 +82,9 @@ class AuthController
         }
 
         if ($mfaRequired && !$hasMfa) {
-            // MFA mandatory but not yet enrolled → force setup
+            // MFA mandatory but not yet enrolled → force setup (let user choose method)
             $_SESSION['mfa_setup_required'] = true;
-            header('Location: /mfa/enroll/totp');
+            header('Location: /mfa/setup');
             exit;
         }
 

@@ -4,7 +4,7 @@
     <h1>🔑 Two-Factor Authentication</h1>
     <?php if (!empty($forceSetup)): ?>
         <div class="alert alert-error" style="margin-top:.5rem;">
-            ⚠️ Your account requires MFA. Please enrol an authenticator method to continue.
+            ⚠️ Your account requires MFA. Please enroll an authenticator method to continue.
         </div>
     <?php endif; ?>
 </div>

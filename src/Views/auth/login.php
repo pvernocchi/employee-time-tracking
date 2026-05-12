@@ -9,7 +9,7 @@
         <?php unset($_SESSION['flash_error']); ?>
     <?php endif; ?>
 
-    <form method="POST" action="/login" class="auth-form">
+    <form id="login-form" method="POST" action="/login" class="auth-form">
         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         
         <div class="form-group">
@@ -48,7 +48,7 @@
     <?php else: ?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?= htmlspecialchars($captchaSiteKey) ?>"></script>
 <script>
-document.querySelector('.auth-form').addEventListener('submit', function(e) {
+document.getElementById('login-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = this;
     grecaptcha.ready(function() {

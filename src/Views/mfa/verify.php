@@ -99,6 +99,8 @@ async function startWebAuthnAuth() {
                 clientDataJSON:    abToB64(credential.response.clientDataJSON),
                 authenticatorData: abToB64(credential.response.authenticatorData),
                 signature:         abToB64(credential.response.signature),
+                // Byte offset 33 in authenticatorData is where the 4-byte big-endian sign count lives
+                // (per WebAuthn spec § 6.1: rpIdHash[32] + flags[1] + signCount[4])
                 signCount:         credential.response.authenticatorData
                                    ? new DataView(credential.response.authenticatorData).getUint32(33) : 0,
             })
