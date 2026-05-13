@@ -418,7 +418,7 @@ class UserProfileController
             }
 
             if (count($intervals) === 1) {
-                $dailyMinutes = max(0, $dailyMinutes - 60);
+                $dailyMinutes -= min(60, $dailyMinutes);
             }
 
             if ($dailyMinutes > $dailyMaxMinutes) {

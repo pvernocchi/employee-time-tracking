@@ -248,8 +248,8 @@ function updateScheduleTotals() {
             }
 
             if (intervals.length === 1) {
-                breakMinutes = 60;
-                dayMinutes = Math.max(0, dayMinutes - 60);
+                breakMinutes = Math.min(60, dayMinutes);
+                dayMinutes -= breakMinutes;
             }
         }
 
