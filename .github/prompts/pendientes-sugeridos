@@ -1,0 +1,130 @@
+"[Security][P0] Make CAPTCHA verification fail closed when provider is configured"
+## Summary
+CAPTCHA verification currently allows login when a provider is configured but the secret key is missing. This should fail closed.
+
+## Why
+This is a pre-public-release security blocker (P0) because CAPTCHA can be silently bypassed when misconfigured.
+
+## Scope
+- Update CAPTCHA verification flow to reject auth when provider != none and secret key is empty.
+- Surface clear admin/operator error messaging for misconfiguration.
+- Add guardrails so this cannot silently regress.
+
+## Acceptance Criteria
+- Login is blocked when CAPTCHA provider is enabled and secret is missing/invalid.
+- User receives a generic auth failure message.
+- Admin/system logs clearly indicate CAPTCHA misconfiguration.
+- Behavior is covered by automated checks/tests where applicable.
+
+
+"[Security][P0] Encrypt CAPTCHA secret at rest and stop echoing stored secret in admin UI"
+## Summary
+CAPTCHA secret is stored as plain text and rendered back in the admin form.
+
+## Why
+This is a pre-public-release security blocker (P0) due to secret exposure risk through DB dumps, screenshots, and UI leaks.
+
+## Scope
+- Encrypt CAPTCHA secret at rest.
+- Do not pre-fill CAPTCHA secret field with stored value.
+- Support "leave blank to keep current secret" behavior.
+- Ensure decryption only happens server-side when needed.
+
+## Acceptance Criteria
+- Stored CAPTCHA secret is encrypted at rest.
+- Admin UI never displays the current secret value.
+- Updating unrelated security settings does not overwrite secret unless explicitly changed.
+- Backward compatibility/migration path exists for existing installations.
+
+
+"[Security][P1] Enforce non-empty SMTP encryption secret and migrate plaintext SMTP passwords"
+## Summary
+SMTP password encryption is optional today if SMTP secret is empty, allowing plaintext-at-rest credentials.
+
+## Why
+Public release readiness requires eliminating optional plaintext credential storage.
+
+## Scope
+- Enforce non-empty SMTP encryption secret at boot/config validation.
+- Block saving SMTP credentials when encryption secret is missing.
+- Provide migration path to re-encrypt existing stored SMTP passwords.
+
+## Acceptance Criteria
+- SMTP password cannot be stored plaintext in supported configurations.
+- Existing plaintext values are migrated or explicitly flagged for admin remediation.
+- Documentation updated with required secret setup and rotation guidance.
+
+
+"[Security][P1] Redact sensitive SMTP debug logging and define production logging policy"
+## Summary
+SMTP debug logging can capture sensitive protocol/session details to local logs.
+
+## Why
+Before going public, logging must minimize sensitive data exposure risk.
+
+## Scope
+- Redact sensitive values in SMTP debug output.
+- Restrict or disable verbose SMTP debug in production by default.
+- Document safe operational guidance for temporary troubleshooting.
+
+## Acceptance Criteria
+- Sensitive auth/session fields are not written to logs.
+- Production-safe default logging is enforced.
+- Ops docs include temporary enable/disable steps and retention guidance.
+
+
+"[Supply Chain][P2] Pin GitHub Actions to immutable commit SHAs"
+## Summary
+Workflows currently pin actions by tags/versions rather than full commit SHAs.
+
+## Why
+SHA pinning reduces supply-chain risk from compromised/moved tags.
+
+## Scope
+- Replace action tag references with audited commit SHA pins.
+- Keep update process documented for future maintenance.
+
+## Acceptance Criteria
+- All third-party actions in repository workflows are pinned to full commit SHAs.
+- README/CONTRIBUTING (or workflow comments) document how to safely bump pins.
+
+
+"[Security][P2] Add CI secret-scanning gate for new commits"
+## Summary
+Add automated secret scanning to CI to prevent accidental credential leaks.
+
+## Why
+Public repos need continuous guardrails against token/key exposure.
+
+## Scope
+- Integrate a secret scanning tool in CI (e.g., gitleaks/trufflehog equivalent).
+- Fail CI on verified leaks, with actionable output.
+- Tune baseline/allowlist to avoid noisy false positives.
+
+## Acceptance Criteria
+- CI runs secret scan on PRs and/or pushes.
+- Pipeline fails on real secret findings.
+- Contributor guidance documents how to resolve findings.
+
+
+"[Release Hygiene][P2] Add pre-public-release verification checklist for config/log secret hygiene"
+## Summary
+Formalize and automate checks ensuring sensitive runtime files are never committed.
+
+## Why
+Before flipping to public, release hygiene must include explicit checks for config and logs.
+
+## Scope
+- Verify and enforce ignore rules for config/config.php, .env*, logs/*.
+- Add a documented pre-release checklist step for secret hygiene verification.
+- Optionally add CI checks for forbidden tracked files.
+
+## Acceptance Criteria
+- Ignore rules are validated and documented.
+- Pre-release checklist includes mandatory secret hygiene verification.
+- CI or scripted check flags forbidden tracked sensitive files."
+github.com
+  X Failed to log in to github.com using token (GITHUB_TOKEN)
+  - Active account: true
+  - The token in GITHUB_TOKEN is invalid.
+<exited with exit code 1>
