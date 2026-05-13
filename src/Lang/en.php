@@ -96,4 +96,5 @@ return [
     'notifications.preferences_description' => 'Choose which email notifications you would like to receive.',
     'notifications.save_preferences' => 'Save Notification Preferences',
     'notifications.preferences_saved' => 'Notification preferences saved successfully.',
+    'leave.not_applicable' => 'N/A',
 ];

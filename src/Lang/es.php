@@ -96,4 +96,5 @@ return [
     'notifications.preferences_description' => 'Elige qué notificaciones por correo electrónico deseas recibir.',
     'notifications.save_preferences' => 'Guardar preferencias de notificaciones',
     'notifications.preferences_saved' => 'Preferencias de notificaciones guardadas correctamente.',
+    'leave.not_applicable' => 'No Aplica',
 ];

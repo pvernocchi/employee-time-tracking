@@ -40,9 +40,9 @@ $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($valu
             <?php foreach ($categoryTracking as $category): ?>
             <tr>
                 <td><?= htmlspecialchars($category['name']) ?></td>
-                <td><?= $formatDays((float) $category['total_days']) ?></td>
+                <td><?= $category['tracks_balance'] ? $formatDays((float) $category['total_days']) : $t('leave.not_applicable') ?></td>
                 <td><?= $formatDays((float) $category['used_days']) ?></td>
-                <td><?= $formatDays((float) $category['available_days']) ?></td>
+                <td><?= $category['tracks_balance'] ? $formatDays((float) $category['available_days']) : $t('leave.not_applicable') ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
