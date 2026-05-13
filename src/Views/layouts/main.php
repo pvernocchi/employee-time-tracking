@@ -91,9 +91,14 @@
         <?= $content ?>
     </main>
 
-    <?php $appVersion = trim((string) file_get_contents(dirname(__DIR__, 3) . '/VERSION')); ?>
+    <?php
+    if (!defined('APP_VERSION')) {
+        $versionFile = dirname(__DIR__, 3) . '/VERSION';
+        define('APP_VERSION', is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : 'unknown');
+    }
+    ?>
     <footer class="footer">
-        <p>Employee Time Tracker v. <?= htmlspecialchars($appVersion) ?> by Pablo Vernocchi</p>
+        <p>Employee Time Tracker v. <?= htmlspecialchars(APP_VERSION) ?> by Pablo Vernocchi</p>
     </footer>
 
     <script src="/assets/js/app.js"></script>
