@@ -260,21 +260,40 @@ class UserProfileController
     private static function loadSchedule(Database $db, int $userId): array
     {
         $rows = $db->fetchAll(
-            'SELECT day_of_week, is_working, start_time, end_time FROM user_work_schedules WHERE user_id = ? ORDER BY day_of_week',
+            'SELECT day_of_week, slot_index, is_working, start_time, end_time
+             FROM user_work_schedules
+             WHERE user_id = ?
+             ORDER BY day_of_week, slot_index',
             [$userId]
         );
 
         $schedule = [];
+        for ($d = 0; $d < 7; $d++) {
+            $schedule[$d] = [
+                'day_of_week' => $d,
+                'is_working' => 0,
+                'slots' => [],
+            ];
+        }
+
         foreach ($rows as $row) {
-            $schedule[(int) $row['day_of_week']] = $row;
+            $dayOfWeek = (int) $row['day_of_week'];
+            if ($dayOfWeek < 0 || $dayOfWeek > 6 || empty($row['is_working'])) {
+                continue;
+            }
+
+            $schedule[$dayOfWeek]['is_working'] = 1;
+            $schedule[$dayOfWeek]['slots'][] = [
+                'start_time' => substr((string) $row['start_time'], 0, 5),
+                'end_time' => substr((string) $row['end_time'], 0, 5),
+            ];
         }
 
         // Fill defaults for missing days (Mon–Fri working 09:00–17:00, Sat–Sun off)
         for ($d = 0; $d < 7; $d++) {
-            if (!isset($schedule[$d])) {
-                $schedule[$d] = [
-                    'day_of_week' => $d,
-                    'is_working' => $d < 5 ? 1 : 0,
+            if ($schedule[$d]['slots'] === [] && $d < 5) {
+                $schedule[$d]['is_working'] = 1;
+                $schedule[$d]['slots'][] = [
                     'start_time' => '09:00',
                     'end_time' => '17:00',
                 ];
@@ -295,20 +314,47 @@ class UserProfileController
         for ($d = 0; $d < 7; $d++) {
             $isWorking = !empty($post["working_{$d}"]) ? 1 : 0;
 
-            $startTime = trim($post["start_{$d}"] ?? '09:00');
-            $endTime = trim($post["end_{$d}"] ?? '17:00');
+            $startTimes = $post["start_{$d}"] ?? [];
+            $endTimes = $post["end_{$d}"] ?? [];
 
-            if (!preg_match('/^\d{2}:\d{2}$/', $startTime)) {
-                $startTime = '09:00';
+            if (!is_array($startTimes)) {
+                $startTimes = [$startTimes];
             }
-            if (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
-                $endTime = '17:00';
+            if (!is_array($endTimes)) {
+                $endTimes = [$endTimes];
+            }
+
+            $slots = [];
+            $slotsCount = max(count($startTimes), count($endTimes));
+            for ($slotIndex = 0; $slotIndex < $slotsCount; $slotIndex++) {
+                $startTime = trim((string) ($startTimes[$slotIndex] ?? ''));
+                $endTime = trim((string) ($endTimes[$slotIndex] ?? ''));
+                if ($startTime === '' && $endTime === '') {
+                    continue;
+                }
+
+                if (!preg_match('/^\d{2}:\d{2}$/', $startTime)) {
+                    $startTime = '09:00';
+                }
+                if (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
+                    $endTime = '17:00';
+                }
+
+                $slots[] = [
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                ];
+            }
+
+            if ($isWorking === 1 && $slots === []) {
+                $slots[] = [
+                    'start_time' => '09:00',
+                    'end_time' => '17:00',
+                ];
             }
 
             $normalizedSchedule[$d] = [
-                'is_working' => $isWorking,
-                'start_time' => $startTime,
-                'end_time' => $endTime,
+                'slots' => $isWorking === 1 ? $slots : [],
             ];
         }
 
@@ -317,13 +363,16 @@ class UserProfileController
             return $validationError;
         }
 
+        $db->query('DELETE FROM user_work_schedules WHERE user_id = ?', [$userId]);
+
         for ($d = 0; $d < 7; $d++) {
-            $db->query(
-                'INSERT INTO user_work_schedules (user_id, day_of_week, is_working, start_time, end_time)
-                 VALUES (?, ?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE is_working = VALUES(is_working), start_time = VALUES(start_time), end_time = VALUES(end_time)',
-                [$userId, $d, $normalizedSchedule[$d]['is_working'], $normalizedSchedule[$d]['start_time'], $normalizedSchedule[$d]['end_time']]
-            );
+            foreach ($normalizedSchedule[$d]['slots'] as $slotIndex => $slot) {
+                $db->query(
+                    'INSERT INTO user_work_schedules (user_id, day_of_week, slot_index, is_working, start_time, end_time)
+                     VALUES (?, ?, ?, 1, ?, ?)',
+                    [$userId, $d, $slotIndex, $slot['start_time'], $slot['end_time']]
+                );
+            }
         }
 
         return null;
@@ -340,20 +389,37 @@ class UserProfileController
         $workingEnds = [];
 
         for ($d = 0; $d < 7; $d++) {
-            if (empty($schedule[$d]['is_working'])) {
+            $slots = $schedule[$d]['slots'] ?? [];
+            if ($slots === []) {
                 continue;
             }
 
-            $startMinutes = self::timeToMinutes($schedule[$d]['start_time']);
-            $endMinutes = self::timeToMinutes($schedule[$d]['end_time']);
+            $intervals = [];
+            $dailyMinutes = 0;
+            foreach ($slots as $slot) {
+                $startMinutes = self::timeToMinutes($slot['start_time']);
+                $endMinutes = self::timeToMinutes($slot['end_time']);
+                if ($startMinutes === null || $endMinutes === null || $endMinutes <= $startMinutes) {
+                    return I18n::translate('profile.schedule_error_invalid_range', [
+                        'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                    ]);
+                }
 
-            if ($startMinutes === null || $endMinutes === null || $endMinutes <= $startMinutes) {
-                return I18n::translate('profile.schedule_error_invalid_range', [
-                    'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
-                ]);
+                $intervals[] = ['start' => $startMinutes, 'end' => $endMinutes];
             }
 
-            $dailyMinutes = $endMinutes - $startMinutes;
+            usort($intervals, static fn(array $a, array $b): int => $a['start'] <=> $b['start']);
+
+            for ($i = 0; $i < count($intervals); $i++) {
+                if ($i > 0 && $intervals[$i]['start'] < $intervals[$i - 1]['end']) {
+                    return I18n::translate('profile.schedule_error_invalid_range', [
+                        'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                    ]);
+                }
+
+                $dailyMinutes += $intervals[$i]['end'] - $intervals[$i]['start'];
+            }
+
             if ($dailyMinutes > $dailyMaxMinutes) {
                 return I18n::translate('profile.schedule_error_daily_max', [
                     'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
@@ -362,8 +428,8 @@ class UserProfileController
             }
 
             $weeklyMinutes += $dailyMinutes;
-            $workingStarts[$d] = ($d * 1440) + $startMinutes;
-            $workingEnds[$d] = ($d * 1440) + $endMinutes;
+            $workingStarts[$d] = ($d * 1440) + $intervals[0]['start'];
+            $workingEnds[$d] = ($d * 1440) + $intervals[count($intervals) - 1]['end'];
         }
 
         if ($weeklyMinutes > $weeklyMaxMinutes) {

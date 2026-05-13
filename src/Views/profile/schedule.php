@@ -17,14 +17,19 @@
                 <tr>
                     <th><?= htmlspecialchars($t('profile.day')) ?></th>
                     <th><?= htmlspecialchars($t('profile.working')) ?></th>
-                    <th><?= htmlspecialchars($t('profile.start_time')) ?></th>
-                    <th><?= htmlspecialchars($t('profile.end_time')) ?></th>
+                    <th><?= htmlspecialchars($t('profile.time_slots')) ?></th>
                     <th><?= htmlspecialchars($t('profile.daily_hours')) ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($daysOfWeek as $idx => $dayKey): ?>
                     <?php $day = $schedule[$idx]; ?>
+                    <?php
+                    $daySlots = $day['slots'] ?? [];
+                    if ($daySlots === []) {
+                        $daySlots = [['start_time' => '09:00', 'end_time' => '17:00']];
+                    }
+                    ?>
                     <tr data-day="<?= (int) $idx ?>">
                         <td><?= htmlspecialchars($t('profile.day_' . $dayKey)) ?></td>
                         <td>
@@ -33,14 +38,18 @@
                                 onchange="toggleDayRow(<?= $idx ?>, this.checked)">
                         </td>
                         <td>
-                            <input type="time" name="start_<?= $idx ?>" id="start_<?= $idx ?>"
-                                value="<?= htmlspecialchars(substr($day['start_time'], 0, 5)) ?>"
-                                <?= empty($day['is_working']) ? 'disabled' : '' ?>>
-                        </td>
-                        <td>
-                            <input type="time" name="end_<?= $idx ?>" id="end_<?= $idx ?>"
-                                value="<?= htmlspecialchars(substr($day['end_time'], 0, 5)) ?>"
-                                <?= empty($day['is_working']) ? 'disabled' : '' ?>>
+                            <div class="time-slots" id="slots_<?= (int) $idx ?>">
+                                <?php foreach ($daySlots as $slot): ?>
+                                    <div class="form-row slot-row">
+                                        <input type="time" name="start_<?= $idx ?>[]" value="<?= htmlspecialchars(substr($slot['start_time'], 0, 5)) ?>" <?= empty($day['is_working']) ? 'disabled' : '' ?>>
+                                        <input type="time" name="end_<?= $idx ?>[]" value="<?= htmlspecialchars(substr($slot['end_time'], 0, 5)) ?>" <?= empty($day['is_working']) ? 'disabled' : '' ?>>
+                                        <button type="button" class="btn btn-outline btn-sm" data-slot-remove="1" onclick="removeTimeSlot(this)" <?= empty($day['is_working']) ? 'disabled' : '' ?>>−</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="btn btn-outline btn-sm mt-1" data-slot-add="1" onclick="addTimeSlot(<?= (int) $idx ?>)" <?= empty($day['is_working']) ? 'disabled' : '' ?>>
+                                + <?= htmlspecialchars($t('profile.add_time_slot')) ?>
+                            </button>
                         </td>
                         <td id="daily_hours_<?= $idx ?>">0.00 h</td>
                     </tr>
@@ -48,7 +57,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="4"><?= htmlspecialchars($t('profile.weekly_hours')) ?></th>
+                    <th colspan="3"><?= htmlspecialchars($t('profile.weekly_hours')) ?></th>
                     <th id="weekly_hours_total">0.00 h</th>
                 </tr>
             </tfoot>
@@ -62,11 +71,81 @@
 </form>
 
 <script>
+function createTimeSlotRow(dayIdx, startValue = '', endValue = '', disabled = false) {
+    const row = document.createElement('div');
+    row.className = 'form-row slot-row';
+
+    const startEl = document.createElement('input');
+    startEl.type = 'time';
+    startEl.name = `start_${dayIdx}[]`;
+    startEl.value = startValue;
+    startEl.disabled = disabled;
+
+    const endEl = document.createElement('input');
+    endEl.type = 'time';
+    endEl.name = `end_${dayIdx}[]`;
+    endEl.value = endValue;
+    endEl.disabled = disabled;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-outline btn-sm';
+    removeBtn.textContent = '−';
+    removeBtn.setAttribute('data-slot-remove', '1');
+    removeBtn.disabled = disabled;
+    removeBtn.addEventListener('click', () => removeTimeSlot(removeBtn));
+
+    row.appendChild(startEl);
+    row.appendChild(endEl);
+    row.appendChild(removeBtn);
+    return row;
+}
+
+function getDayRow(dayIdx) {
+    return document.querySelector(`tr[data-day="${dayIdx}"]`);
+}
+
+function updateDaySlotButtons(dayIdx) {
+    const row = getDayRow(dayIdx);
+    if (!row) return;
+    const removeButtons = row.querySelectorAll('button[data-slot-remove="1"]');
+    const working = row.querySelector(`input[name="working_${dayIdx}"]`);
+    const disableRemove = removeButtons.length <= 1 || !(working && working.checked);
+    removeButtons.forEach((btn) => {
+        btn.disabled = disableRemove;
+    });
+}
+
+function addTimeSlot(dayIdx) {
+    const row = getDayRow(dayIdx);
+    const slotsEl = document.getElementById(`slots_${dayIdx}`);
+    if (!row || !slotsEl) return;
+    const working = row.querySelector(`input[name="working_${dayIdx}"]`);
+    const disabled = !(working && working.checked);
+    slotsEl.appendChild(createTimeSlotRow(dayIdx, '', '', disabled));
+    updateDaySlotButtons(dayIdx);
+    updateScheduleTotals();
+}
+
+function removeTimeSlot(button) {
+    const row = button.closest('tr[data-day]');
+    if (!row) return;
+    const dayIdx = Number(row.getAttribute('data-day'));
+    const slots = row.querySelectorAll('.slot-row');
+    if (slots.length <= 1) return;
+    const slotRow = button.closest('.slot-row');
+    if (slotRow) slotRow.remove();
+    updateDaySlotButtons(dayIdx);
+    updateScheduleTotals();
+}
+
 function toggleDayRow(dayIdx, checked) {
-    const startEl = document.getElementById('start_' + dayIdx);
-    const endEl = document.getElementById('end_' + dayIdx);
-    if (startEl) startEl.disabled = !checked;
-    if (endEl) endEl.disabled = !checked;
+    const row = getDayRow(dayIdx);
+    if (!row) return;
+    row.querySelectorAll(`input[name="start_${dayIdx}[]"], input[name="end_${dayIdx}[]"], button[data-slot-remove="1"], button[data-slot-add="1"]`).forEach((el) => {
+        el.disabled = !checked;
+    });
+    updateDaySlotButtons(dayIdx);
     updateScheduleTotals();
 }
 
@@ -82,16 +161,19 @@ function updateScheduleTotals() {
 
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
         const working = document.querySelector(`input[name="working_${dayIdx}"]`);
-        const startEl = document.getElementById(`start_${dayIdx}`);
-        const endEl = document.getElementById(`end_${dayIdx}`);
         const hoursEl = document.getElementById(`daily_hours_${dayIdx}`);
         let dayMinutes = 0;
 
-        if (working && working.checked && startEl && endEl) {
-            const start = parseTimeToMinutes(startEl.value);
-            const end = parseTimeToMinutes(endEl.value);
-            if (start !== null && end !== null && end > start) {
-                dayMinutes = end - start;
+        if (working && working.checked) {
+            const starts = document.querySelectorAll(`input[name="start_${dayIdx}[]"]`);
+            const ends = document.querySelectorAll(`input[name="end_${dayIdx}[]"]`);
+            const slotsCount = Math.min(starts.length, ends.length);
+            for (let i = 0; i < slotsCount; i++) {
+                const start = parseTimeToMinutes(starts[i].value);
+                const end = parseTimeToMinutes(ends[i].value);
+                if (start !== null && end !== null && end > start) {
+                    dayMinutes += end - start;
+                }
             }
         }
 
@@ -109,13 +191,15 @@ function updateScheduleTotals() {
 
 document.addEventListener('DOMContentLoaded', () => {
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
-        const startEl = document.getElementById(`start_${dayIdx}`);
-        const endEl = document.getElementById(`end_${dayIdx}`);
-        if (startEl) startEl.addEventListener('input', updateScheduleTotals);
-        if (endEl) endEl.addEventListener('input', updateScheduleTotals);
+        updateDaySlotButtons(dayIdx);
         const working = document.querySelector(`input[name="working_${dayIdx}"]`);
         if (working) working.addEventListener('change', updateScheduleTotals);
     }
+    document.addEventListener('input', (event) => {
+        if (event.target && (event.target.matches('input[type="time"]'))) {
+            updateScheduleTotals();
+        }
+    });
     updateScheduleTotals();
 });
 </script>
