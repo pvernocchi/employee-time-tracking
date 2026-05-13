@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\I18n;
 use App\Core\View;
 
 class InspectorController
@@ -38,7 +39,7 @@ class InspectorController
         );
 
         if (!$employee) {
-            $_SESSION['flash_error'] = 'Empleado no encontrado.';
+            $_SESSION['flash_error'] = I18n::translate('inspector.employee_not_found');
             header('Location: /inspector');
             exit;
         }
@@ -89,7 +90,7 @@ class InspectorController
             [$startDate, $endDate]
         );
 
-        $filename = "registro_jornada_{$startDate}_a_{$endDate}.csv";
+        $filename = I18n::translate('inspector.csv.filename_prefix') . "_{$startDate}_{$endDate}.csv";
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -98,9 +99,16 @@ class InspectorController
         fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
         fputcsv($output, [
-            'Empleado', 'Email', 'Departamento', 'Fecha',
-            'Hora Entrada', 'Hora Salida', 'Pausa (min)',
-            'Horas Trabajadas', 'Estado', 'Notas'
+            I18n::translate('inspector.csv.employee'),
+            I18n::translate('inspector.csv.email'),
+            I18n::translate('inspector.csv.department'),
+            I18n::translate('inspector.csv.date'),
+            I18n::translate('inspector.csv.clock_in'),
+            I18n::translate('inspector.csv.clock_out'),
+            I18n::translate('inspector.csv.break_minutes'),
+            I18n::translate('inspector.csv.hours_worked'),
+            I18n::translate('inspector.csv.status'),
+            I18n::translate('inspector.csv.notes'),
         ], ';');
 
         foreach ($entries as $entry) {
@@ -116,7 +124,7 @@ class InspectorController
                 $entry['department'] ?? '',
                 date('d/m/Y', strtotime($entry['clock_in'])),
                 date('H:i', strtotime($entry['clock_in'])),
-                $entry['clock_out'] ? date('H:i', strtotime($entry['clock_out'])) : 'Activo',
+                $entry['clock_out'] ? date('H:i', strtotime($entry['clock_out'])) : I18n::translate('inspector.csv.active'),
                 $entry['break_minutes'],
                 $hours,
                 ucfirst($entry['status']),

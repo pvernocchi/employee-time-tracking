@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Database;
+use App\Core\I18n;
 use App\Core\View;
 
 class LeavePolicyController
@@ -35,13 +36,13 @@ class LeavePolicyController
         $decemberDeduction = $this->sanitizeDecemberDeduction($_POST['dec_24_31_deduction'] ?? self::DECEMBER_DEDUCTION_FULL);
 
         if ($name === '') {
-            $_SESSION['flash_error'] = 'El nombre es obligatorio.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_name_required');
             header('Location: /admin/settings/leave-policy/create');
             exit;
         }
 
         if ($legalDays < 0) {
-            $_SESSION['flash_error'] = 'Los días deben ser un número positivo o cero.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_days_non_negative');
             header('Location: /admin/settings/leave-policy/create');
             exit;
         }
@@ -64,7 +65,7 @@ class LeavePolicyController
             'tracks_balance'     => isset($_POST['tracks_balance']) ? 1 : 0,
         ]);
 
-        $_SESSION['flash_success'] = 'Categoría creada correctamente.';
+        $_SESSION['flash_success'] = I18n::translate('flash.leave_policy_created');
         header('Location: /admin/settings/leave-policy');
         exit;
     }
@@ -75,7 +76,7 @@ class LeavePolicyController
         $policy = $db->fetchOne('SELECT * FROM leave_policy WHERE id = ?', [(int) $id]);
 
         if (!$policy) {
-            $_SESSION['flash_error'] = 'Categoría no encontrada.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_not_found');
             header('Location: /admin/settings/leave-policy');
             exit;
         }
@@ -91,7 +92,7 @@ class LeavePolicyController
         $policy = $db->fetchOne('SELECT * FROM leave_policy WHERE id = ?', [(int) $id]);
 
         if (!$policy) {
-            $_SESSION['flash_error'] = 'Categoría no encontrada.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_not_found');
             header('Location: /admin/settings/leave-policy');
             exit;
         }
@@ -100,7 +101,7 @@ class LeavePolicyController
         $decemberDeduction = $this->sanitizeDecemberDeduction($_POST['dec_24_31_deduction'] ?? ($policy['dec_24_31_deduction'] ?? self::DECEMBER_DEDUCTION_FULL));
 
         if ($legalDays < 0) {
-            $_SESSION['flash_error'] = 'Los días deben ser un número positivo o cero.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_days_non_negative');
             header("Location: /admin/settings/leave-policy/{$id}/edit");
             exit;
         }
@@ -109,8 +110,9 @@ class LeavePolicyController
             // Statutory categories: only days can be changed, and only upward
             if ($legalDays < (float) $policy['min_statutory_days']) {
                 $_SESSION['flash_error'] = sprintf(
-                    'No se pueden reducir los días por debajo del mínimo legal establecido por el Estatuto de los Trabajadores (%s días).',
-                    rtrim(rtrim(number_format((float) $policy['min_statutory_days'], 1), '0'), '.')
+                    I18n::translate('flash.leave_policy_minimum_days', [
+                        'days' => rtrim(rtrim(number_format((float) $policy['min_statutory_days'], 1), '0'), '.'),
+                    ])
                 );
                 header("Location: /admin/settings/leave-policy/{$id}/edit");
                 exit;
@@ -126,7 +128,7 @@ class LeavePolicyController
             $isStatutory = isset($_POST['is_statutory']) ? 1 : 0;
 
             if ($name === '') {
-                $_SESSION['flash_error'] = 'El nombre es obligatorio.';
+                $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_name_required');
                 header("Location: /admin/settings/leave-policy/{$id}/edit");
                 exit;
             }
@@ -143,7 +145,7 @@ class LeavePolicyController
             $db->update('leave_policy', $data, 'id = ?', [(int) $id]);
         }
 
-        $_SESSION['flash_success'] = 'Categoría actualizada correctamente.';
+        $_SESSION['flash_success'] = I18n::translate('flash.leave_policy_updated');
         header('Location: /admin/settings/leave-policy');
         exit;
     }
@@ -156,20 +158,20 @@ class LeavePolicyController
         $policy = $db->fetchOne('SELECT * FROM leave_policy WHERE id = ?', [(int) $id]);
 
         if (!$policy) {
-            $_SESSION['flash_error'] = 'Categoría no encontrada.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_not_found');
             header('Location: /admin/settings/leave-policy');
             exit;
         }
 
         if ($policy['is_statutory']) {
-            $_SESSION['flash_error'] = 'No se pueden eliminar categorías del Estatuto de los Trabajadores.';
+            $_SESSION['flash_error'] = I18n::translate('flash.leave_policy_statutory_delete_forbidden');
             header('Location: /admin/settings/leave-policy');
             exit;
         }
 
         $db->query('DELETE FROM leave_policy WHERE id = ?', [(int) $id]);
 
-        $_SESSION['flash_success'] = 'Categoría eliminada correctamente.';
+        $_SESSION['flash_success'] = I18n::translate('flash.leave_policy_deleted');
         header('Location: /admin/settings/leave-policy');
         exit;
     }
@@ -177,7 +179,7 @@ class LeavePolicyController
     private function validateCsrf(string $redirectOnFail): void
     {
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['flash_error'] = 'Solicitud no válida. Inténtalo de nuevo.';
+            $_SESSION['flash_error'] = I18n::translate('flash.invalid_request_try_again');
             header('Location: ' . $redirectOnFail);
             exit;
         }

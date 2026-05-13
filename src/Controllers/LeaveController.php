@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\I18n;
 use App\Core\NotificationService;
 use App\Core\View;
 
@@ -55,8 +56,8 @@ class LeaveController
                 'status' => 'pending',
             ],
             'formAction' => '/leave/request',
-            'pageTitle' => 'Request Leave',
-            'submitLabel' => 'Submit Request',
+            'pageTitle' => I18n::translate('leave.request.page_title'),
+            'submitLabel' => I18n::translate('leave.request.submit'),
         ]);
     }
 
@@ -132,8 +133,10 @@ class LeaveController
         View::render('leave.request', [
             'request' => $request,
             'formAction' => "/leave/edit/{$request['id']}",
-            'pageTitle' => 'Edit Leave Request',
-            'submitLabel' => $request['status'] === 'approved' ? 'Update Request and Resubmit' : 'Update Request',
+            'pageTitle' => I18n::translate('leave.request.edit_page_title'),
+            'submitLabel' => $request['status'] === 'approved'
+                ? I18n::translate('leave.request.update_and_resubmit')
+                : I18n::translate('leave.request.update'),
         ]);
     }
 

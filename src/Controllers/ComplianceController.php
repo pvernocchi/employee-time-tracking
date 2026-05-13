@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Auth;
+use App\Core\I18n;
 use App\Core\Database;
 use App\Core\View;
 use App\Core\ComplianceService;
@@ -111,7 +112,7 @@ class ComplianceController
             [$startDate, $endDate]
         );
 
-        $filename = "inspeccion_registros_{$startDate}_a_{$endDate}.csv";
+        $filename = I18n::translate('compliance.export.filename_prefix') . "_{$startDate}_{$endDate}.csv";
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -121,10 +122,19 @@ class ComplianceController
         fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
         fputcsv($output, [
-            'Empleado', 'Email', 'Departamento', 'Fecha',
-            'Hora Entrada', 'Hora Salida', 'Pausa (min)',
-            'Horas Trabajadas', 'Estado', 'Bloqueado',
-            'Editado por', 'Motivo edición', 'Notas'
+            I18n::translate('compliance.export.employee'),
+            I18n::translate('compliance.export.email'),
+            I18n::translate('compliance.export.department'),
+            I18n::translate('compliance.export.date'),
+            I18n::translate('compliance.export.clock_in'),
+            I18n::translate('compliance.export.clock_out'),
+            I18n::translate('compliance.export.break_minutes'),
+            I18n::translate('compliance.export.hours_worked'),
+            I18n::translate('compliance.export.status'),
+            I18n::translate('compliance.export.locked'),
+            I18n::translate('compliance.export.edited_by'),
+            I18n::translate('compliance.export.edit_reason'),
+            I18n::translate('compliance.export.notes'),
         ], ';');
 
         foreach ($entries as $entry) {
@@ -140,11 +150,11 @@ class ComplianceController
                 $entry['department'] ?? '',
                 date('d/m/Y', strtotime($entry['clock_in'])),
                 date('H:i', strtotime($entry['clock_in'])),
-                $entry['clock_out'] ? date('H:i', strtotime($entry['clock_out'])) : 'Activo',
+                $entry['clock_out'] ? date('H:i', strtotime($entry['clock_out'])) : I18n::translate('compliance.export.active'),
                 $entry['break_minutes'],
                 $hours,
                 ucfirst($entry['status']),
-                $entry['is_locked'] ? 'Sí' : 'No',
+                $entry['is_locked'] ? I18n::translate('leave_policy.yes') : I18n::translate('leave_policy.no'),
                 $entry['editor_first'] ? $entry['editor_first'] . ' ' . $entry['editor_last'] : '',
                 $entry['edit_reason'] ?? '',
                 $entry['notes'] ?? '',
@@ -163,7 +173,7 @@ class ComplianceController
     public function dataProtectionConsent(): void
     {
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['flash_error'] = 'Invalid request.';
+            $_SESSION['flash_error'] = I18n::translate('flash.invalid_request_try_again');
             header('Location: /compliance/privacy');
             exit;
         }
@@ -180,7 +190,7 @@ class ComplianceController
             'ip_address' => $ipAddress,
         ]);
 
-        $_SESSION['flash_success'] = 'Consentimiento registrado correctamente.';
+        $_SESSION['flash_success'] = I18n::translate('flash.compliance_consent_saved');
         header('Location: /compliance/privacy');
         exit;
     }
