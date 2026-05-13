@@ -147,16 +147,24 @@ class NotificationService
             $userPrefs = $this->getUserPreferences($userId);
 
             $schedule = $this->db->fetchOne(
-                'SELECT is_working, start_time, end_time FROM user_work_schedules WHERE user_id = ? AND day_of_week = ?',
+                'SELECT COUNT(*) AS slot_count, MIN(start_time) AS start_time, MAX(end_time) AS end_time
+                 FROM user_work_schedules
+                 WHERE user_id = ? AND day_of_week = ? AND is_working = 1',
                 [$userId, $dayOfWeek]
             );
 
-            if (!$schedule) {
+            if (!$schedule || (int) ($schedule['slot_count'] ?? 0) === 0) {
                 // Use defaults: Mon-Fri working 09:00-17:00
                 $schedule = [
                     'is_working' => $dayOfWeek < 5 ? 1 : 0,
                     'start_time' => '09:00',
                     'end_time' => '17:00',
+                ];
+            } else {
+                $schedule = [
+                    'is_working' => 1,
+                    'start_time' => (string) $schedule['start_time'],
+                    'end_time' => (string) $schedule['end_time'],
                 ];
             }
 
