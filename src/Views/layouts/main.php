@@ -91,12 +91,6 @@
         <?= $content ?>
     </main>
 
-    <?php
-    if (!defined('APP_VERSION')) {
-        $versionFile = dirname(__DIR__, 3) . '/VERSION';
-        define('APP_VERSION', is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : 'unknown');
-    }
-    ?>
     <footer class="footer">
         <p>Employee Time Tracker v. <?= htmlspecialchars(APP_VERSION) ?> by Pablo Vernocchi</p>
     </footer>
