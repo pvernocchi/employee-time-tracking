@@ -494,22 +494,23 @@ class LeaveController
             return [];
         }
 
-        $visibilityClauses = [];
-        $params = [$this->today(), $userId];
+        $visibleManagerIds = [];
 
         if (!empty($currentUser['manager_id'])) {
-            $visibilityClauses[] = 'u.manager_id = ?';
-            $params[] = (int) $currentUser['manager_id'];
+            $visibleManagerIds[] = (int) $currentUser['manager_id'];
         }
 
         if ($canViewManagedEmployees) {
-            $visibilityClauses[] = 'u.manager_id = ?';
-            $params[] = $userId;
+            $visibleManagerIds[] = $userId;
         }
 
-        if ($visibilityClauses === []) {
+        $visibleManagerIds = array_values(array_unique($visibleManagerIds));
+        if ($visibleManagerIds === []) {
             return [];
         }
+
+        $managerIdPlaceholders = implode(', ', array_fill(0, count($visibleManagerIds), '?'));
+        $params = array_merge([$this->today(), $userId], $visibleManagerIds);
 
         $sql = 'SELECT lr.id, lr.leave_type, lr.start_date, lr.end_date, lr.status, u.first_name, u.last_name
                 FROM leave_requests lr
@@ -518,7 +519,7 @@ class LeaveController
                   AND lr.end_date >= ?
                   AND u.id <> ?
                   AND u.is_active = 1
-                  AND (' . implode(' OR ', $visibilityClauses) . ')
+                  AND u.manager_id IN (' . $managerIdPlaceholders . ')
                 ORDER BY lr.start_date ASC, u.last_name ASC, u.first_name ASC';
 
         return $db->fetchAll($sql, $params);
