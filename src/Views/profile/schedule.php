@@ -28,7 +28,10 @@
                     <?php
                     $daySlots = $day['slots'] ?? [];
                     if ($daySlots === []) {
-                        $daySlots = [['start_time' => '09:00', 'end_time' => '17:00']];
+                        $daySlots = [
+                            ['start_time' => '09:00', 'end_time' => '14:00'],
+                            ['start_time' => '15:00', 'end_time' => '18:00'],
+                        ];
                     }
                     ?>
                     <tr data-day="<?= (int) $idx ?>">
