@@ -33,6 +33,7 @@
         </div>
 
         <div class="form-row">
+            <?php if ($isAdmin): ?>
             <div class="form-group">
                 <label for="role">Role</label>
                 <select name="role" id="role">
@@ -53,6 +54,7 @@
                     <?php endforeach; ?>
                 </select>
             </div>
+            <?php endif; ?>
             <div class="form-group">
                 <label for="department">Department</label>
                 <input type="text" name="department" id="department" value="<?= htmlspecialchars($employee['department'] ?? '') ?>">
@@ -63,6 +65,7 @@
             </div>
         </div>
 
+        <?php if ($isAdmin): ?>
         <div class="form-group" id="team-members-field" style="display: none;">
             <label for="team_member_ids">Team Members</label>
             <select name="team_member_ids[]" id="team_member_ids" multiple size="8">
@@ -74,6 +77,7 @@
             </select>
             <small>Hold Ctrl/Cmd to select multiple members.</small>
         </div>
+        <?php endif; ?>
 
         <div class="form-group">
             <label class="checkbox-label">
@@ -122,7 +126,7 @@
             }
         }
 
-        roleSelect.addEventListener('change', updateRoleFields);
-        updateRoleFields();
+        if (roleSelect) roleSelect.addEventListener('change', updateRoleFields);
+        if (roleSelect) updateRoleFields();
     })();
 </script>
