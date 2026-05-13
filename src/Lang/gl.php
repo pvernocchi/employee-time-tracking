@@ -284,4 +284,13 @@ return [
     'leave.type.jury_duty' => 'Deber público',
     'leave.type.other' => 'Outro',
     'leave.not_applicable' => 'Non Aplica',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => 'Xerarquía organizativa de :name.',
+    'orgchart.dashboard_description' => 'Consulta a túa posición no organigrama da empresa.',
+    'orgchart.view_orgchart' => 'Ver organigrama',
+    'orgchart.back_to_edit' => 'Volver a empregado',
+    'orgchart.back_to_dashboard' => 'Volver ao panel',
+    'orgchart.no_data' => 'Non hai datos de organigrama dispoñibles.',
 ];

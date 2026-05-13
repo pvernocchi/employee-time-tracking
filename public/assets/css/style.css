@@ -456,6 +456,82 @@ a:hover { text-decoration: underline; }
     margin-top: 0.35rem;
 }
 
+/* Org Chart */
+.orgchart-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 2rem 1rem;
+    min-height: 150px;
+    position: relative;
+    text-align: center;
+}
+
+.orgchart-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.orgchart-level {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+    flex-wrap: nowrap;
+}
+
+.orgchart-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--surface-bg);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+    min-width: 130px;
+    max-width: 180px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 1;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.orgchart-card--focused {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+
+[data-theme="dark"] .orgchart-card--focused {
+    background: #1e3a5f;
+}
+
+.orgchart-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+}
+
+.orgchart-dept {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+svg.orgchart-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+}
+
 /* Footer */
 .footer {
     text-align: center;

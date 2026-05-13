@@ -66,6 +66,14 @@
 </div>
 <?php endif; ?>
 
+<div class="card" style="margin-top: 1.5rem;">
+    <h2>🏢 <?= htmlspecialchars($t('orgchart.heading')) ?></h2>
+    <p class="text-muted"><?= htmlspecialchars($t('orgchart.dashboard_description')) ?></p>
+    <div class="form-actions mt-2">
+        <a href="/orgchart" class="btn btn-outline">🏢 <?= htmlspecialchars($t('orgchart.view_orgchart')) ?></a>
+    </div>
+</div>
+
 <?php if (\App\Core\Auth::isManager() && !empty($adminData)): ?>
 <div class="page-header" style="margin-top: 2rem;">
     <h2>Admin Overview</h2>

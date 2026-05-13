@@ -284,4 +284,13 @@ return [
     'leave.type.jury_duty' => 'Betebehar publikoa',
     'leave.type.other' => 'Beste bat',
     'leave.not_applicable' => 'Ez aplikagarri',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => ':name erabiltzailearen hierarkia organizatiboa.',
+    'orgchart.dashboard_description' => 'Kontsultatu zure posizioa enpresaren organigraman.',
+    'orgchart.view_orgchart' => 'Organigrama ikusi',
+    'orgchart.back_to_edit' => 'Langileari itzuli',
+    'orgchart.back_to_dashboard' => 'Arbelera itzuli',
+    'orgchart.no_data' => 'Ez dago organigramaren daturik.',
 ];

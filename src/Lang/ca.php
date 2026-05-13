@@ -284,4 +284,13 @@ return [
     'leave.type.jury_duty' => 'Deure públic',
     'leave.type.other' => 'Altre',
     'leave.not_applicable' => 'No Aplica',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => 'Jerarquia organitzativa de :name.',
+    'orgchart.dashboard_description' => "Consulta la teva posició en l'organigrama de l'empresa.",
+    'orgchart.view_orgchart' => 'Veure organigrama',
+    'orgchart.back_to_edit' => 'Tornar a empleat',
+    'orgchart.back_to_dashboard' => 'Tornar al tauler',
+    'orgchart.no_data' => 'No hi ha dades d\'organigrama disponibles.',
 ];

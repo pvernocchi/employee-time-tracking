@@ -284,4 +284,13 @@ return [
     'leave.type.jury_duty' => 'Public Duty',
     'leave.type.other' => 'Other',
     'leave.not_applicable' => 'N/A',
+
+    'orgchart.title' => 'Org Chart',
+    'orgchart.heading' => 'Org Chart',
+    'orgchart.description' => 'Organisational hierarchy of :name.',
+    'orgchart.dashboard_description' => 'View your position in the company organisational chart.',
+    'orgchart.view_orgchart' => 'View Org Chart',
+    'orgchart.back_to_edit' => 'Back to Employee',
+    'orgchart.back_to_dashboard' => 'Back to Dashboard',
+    'orgchart.no_data' => 'No org chart data available.',
 ];

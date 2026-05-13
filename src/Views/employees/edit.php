@@ -89,6 +89,7 @@
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Update Employee</button>
             <a href="/admin/employees/<?= (int) $employee['id'] ?>/schedule" class="btn btn-outline">📅 Work Schedule</a>
+            <a href="/admin/employees/<?= (int) $employee['id'] ?>/orgchart" class="btn btn-outline">🏢 Org Chart</a>
             <a href="/admin/employees" class="btn btn-outline">Cancel</a>
         </div>
     </form>
