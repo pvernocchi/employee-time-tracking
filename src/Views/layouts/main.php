@@ -91,8 +91,9 @@
         <?= $content ?>
     </main>
 
+    <?php $appVersion = trim((string) file_get_contents(dirname(__DIR__, 3) . '/VERSION')); ?>
     <footer class="footer">
-        <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($t('app.name')) ?></p>
+        <p>Employee Time Tracker v. <?= htmlspecialchars($appVersion) ?> by Pablo Vernocchi</p>
     </footer>
 
     <script src="/assets/js/app.js"></script>
