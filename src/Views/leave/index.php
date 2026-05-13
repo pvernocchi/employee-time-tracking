@@ -2,7 +2,14 @@
 $title = 'Leave Management';
 $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($value, 1), '0'), '.');
 $locale = \App\Core\I18n::getLocale();
-$dateFormat = $locale === 'en' ? 'M j, Y' : 'd/m/Y';
+$dateFormatsByLocale = [
+    'en' => 'M j, Y',
+    'es' => 'd/m/Y',
+    'ca' => 'd/m/Y',
+    'eu' => 'Y/m/d',
+    'gl' => 'd/m/Y',
+];
+$dateFormat = $dateFormatsByLocale[$locale] ?? 'Y-m-d';
 $formatLeaveType = static function (string $leaveType) use ($t): string {
     $translationKey = 'leave.type.' . $leaveType;
     $translated = $t($translationKey);
