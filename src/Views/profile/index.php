@@ -235,9 +235,16 @@ function updateScheduleTotals() {
             }
 
             intervals.sort((a, b) => a.start - b.start);
-            for (let i = 1; i < intervals.length; i++) {
-                const gap = intervals[i].start - intervals[i - 1].end;
-                if (gap > 0) breakMinutes += gap;
+            if (intervals.length > 0) {
+                let mergedEnd = intervals[0].end;
+                for (let i = 1; i < intervals.length; i++) {
+                    if (intervals[i].start > mergedEnd) {
+                        breakMinutes += intervals[i].start - mergedEnd;
+                        mergedEnd = intervals[i].end;
+                    } else if (intervals[i].end > mergedEnd) {
+                        mergedEnd = intervals[i].end;
+                    }
+                }
             }
         }
 
