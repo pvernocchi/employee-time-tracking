@@ -13,7 +13,7 @@ $dateFormat = $dateFormatsByLocale[$locale] ?? 'Y-m-d';
 $formatDate = static function (string $dateValue) use ($dateFormat): string {
     $timestamp = strtotime($dateValue);
     if ($timestamp === false) {
-        return htmlspecialchars($dateValue);
+        return '—';
     }
 
     return htmlspecialchars(date($dateFormat, $timestamp));
