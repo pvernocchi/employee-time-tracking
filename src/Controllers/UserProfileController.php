@@ -418,6 +418,7 @@ class UserProfileController
             }
 
             if (count($intervals) === 1) {
+                // For single-slot schedules, apply the default 60-minute break used in the profile UI.
                 $dailyMinutes -= min(60, $dailyMinutes);
             }
 
