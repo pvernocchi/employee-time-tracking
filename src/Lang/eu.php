@@ -62,6 +62,7 @@ return [
     'profile.day' => 'Eguna',
     'profile.working' => 'Lanean',
     'profile.time_slots' => 'Sarrera eta irteerak',
+    'profile.breaks' => 'Atsedena, bazkaria, etab.',
     'profile.start_time' => 'Sarrera ordua',
     'profile.end_time' => 'Irteera ordua',
     'profile.add_time_slot' => 'Tartea gehitu',
