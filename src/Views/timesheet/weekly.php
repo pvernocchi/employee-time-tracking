@@ -38,6 +38,7 @@
                 <th>Day</th>
                 <th>Date</th>
                 <th>Entries</th>
+                <th>Descanso / Comida</th>
                 <th>Hours</th>
             </tr>
         </thead>
@@ -53,9 +54,17 @@
                                 <?= date('g:i A', strtotime($entry['clock_in'])) ?>
                                 –
                                 <?= $entry['clock_out'] ? date('g:i A', strtotime($entry['clock_out'])) : '<span class="badge badge-success">Active</span>' ?>
-                                <?php if ($entry['break_minutes']): ?>
-                                    <small>(<?= $entry['break_minutes'] ?>min break)</small>
-                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <span class="text-muted">—</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if (!empty($day['entries'])): ?>
+                        <?php foreach ($day['entries'] as $entry): ?>
+                            <div class="entry-line">
+                                <?= $entry['break_minutes'] > 0 ? htmlspecialchars($entry['break_minutes'], ENT_QUOTES, 'UTF-8') . ' min' : '<span class="text-muted">—</span>' ?>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -73,7 +82,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"><strong>Total</strong></td>
+                <td colspan="4"><strong>Total</strong></td>
                 <td>
                     <strong class="<?= $totalWeekHours > 40 ? 'text-danger' : '' ?>"><?= $totalWeekHours ?> hrs</strong>
                     <?php if ($totalWeekHours > 40): ?>
