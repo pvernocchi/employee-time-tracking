@@ -23,6 +23,13 @@ use App\Core\View;
 $setupManager = new SetupManager(dirname(__DIR__));
 $config = $setupManager->loadConfig();
 
+if (!defined('APP_VERSION')) {
+    $versionFile = dirname(__DIR__) . '/VERSION';
+    $rawVersion = is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : '';
+    $safeVersion = preg_replace('/[^A-Za-z0-9._-]/', '', $rawVersion);
+    define('APP_VERSION', $safeVersion !== '' ? $safeVersion : 'unknown');
+}
+
 // Set timezone
 date_default_timezone_set($config['app']['timezone'] ?? 'Europe/Madrid');
 

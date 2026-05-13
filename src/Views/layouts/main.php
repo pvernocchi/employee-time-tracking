@@ -92,7 +92,7 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($t('app.name')) ?></p>
+        <p>Employee Time Tracker v. <?= htmlspecialchars(APP_VERSION) ?> by Pablo Vernocchi</p>
     </footer>
 
     <script src="/assets/js/app.js"></script>
