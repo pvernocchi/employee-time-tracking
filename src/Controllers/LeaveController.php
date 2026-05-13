@@ -505,11 +505,12 @@ class LeaveController
         }
 
         $visibleManagerIds = array_values(array_unique($visibleManagerIds));
-        if ($visibleManagerIds === []) {
+        $visibleManagerCount = count($visibleManagerIds);
+        if ($visibleManagerCount === 0) {
             return [];
         }
 
-        $managerIdPlaceholders = implode(', ', array_fill(0, count($visibleManagerIds), '?'));
+        $managerIdPlaceholders = implode(', ', array_fill(0, $visibleManagerCount, '?'));
         $params = array_merge([$this->today(), $userId], $visibleManagerIds);
 
         $sql = 'SELECT lr.id, lr.leave_type, lr.start_date, lr.end_date, lr.status, u.first_name, u.last_name
