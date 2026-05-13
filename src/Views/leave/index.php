@@ -82,8 +82,8 @@ $formatLeaveType = static function (string $leaveType) use ($t): string {
             <tr>
                 <td><?= htmlspecialchars($absence['first_name'] . ' ' . $absence['last_name']) ?></td>
                 <td><?= htmlspecialchars($formatLeaveType((string) $absence['leave_type'])) ?></td>
-                <td><?= date($dateFormat, strtotime($absence['start_date'])) ?></td>
-                <td><?= date($dateFormat, strtotime($absence['end_date'])) ?></td>
+                <td><?= htmlspecialchars(date($dateFormat, strtotime($absence['start_date']))) ?></td>
+                <td><?= htmlspecialchars(date($dateFormat, strtotime($absence['end_date']))) ?></td>
                 <td><?= $formatDays((float) $absence['calculated_days']) ?></td>
             </tr>
             <?php endforeach; ?>
