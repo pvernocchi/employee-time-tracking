@@ -25,7 +25,9 @@ $config = $setupManager->loadConfig();
 
 if (!defined('APP_VERSION')) {
     $versionFile = dirname(__DIR__) . '/VERSION';
-    define('APP_VERSION', is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : 'unknown');
+    $rawVersion = is_readable($versionFile) ? trim((string) file_get_contents($versionFile)) : '';
+    $safeVersion = preg_replace('/[^A-Za-z0-9._-]/', '', $rawVersion);
+    define('APP_VERSION', $safeVersion !== '' ? $safeVersion : 'unknown');
 }
 
 // Set timezone
