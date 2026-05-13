@@ -28,10 +28,7 @@
                     <?php
                     $daySlots = $day['slots'] ?? [];
                     if ($daySlots === []) {
-                        $daySlots = [
-                            ['start_time' => '09:00', 'end_time' => '14:00'],
-                            ['start_time' => '15:00', 'end_time' => '18:00'],
-                        ];
+                        $daySlots = \App\Controllers\UserProfileController::DEFAULT_WORK_SLOTS;
                     }
                     ?>
                     <tr data-day="<?= (int) $idx ?>">
@@ -196,6 +193,11 @@ function updateScheduleTotals() {
                         mergedEnd = intervals[i].end;
                     }
                 }
+            }
+
+            if (intervals.length === 1) {
+                breakMinutes = 60;
+                dayMinutes = Math.max(0, dayMinutes - 60);
             }
         }
 

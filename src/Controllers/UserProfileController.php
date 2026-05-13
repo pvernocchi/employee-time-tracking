@@ -14,8 +14,7 @@ class UserProfileController
     private const WEEKLY_MAX_HOURS = 40.0;
     private const MIN_REST_HOURS = 12.0;
     public const DEFAULT_WORK_SLOTS = [
-        ['start_time' => '09:00', 'end_time' => '14:00'],
-        ['start_time' => '15:00', 'end_time' => '18:00'],
+        ['start_time' => '09:00', 'end_time' => '18:00'],
     ];
 
     private const DAYS_OF_WEEK = [
@@ -338,7 +337,7 @@ class UserProfileController
                     $startTime = '09:00';
                 }
                 if (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
-                    $endTime = '17:00';
+                    $endTime = '18:00';
                 }
 
                 $slots[] = [
@@ -416,6 +415,10 @@ class UserProfileController
                 }
 
                 $dailyMinutes += $intervals[$i]['end'] - $intervals[$i]['start'];
+            }
+
+            if (count($intervals) === 1) {
+                $dailyMinutes = max(0, $dailyMinutes - 60);
             }
 
             if ($dailyMinutes > $dailyMaxMinutes) {
