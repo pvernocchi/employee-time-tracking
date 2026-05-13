@@ -13,6 +13,7 @@ class UserProfileController
     private const DAILY_MAX_HOURS = 9.0;
     private const WEEKLY_MAX_HOURS = 40.0;
     private const MIN_REST_HOURS = 12.0;
+    private const DEFAULT_BREAK_MINUTES = 60;
     public const DEFAULT_WORK_SLOTS = [
         ['start_time' => '09:00', 'end_time' => '18:00'],
     ];
@@ -263,7 +264,7 @@ class UserProfileController
     private static function loadSchedule(Database $db, int $userId): array
     {
         $rows = $db->fetchAll(
-            'SELECT day_of_week, slot_index, is_working, start_time, end_time
+            'SELECT day_of_week, slot_index, is_working, start_time, end_time, break_minutes
              FROM user_work_schedules
              WHERE user_id = ?
              ORDER BY day_of_week, slot_index',
@@ -276,6 +277,7 @@ class UserProfileController
                 'day_of_week' => $d,
                 'is_working' => 0,
                 'slots' => [],
+                'break_minutes' => null,
             ];
         }
 
@@ -286,6 +288,9 @@ class UserProfileController
             }
 
             $schedule[$dayOfWeek]['is_working'] = 1;
+            if ($schedule[$dayOfWeek]['break_minutes'] === null && array_key_exists('break_minutes', $row) && $row['break_minutes'] !== null) {
+                $schedule[$dayOfWeek]['break_minutes'] = max(0, (int) $row['break_minutes']);
+            }
             $schedule[$dayOfWeek]['slots'][] = [
                 'start_time' => substr((string) $row['start_time'], 0, 5),
                 'end_time' => substr((string) $row['end_time'], 0, 5),
@@ -297,6 +302,11 @@ class UserProfileController
             if ($schedule[$d]['slots'] === [] && $d < 5) {
                 $schedule[$d]['is_working'] = 1;
                 $schedule[$d]['slots'] = self::DEFAULT_WORK_SLOTS;
+                $schedule[$d]['break_minutes'] = self::DEFAULT_BREAK_MINUTES;
+            } elseif ($schedule[$d]['slots'] !== [] && $schedule[$d]['break_minutes'] === null) {
+                $schedule[$d]['break_minutes'] = count($schedule[$d]['slots']) === 1 ? self::DEFAULT_BREAK_MINUTES : 0;
+            } elseif ($schedule[$d]['break_minutes'] === null) {
+                $schedule[$d]['break_minutes'] = 0;
             }
         }
 
@@ -313,6 +323,12 @@ class UserProfileController
 
         for ($d = 0; $d < 7; $d++) {
             $isWorking = !empty($post["working_{$d}"]) ? 1 : 0;
+            $breakMinutes = filter_var(
+                $post["break_{$d}"] ?? 0,
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 0]]
+            );
+            $breakMinutes = $breakMinutes === false ? 0 : (int) $breakMinutes;
 
             $startTimes = $post["start_{$d}"] ?? [];
             $endTimes = $post["end_{$d}"] ?? [];
@@ -348,10 +364,14 @@ class UserProfileController
 
             if ($isWorking === 1 && $slots === []) {
                 $slots = self::DEFAULT_WORK_SLOTS;
+                if (!array_key_exists("break_{$d}", $post)) {
+                    $breakMinutes = self::DEFAULT_BREAK_MINUTES;
+                }
             }
 
             $normalizedSchedule[$d] = [
                 'slots' => $isWorking === 1 ? $slots : [],
+                'break_minutes' => $isWorking === 1 ? $breakMinutes : 0,
             ];
         }
 
@@ -365,9 +385,9 @@ class UserProfileController
         for ($d = 0; $d < 7; $d++) {
             foreach ($normalizedSchedule[$d]['slots'] as $slotIndex => $slot) {
                 $db->query(
-                    'INSERT INTO user_work_schedules (user_id, day_of_week, slot_index, is_working, start_time, end_time)
-                     VALUES (?, ?, ?, 1, ?, ?)',
-                    [$userId, $d, $slotIndex, $slot['start_time'], $slot['end_time']]
+                    'INSERT INTO user_work_schedules (user_id, day_of_week, slot_index, is_working, break_minutes, start_time, end_time)
+                     VALUES (?, ?, ?, 1, ?, ?, ?)',
+                    [$userId, $d, $slotIndex, $normalizedSchedule[$d]['break_minutes'], $slot['start_time'], $slot['end_time']]
                 );
             }
         }
@@ -393,6 +413,7 @@ class UserProfileController
 
             $intervals = [];
             $dailyMinutes = 0;
+            $breakMinutes = max(0, (int) ($schedule[$d]['break_minutes'] ?? 0));
             foreach ($slots as $slot) {
                 $startMinutes = self::timeToMinutes($slot['start_time']);
                 $endMinutes = self::timeToMinutes($slot['end_time']);
@@ -417,10 +438,13 @@ class UserProfileController
                 $dailyMinutes += $intervals[$i]['end'] - $intervals[$i]['start'];
             }
 
-            if (count($intervals) === 1) {
-                // For single-slot schedules, apply up to 60 minutes break (capped to actual worked minutes), as in profile UI.
-                $dailyMinutes -= min(60, $dailyMinutes);
+            if ($breakMinutes > $dailyMinutes) {
+                return I18n::translate('profile.schedule_error_invalid_break', [
+                    'day' => I18n::translate('profile.day_' . self::DAYS_OF_WEEK[$d]),
+                ]);
             }
+
+            $dailyMinutes -= $breakMinutes;
 
             if ($dailyMinutes > $dailyMaxMinutes) {
                 return I18n::translate('profile.schedule_error_daily_max', [

@@ -105,7 +105,17 @@
                                 + <?= htmlspecialchars($t('profile.add_time_slot')) ?>
                             </button>
                         </td>
-                        <td id="daily_break_<?= $idx ?>">—</td>
+                        <td>
+                            <input
+                                type="number"
+                                name="break_<?= $idx ?>"
+                                id="daily_break_<?= $idx ?>"
+                                value="<?= (int) ($day['break_minutes'] ?? 0) ?>"
+                                min="0"
+                                step="5"
+                                <?= empty($day['is_working']) ? 'disabled' : '' ?>
+                            >
+                        </td>
                         <td id="daily_hours_<?= $idx ?>">0.00 h</td>
                     </tr>
                 <?php endforeach; ?>
@@ -196,7 +206,7 @@ function removeTimeSlot(button) {
 function toggleDayRow(dayIdx, checked) {
     const row = getDayRow(dayIdx);
     if (!row) return;
-    row.querySelectorAll(`input[name="start_${dayIdx}[]"], input[name="end_${dayIdx}[]"], button[data-slot-remove="1"], button[data-slot-add="1"]`).forEach((el) => {
+    row.querySelectorAll(`input[name="start_${dayIdx}[]"], input[name="end_${dayIdx}[]"], input[name="break_${dayIdx}"], button[data-slot-remove="1"], button[data-slot-add="1"]`).forEach((el) => {
         el.disabled = !checked;
     });
     updateDaySlotButtons(dayIdx);
@@ -216,45 +226,26 @@ function updateScheduleTotals() {
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
         const working = document.querySelector(`input[name="working_${dayIdx}"]`);
         const hoursEl = document.getElementById(`daily_hours_${dayIdx}`);
-        const breakEl = document.getElementById(`daily_break_${dayIdx}`);
-        let dayMinutes = 0;
-        let breakMinutes = 0;
+        const breakInput = document.getElementById(`daily_break_${dayIdx}`);
+        let scheduledMinutes = 0;
 
         if (working && working.checked) {
             const starts = document.querySelectorAll(`input[name="start_${dayIdx}[]"]`);
             const ends = document.querySelectorAll(`input[name="end_${dayIdx}[]"]`);
             const slotsCount = Math.min(starts.length, ends.length);
-            const intervals = [];
             for (let i = 0; i < slotsCount; i++) {
                 const start = parseTimeToMinutes(starts[i].value);
                 const end = parseTimeToMinutes(ends[i].value);
                 if (start !== null && end !== null && end > start) {
-                    dayMinutes += end - start;
-                    intervals.push({ start, end });
-                }
-            }
-
-            intervals.sort((a, b) => a.start - b.start);
-            if (intervals.length === 1) {
-                breakMinutes = Math.min(60, dayMinutes);
-                dayMinutes -= breakMinutes;
-            } else if (intervals.length > 1) {
-                let mergedEnd = intervals[0].end;
-                for (let i = 1; i < intervals.length; i++) {
-                    if (intervals[i].start > mergedEnd) {
-                        breakMinutes += intervals[i].start - mergedEnd;
-                        mergedEnd = intervals[i].end;
-                    } else if (intervals[i].end > mergedEnd) {
-                        mergedEnd = intervals[i].end;
-                    }
+                    scheduledMinutes += end - start;
                 }
             }
         }
 
+        const rawBreakMinutes = breakInput ? Number.parseInt(breakInput.value, 10) : 0;
+        const breakMinutes = Number.isFinite(rawBreakMinutes) && rawBreakMinutes > 0 ? rawBreakMinutes : 0;
+        const dayMinutes = Math.max(0, scheduledMinutes - breakMinutes);
         totalMinutes += dayMinutes;
-        if (breakEl) {
-            breakEl.textContent = breakMinutes > 0 ? `${breakMinutes} min` : '—';
-        }
         if (hoursEl) {
             hoursEl.textContent = `${(dayMinutes / 60).toFixed(2)} h`;
         }
@@ -273,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (working) working.addEventListener('change', updateScheduleTotals);
     }
     document.addEventListener('input', (event) => {
-        if (event.target && (event.target.matches('input[type="time"]'))) {
+        if (event.target && (event.target.matches('input[type="time"]') || event.target.matches('input[type="number"][name^="break_"]'))) {
             updateScheduleTotals();
         }
     });

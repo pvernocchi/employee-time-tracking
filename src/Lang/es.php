@@ -81,6 +81,7 @@ return [
     'profile.daily_hours' => 'Horas/día',
     'profile.weekly_hours' => 'Horas semanales',
     'profile.schedule_error_invalid_range' => 'El horario de :day no es válido: la hora de salida debe ser posterior a la de entrada.',
+    'profile.schedule_error_invalid_break' => 'El descanso de :day no es válido: no puede superar las horas trabajadas.',
     'profile.schedule_error_daily_max' => 'El horario de :day supera el máximo legal diario de :max horas.',
     'profile.schedule_error_weekly_max' => 'La suma semanal del horario supera el máximo legal de :max horas.',
     'profile.schedule_error_min_rest' => 'No se cumple el descanso mínimo de :min horas entre :prev_day y :day.',
