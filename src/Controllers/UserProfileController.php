@@ -13,7 +13,7 @@ class UserProfileController
     private const DAILY_MAX_HOURS = 9.0;
     private const WEEKLY_MAX_HOURS = 40.0;
     private const MIN_REST_HOURS = 12.0;
-    private const DEFAULT_WORK_SLOTS = [
+    public const DEFAULT_WORK_SLOTS = [
         ['start_time' => '09:00', 'end_time' => '14:00'],
         ['start_time' => '15:00', 'end_time' => '18:00'],
     ];
