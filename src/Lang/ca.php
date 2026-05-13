@@ -62,6 +62,7 @@ return [
     'profile.day' => 'Dia',
     'profile.working' => 'Treballa',
     'profile.time_slots' => 'Entrades i sortides',
+    'profile.breaks' => 'Descans, dinar, etc',
     'profile.start_time' => 'Hora d\'entrada',
     'profile.end_time' => 'Hora de sortida',
     'profile.add_time_slot' => 'Afegir tram',

@@ -62,6 +62,7 @@ return [
     'profile.day' => 'Day',
     'profile.working' => 'Working',
     'profile.time_slots' => 'Clock in/out slots',
+    'profile.breaks' => 'Break, lunch, etc',
     'profile.start_time' => 'Start Time',
     'profile.end_time' => 'End Time',
     'profile.add_time_slot' => 'Add slot',

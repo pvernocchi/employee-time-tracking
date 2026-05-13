@@ -13,6 +13,9 @@ class UserProfileController
     private const DAILY_MAX_HOURS = 9.0;
     private const WEEKLY_MAX_HOURS = 40.0;
     private const MIN_REST_HOURS = 12.0;
+    public const DEFAULT_WORK_SLOTS = [
+        ['start_time' => '09:00', 'end_time' => '18:00'],
+    ];
 
     private const DAYS_OF_WEEK = [
         0 => 'monday',
@@ -289,14 +292,11 @@ class UserProfileController
             ];
         }
 
-        // Fill defaults for missing days (Mon–Fri working 09:00–17:00, Sat–Sun off)
+        // Fill defaults for missing days (Mon–Fri working 09:00–18:00 with 1h break, Sat–Sun off)
         for ($d = 0; $d < 7; $d++) {
             if ($schedule[$d]['slots'] === [] && $d < 5) {
                 $schedule[$d]['is_working'] = 1;
-                $schedule[$d]['slots'][] = [
-                    'start_time' => '09:00',
-                    'end_time' => '17:00',
-                ];
+                $schedule[$d]['slots'] = self::DEFAULT_WORK_SLOTS;
             }
         }
 
@@ -337,7 +337,7 @@ class UserProfileController
                     $startTime = '09:00';
                 }
                 if (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
-                    $endTime = '17:00';
+                    $endTime = '18:00';
                 }
 
                 $slots[] = [
@@ -347,10 +347,7 @@ class UserProfileController
             }
 
             if ($isWorking === 1 && $slots === []) {
-                $slots[] = [
-                    'start_time' => '09:00',
-                    'end_time' => '17:00',
-                ];
+                $slots = self::DEFAULT_WORK_SLOTS;
             }
 
             $normalizedSchedule[$d] = [
@@ -418,6 +415,11 @@ class UserProfileController
                 }
 
                 $dailyMinutes += $intervals[$i]['end'] - $intervals[$i]['start'];
+            }
+
+            if (count($intervals) === 1) {
+                // For single-slot schedules, apply up to 60 minutes break (capped to actual worked minutes), as in profile UI.
+                $dailyMinutes -= min(60, $dailyMinutes);
             }
 
             if ($dailyMinutes > $dailyMaxMinutes) {
