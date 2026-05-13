@@ -1,6 +1,18 @@
 <?php
 $title = 'Leave Management';
 $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($value, 1), '0'), '.');
+$locale = \App\Core\I18n::getLocale();
+$dateFormat = $locale === 'en' ? 'M j, Y' : 'd/m/Y';
+$formatLeaveType = static function (string $leaveType) use ($t): string {
+    $translationKey = 'leave.type.' . $leaveType;
+    $translated = $t($translationKey);
+
+    if ($translated !== $translationKey) {
+        return $translated;
+    }
+
+    return ucfirst(str_replace('_', ' ', $leaveType));
+};
 ?>
 
 <div class="page-header">
@@ -69,9 +81,9 @@ $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($valu
             <?php foreach ($teamAbsences as $absence): ?>
             <tr>
                 <td><?= htmlspecialchars($absence['first_name'] . ' ' . $absence['last_name']) ?></td>
-                <td><?= ucfirst($absence['leave_type']) ?></td>
-                <td><?= date('M j, Y', strtotime($absence['start_date'])) ?></td>
-                <td><?= date('M j, Y', strtotime($absence['end_date'])) ?></td>
+                <td><?= htmlspecialchars($formatLeaveType((string) $absence['leave_type'])) ?></td>
+                <td><?= date($dateFormat, strtotime($absence['start_date'])) ?></td>
+                <td><?= date($dateFormat, strtotime($absence['end_date'])) ?></td>
                 <td><?= $formatDays((float) $absence['calculated_days']) ?></td>
             </tr>
             <?php endforeach; ?>
