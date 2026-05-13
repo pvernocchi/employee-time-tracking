@@ -3,7 +3,7 @@
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![MySQL 5.7+](https://img.shields.io/badge/MySQL-5.7%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Licencia GPLv3](https://img.shields.io/badge/Licencia-GPLv3-blue.svg)](LICENSE)
-[![Versión 0.2.2](https://img.shields.io/badge/Versi%C3%B3n-0.2.2-brightgreen.svg)](VERSION)
+[![Versión 0.2.2](https://img.shields.io/badge/Versi%C3%B3n-0.2.7-brightgreen.svg)](VERSION)
 [![Despliegue por FTP](https://github.com/pvernocchi/employee-time-tracking/actions/workflows/ftp-deploy.yml/badge.svg)](.github/workflows/ftp-deploy.yml)
 
 **Employee Time Tracking** es una aplicación web ligera de fichaje y gestión de jornada para equipos que necesitan registrar horas, administrar ausencias y preparar informes de cumplimiento laboral en España.
