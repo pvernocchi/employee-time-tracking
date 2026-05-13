@@ -265,5 +265,12 @@ return [
     'compliance.privacy.ack_body' => 'Zure baimena erregistratzean, zure datu pertsonalen tratamenduari buruz informatua izan zarela berresten duzu.',
     'compliance.privacy.ack_button' => 'Pribatutasun politika hau irakurri eta ulertu dut',
     'flash.compliance_consent_saved' => 'Baimena ondo erregistratu da.',
+    'leave.team_calendar.title' => 'Taldearen absentzien egutegia',
+    'leave.team_calendar.empty' => 'Ez dago zure taldearen hurrengo absentziarik.',
+    'leave.team_calendar.employee' => 'Langilea',
+    'leave.team_calendar.type' => 'Mota',
+    'leave.team_calendar.from' => 'Noiztik',
+    'leave.team_calendar.to' => 'Noiz arte',
+    'leave.team_calendar.days' => 'Egunak',
     'leave.not_applicable' => 'Ez aplikagarri',
 ];

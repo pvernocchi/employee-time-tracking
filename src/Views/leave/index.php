@@ -51,6 +51,36 @@ $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($valu
 <?php endif; ?>
 
 <div class="card">
+    <h2><?= htmlspecialchars($t('leave.team_calendar.title')) ?></h2>
+    <?php if (empty($teamAbsences)): ?>
+        <p class="text-muted"><?= htmlspecialchars($t('leave.team_calendar.empty')) ?></p>
+    <?php else: ?>
+    <table class="table">
+        <thead>
+            <tr>
+                <th><?= htmlspecialchars($t('leave.team_calendar.employee')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.type')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.from')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.to')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.days')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($teamAbsences as $absence): ?>
+            <tr>
+                <td><?= htmlspecialchars($absence['first_name'] . ' ' . $absence['last_name']) ?></td>
+                <td><?= ucfirst($absence['leave_type']) ?></td>
+                <td><?= date('M j, Y', strtotime($absence['start_date'])) ?></td>
+                <td><?= date('M j, Y', strtotime($absence['end_date'])) ?></td>
+                <td><?= $formatDays((float) $absence['calculated_days']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+</div>
+
+<div class="card">
     <h2>My Leave Requests</h2>
     <?php if (empty($requests)): ?>
         <p class="text-muted">No leave requests found.</p>

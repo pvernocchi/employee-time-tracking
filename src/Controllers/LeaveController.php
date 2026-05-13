@@ -37,11 +37,14 @@ class LeaveController
         );
 
         $categoryTracking = $this->buildCategoryTracking($db, $userId, $year, $vacationDecemberDeduction);
+        $teamAbsences = $this->getTeamAbsences($db, $userId, Auth::isManager());
+        $this->appendCalculatedDays($teamAbsences, $vacationDecemberDeduction);
 
         View::render('leave.index', [
             'requests' => $requests,
             'balances' => $balances,
             'categoryTracking' => $categoryTracking,
+            'teamAbsences' => $teamAbsences,
         ]);
     }
 
@@ -482,5 +485,42 @@ class LeaveController
         }
 
         return round($days, 1);
+    }
+
+    private function getTeamAbsences(Database $db, int $userId, bool $canViewManagedEmployees): array
+    {
+        $currentUser = $db->fetchOne('SELECT manager_id FROM users WHERE id = ?', [$userId]);
+        if (!$currentUser) {
+            return [];
+        }
+
+        $visibilityClauses = [];
+        $params = [$this->today(), $userId];
+
+        if (!empty($currentUser['manager_id'])) {
+            $visibilityClauses[] = 'u.manager_id = ?';
+            $params[] = (int) $currentUser['manager_id'];
+        }
+
+        if ($canViewManagedEmployees) {
+            $visibilityClauses[] = 'u.manager_id = ?';
+            $params[] = $userId;
+        }
+
+        if ($visibilityClauses === []) {
+            return [];
+        }
+
+        $sql = 'SELECT lr.id, lr.leave_type, lr.start_date, lr.end_date, lr.status, u.first_name, u.last_name
+                FROM leave_requests lr
+                JOIN users u ON lr.user_id = u.id
+                WHERE lr.status = "approved"
+                  AND lr.end_date >= ?
+                  AND u.id <> ?
+                  AND u.is_active = 1
+                  AND (' . implode(' OR ', $visibilityClauses) . ')
+                ORDER BY lr.start_date ASC, u.last_name ASC, u.first_name ASC';
+
+        return $db->fetchAll($sql, $params);
     }
 }

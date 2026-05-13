@@ -265,5 +265,12 @@ return [
     'compliance.privacy.ack_body' => 'Al registrar su consentimiento, confirma que ha sido informado/a sobre el tratamiento de sus datos personales en el sistema de registro de jornada.',
     'compliance.privacy.ack_button' => 'He leído y comprendo esta política de privacidad',
     'flash.compliance_consent_saved' => 'Consentimiento registrado correctamente.',
+    'leave.team_calendar.title' => 'Calendario de ausencias del equipo',
+    'leave.team_calendar.empty' => 'No hay ausencias previstas de tu equipo.',
+    'leave.team_calendar.employee' => 'Empleado',
+    'leave.team_calendar.type' => 'Tipo',
+    'leave.team_calendar.from' => 'Desde',
+    'leave.team_calendar.to' => 'Hasta',
+    'leave.team_calendar.days' => 'Días',
     'leave.not_applicable' => 'No Aplica',
 ];

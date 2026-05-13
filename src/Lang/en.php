@@ -265,5 +265,12 @@ return [
     'compliance.privacy.ack_body' => 'By recording your consent, you confirm that you have been informed about the processing of your personal data in the time tracking system.',
     'compliance.privacy.ack_button' => 'I have read and understand this privacy policy',
     'flash.compliance_consent_saved' => 'Consent recorded successfully.',
+    'leave.team_calendar.title' => 'Team Out-of-Office Calendar',
+    'leave.team_calendar.empty' => 'No upcoming team absences found.',
+    'leave.team_calendar.employee' => 'Employee',
+    'leave.team_calendar.type' => 'Type',
+    'leave.team_calendar.from' => 'From',
+    'leave.team_calendar.to' => 'To',
+    'leave.team_calendar.days' => 'Days',
     'leave.not_applicable' => 'N/A',
 ];

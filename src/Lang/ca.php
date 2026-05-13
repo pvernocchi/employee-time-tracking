@@ -265,5 +265,12 @@ return [
     'compliance.privacy.ack_body' => 'En registrar el seu consentiment, confirma que ha estat informat/da sobre el tractament de les seves dades personals en el sistema de registre de jornada.',
     'compliance.privacy.ack_button' => 'He llegit i comprenc aquesta política de privacitat',
     'flash.compliance_consent_saved' => 'Consentiment registrat correctament.',
+    'leave.team_calendar.title' => 'Calendari d’absències de l’equip',
+    'leave.team_calendar.empty' => 'No hi ha absències previstes del teu equip.',
+    'leave.team_calendar.employee' => 'Empleat',
+    'leave.team_calendar.type' => 'Tipus',
+    'leave.team_calendar.from' => 'Des de',
+    'leave.team_calendar.to' => 'Fins a',
+    'leave.team_calendar.days' => 'Dies',
     'leave.not_applicable' => 'No Aplica',
 ];
