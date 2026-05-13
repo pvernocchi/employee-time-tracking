@@ -266,4 +266,13 @@ return [
     'compliance.privacy.ack_button' => 'He llegit i comprenc aquesta política de privacitat',
     'flash.compliance_consent_saved' => 'Consentiment registrat correctament.',
     'leave.not_applicable' => 'No Aplica',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => 'Jerarquia organitzativa de :name.',
+    'orgchart.dashboard_description' => 'Consulta la teva posició en l\'organigrama de l\'empresa.',
+    'orgchart.view_orgchart' => 'Veure organigrama',
+    'orgchart.back_to_edit' => 'Tornar a empleat',
+    'orgchart.back_to_dashboard' => 'Tornar al tauler',
+    'orgchart.no_data' => 'No hi ha dades d\'organigrama disponibles.',
 ];

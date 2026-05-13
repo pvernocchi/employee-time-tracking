@@ -221,6 +221,10 @@ $router->post('/profile/password', [\App\Controllers\UserProfileController::clas
 $router->get('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSchedule'], $adminMiddleware);
 $router->post('/admin/employees/{id}/schedule', [\App\Controllers\UserProfileController::class, 'adminSaveSchedule'], $adminMiddleware);
 
+// Org chart
+$router->get('/orgchart', [\App\Controllers\OrgChartController::class, 'ownOrgChart'], $authMiddleware);
+$router->get('/admin/employees/{id}/orgchart', [\App\Controllers\OrgChartController::class, 'adminOrgChart'], $adminMiddleware);
+
 // Admin: Security settings
 $router->get('/admin/security', [\App\Controllers\SecurityController::class, 'settings'], $adminMiddleware);
 $router->post('/admin/security', [\App\Controllers\SecurityController::class, 'saveSettings'], $adminMiddleware);

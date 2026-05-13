@@ -266,4 +266,13 @@ return [
     'compliance.privacy.ack_button' => 'Pribatutasun politika hau irakurri eta ulertu dut',
     'flash.compliance_consent_saved' => 'Baimena ondo erregistratu da.',
     'leave.not_applicable' => 'Ez aplikagarri',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => ':name erabiltzailearen hierarkia organizatiboa.',
+    'orgchart.dashboard_description' => 'Kontsultatu zure posizioa enpresaren organigraman.',
+    'orgchart.view_orgchart' => 'Organigrama ikusi',
+    'orgchart.back_to_edit' => 'Langileari itzuli',
+    'orgchart.back_to_dashboard' => 'Arbelera itzuli',
+    'orgchart.no_data' => 'Ez dago organigramaren daturik.',
 ];

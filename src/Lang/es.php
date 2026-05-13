@@ -266,4 +266,13 @@ return [
     'compliance.privacy.ack_button' => 'He leído y comprendo esta política de privacidad',
     'flash.compliance_consent_saved' => 'Consentimiento registrado correctamente.',
     'leave.not_applicable' => 'No Aplica',
+
+    'orgchart.title' => 'Organigrama',
+    'orgchart.heading' => 'Organigrama',
+    'orgchart.description' => 'Jerarquía organizativa de :name.',
+    'orgchart.dashboard_description' => 'Consulta tu posición en el organigrama de la empresa.',
+    'orgchart.view_orgchart' => 'Ver organigrama',
+    'orgchart.back_to_edit' => 'Volver a empleado',
+    'orgchart.back_to_dashboard' => 'Volver al panel',
+    'orgchart.no_data' => 'No hay datos de organigrama disponibles.',
 ];
