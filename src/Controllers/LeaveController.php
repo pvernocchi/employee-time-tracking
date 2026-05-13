@@ -385,7 +385,7 @@ class LeaveController
     {
         try {
             $policies = $db->fetchAll(
-                'SELECT category_key, name, legal_days FROM leave_policy WHERE is_active = 1 ORDER BY is_statutory DESC, name ASC'
+                'SELECT category_key, name, legal_days, tracks_balance FROM leave_policy WHERE is_active = 1 ORDER BY is_statutory DESC, name ASC'
             );
         } catch (\Throwable $e) {
             return [];
@@ -420,6 +420,7 @@ class LeaveController
         $tracking = [];
         foreach ($policies as $policy) {
             $categoryKey = (string) $policy['category_key'];
+            $tracksBalance = (bool) ($policy['tracks_balance'] ?? true);
             $totalDays = (float) $policy['legal_days'];
             $usedDays = round((float) ($usedByCategory[$categoryKey] ?? 0.0), 1);
             $tracking[] = [
@@ -427,7 +428,8 @@ class LeaveController
                 'name' => (string) $policy['name'],
                 'total_days' => $totalDays,
                 'used_days' => $usedDays,
-                'available_days' => round($totalDays - $usedDays, 1),
+                'available_days' => $tracksBalance ? round($totalDays - $usedDays, 1) : null,
+                'tracks_balance' => $tracksBalance,
             ];
         }
 

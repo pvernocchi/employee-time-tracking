@@ -96,4 +96,5 @@ return [
     'notifications.preferences_description' => 'Aukeratu zein e-mail jakinarazpen jaso nahi dituzun.',
     'notifications.save_preferences' => 'Gorde jakinarazpen hobespenak',
     'notifications.preferences_saved' => 'Jakinarazpen hobespenak ondo gorde dira.',
+    'leave.not_applicable' => 'Ez aplikagarri',
 ];

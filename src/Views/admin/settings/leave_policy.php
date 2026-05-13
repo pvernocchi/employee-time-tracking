@@ -24,6 +24,7 @@
                 <th>Categoría</th>
                 <th>Días legales</th>
                 <th>24/12 y 31/12</th>
+                <th>Controla saldo</th>
                 <th>Estatuto de los Trabajadores</th>
                 <th>Acciones</th>
             </tr>
@@ -39,6 +40,13 @@
                     ?>
                 </td>
                 <td><?= ($policy['dec_24_31_deduction'] ?? 'full') === 'half' ? 'Medio día' : 'Día completo' ?></td>
+                <td>
+                    <?php if ($policy['tracks_balance'] ?? true): ?>
+                        <span class="badge badge-active">Sí</span>
+                    <?php else: ?>
+                        <span class="badge badge-inactive">No Aplica</span>
+                    <?php endif; ?>
+                </td>
                 <td>
                     <?php if ($policy['is_statutory']): ?>
                         <span class="badge badge-active" title="Según el Estatuto de los Trabajadores">⚖️ Sí</span>

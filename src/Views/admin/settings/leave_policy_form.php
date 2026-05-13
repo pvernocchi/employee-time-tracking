@@ -86,6 +86,18 @@ $formAction = $isEdit
             </small>
         </div>
 
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="tracks_balance" id="tracks_balance" value="1"
+                       <?= (!$isEdit || $policy['tracks_balance']) ? 'checked' : '' ?>>
+                Controla saldo de días restantes
+            </label>
+            <small class="text-muted">
+                Desmarcar si este permiso no tiene un límite de días (p. ej., baja por enfermedad, deber público).
+                Las categorías sin saldo mostrarán "No Aplica" en la columna "Restantes".
+            </small>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 <?= $isEdit ? 'Guardar cambios' : 'Crear categoría' ?>

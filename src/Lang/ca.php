@@ -96,4 +96,5 @@ return [
     'notifications.preferences_description' => 'Tria quines notificacions per correu electrònic vols rebre.',
     'notifications.save_preferences' => 'Desa les preferències de notificacions',
     'notifications.preferences_saved' => 'Preferències de notificacions desades correctament.',
+    'leave.not_applicable' => 'No Aplica',
 ];

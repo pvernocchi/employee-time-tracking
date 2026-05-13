@@ -61,6 +61,7 @@ class LeavePolicyController
             'is_statutory'       => $isStatutory,
             'min_statutory_days' => $isStatutory ? $legalDays : 0,
             'dec_24_31_deduction' => $decemberDeduction,
+            'tracks_balance'     => isset($_POST['tracks_balance']) ? 1 : 0,
         ]);
 
         $_SESSION['flash_success'] = 'Categoría creada correctamente.';
@@ -118,6 +119,7 @@ class LeavePolicyController
             $db->update('leave_policy', [
                 'legal_days' => $legalDays,
                 'dec_24_31_deduction' => $decemberDeduction,
+                'tracks_balance' => isset($_POST['tracks_balance']) ? 1 : 0,
             ], 'id = ?', [(int) $id]);
         } else {
             $name = trim($_POST['name'] ?? '');
@@ -135,6 +137,7 @@ class LeavePolicyController
                 'is_statutory'       => $isStatutory,
                 'min_statutory_days' => $isStatutory ? $legalDays : 0,
                 'dec_24_31_deduction' => $decemberDeduction,
+                'tracks_balance'     => isset($_POST['tracks_balance']) ? 1 : 0,
             ];
 
             $db->update('leave_policy', $data, 'id = ?', [(int) $id]);
