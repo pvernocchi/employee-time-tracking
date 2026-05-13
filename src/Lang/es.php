@@ -62,6 +62,7 @@ return [
     'profile.day' => 'Día',
     'profile.working' => 'Trabaja',
     'profile.time_slots' => 'Entradas y salidas',
+    'profile.breaks' => 'Descanso, comida, etc',
     'profile.start_time' => 'Hora de entrada',
     'profile.end_time' => 'Hora de salida',
     'profile.add_time_slot' => 'Agregar tramo',

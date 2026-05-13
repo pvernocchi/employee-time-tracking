@@ -71,6 +71,7 @@
                     <th><?= htmlspecialchars($t('profile.day')) ?></th>
                     <th><?= htmlspecialchars($t('profile.working')) ?></th>
                     <th><?= htmlspecialchars($t('profile.time_slots')) ?></th>
+                    <th><?= htmlspecialchars($t('profile.breaks')) ?></th>
                     <th><?= htmlspecialchars($t('profile.daily_hours')) ?></th>
                 </tr>
             </thead>
@@ -104,13 +105,14 @@
                                 + <?= htmlspecialchars($t('profile.add_time_slot')) ?>
                             </button>
                         </td>
+                        <td id="daily_break_<?= $idx ?>">—</td>
                         <td id="daily_hours_<?= $idx ?>">0.00 h</td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3"><?= htmlspecialchars($t('profile.weekly_hours')) ?></th>
+                    <th colspan="4"><?= htmlspecialchars($t('profile.weekly_hours')) ?></th>
                     <th id="weekly_hours_total">0.00 h</th>
                 </tr>
             </tfoot>
@@ -214,22 +216,35 @@ function updateScheduleTotals() {
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
         const working = document.querySelector(`input[name="working_${dayIdx}"]`);
         const hoursEl = document.getElementById(`daily_hours_${dayIdx}`);
+        const breakEl = document.getElementById(`daily_break_${dayIdx}`);
         let dayMinutes = 0;
+        let breakMinutes = 0;
 
         if (working && working.checked) {
             const starts = document.querySelectorAll(`input[name="start_${dayIdx}[]"]`);
             const ends = document.querySelectorAll(`input[name="end_${dayIdx}[]"]`);
             const slotsCount = Math.min(starts.length, ends.length);
+            const intervals = [];
             for (let i = 0; i < slotsCount; i++) {
                 const start = parseTimeToMinutes(starts[i].value);
                 const end = parseTimeToMinutes(ends[i].value);
                 if (start !== null && end !== null && end > start) {
                     dayMinutes += end - start;
+                    intervals.push({ start, end });
                 }
+            }
+
+            intervals.sort((a, b) => a.start - b.start);
+            for (let i = 1; i < intervals.length; i++) {
+                const gap = intervals[i].start - intervals[i - 1].end;
+                if (gap > 0) breakMinutes += gap;
             }
         }
 
         totalMinutes += dayMinutes;
+        if (breakEl) {
+            breakEl.textContent = breakMinutes > 0 ? `${breakMinutes} min` : '—';
+        }
         if (hoursEl) {
             hoursEl.textContent = `${(dayMinutes / 60).toFixed(2)} h`;
         }
