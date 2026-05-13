@@ -235,7 +235,10 @@ function updateScheduleTotals() {
             }
 
             intervals.sort((a, b) => a.start - b.start);
-            if (intervals.length > 0) {
+            if (intervals.length === 1) {
+                breakMinutes = Math.min(60, dayMinutes);
+                dayMinutes -= breakMinutes;
+            } else if (intervals.length > 1) {
                 let mergedEnd = intervals[0].end;
                 for (let i = 1; i < intervals.length; i++) {
                     if (intervals[i].start > mergedEnd) {
@@ -245,11 +248,6 @@ function updateScheduleTotals() {
                         mergedEnd = intervals[i].end;
                     }
                 }
-            }
-
-            if (intervals.length === 1) {
-                breakMinutes = Math.min(60, dayMinutes);
-                dayMinutes -= breakMinutes;
             }
         }
 
