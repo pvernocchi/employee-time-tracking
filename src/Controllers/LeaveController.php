@@ -37,11 +37,14 @@ class LeaveController
         );
 
         $categoryTracking = $this->buildCategoryTracking($db, $userId, $year, $vacationDecemberDeduction);
+        $teamAbsences = $this->getTeamAbsences($db, $userId, Auth::isManager());
+        $this->appendCalculatedDays($teamAbsences, $vacationDecemberDeduction);
 
         View::render('leave.index', [
             'requests' => $requests,
             'balances' => $balances,
             'categoryTracking' => $categoryTracking,
+            'teamAbsences' => $teamAbsences,
         ]);
     }
 
@@ -482,5 +485,44 @@ class LeaveController
         }
 
         return round($days, 1);
+    }
+
+    private function getTeamAbsences(Database $db, int $userId, bool $canViewManagedEmployees): array
+    {
+        $currentUser = $db->fetchOne('SELECT manager_id FROM users WHERE id = ?', [$userId]);
+        if (!$currentUser) {
+            return [];
+        }
+
+        $visibleManagerIds = [];
+
+        if (!empty($currentUser['manager_id'])) {
+            $visibleManagerIds[] = (int) $currentUser['manager_id'];
+        }
+
+        if ($canViewManagedEmployees) {
+            $visibleManagerIds[] = $userId;
+        }
+
+        $visibleManagerIds = array_values(array_unique($visibleManagerIds));
+        $visibleManagerCount = count($visibleManagerIds);
+        if ($visibleManagerCount === 0) {
+            return [];
+        }
+
+        $managerIdPlaceholders = implode(', ', array_fill(0, $visibleManagerCount, '?'));
+        $params = array_merge([$this->today(), $userId], $visibleManagerIds);
+
+        $sql = 'SELECT lr.id, lr.leave_type, lr.start_date, lr.end_date, lr.status, u.first_name, u.last_name
+                FROM leave_requests lr
+                JOIN users u ON lr.user_id = u.id
+                WHERE lr.status = "approved"
+                  AND lr.end_date >= ?
+                  AND u.id <> ?
+                  AND u.is_active = 1
+                  AND u.manager_id IN (' . $managerIdPlaceholders . ')
+                ORDER BY lr.start_date ASC, u.last_name ASC, u.first_name ASC';
+
+        return $db->fetchAll($sql, $params);
     }
 }

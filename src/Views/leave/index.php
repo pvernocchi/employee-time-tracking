@@ -1,6 +1,33 @@
 <?php
 $title = 'Leave Management';
 $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($value, 1), '0'), '.');
+$locale = \App\Core\I18n::getLocale();
+$dateFormatsByLocale = [
+    'en' => 'M j, Y',
+    'es' => 'd/m/Y',
+    'ca' => 'd/m/Y',
+    'eu' => 'Y/m/d',
+    'gl' => 'd/m/Y',
+];
+$dateFormat = $dateFormatsByLocale[$locale] ?? 'Y-m-d';
+$formatDate = static function (string $dateValue) use ($dateFormat): string {
+    $timestamp = strtotime($dateValue);
+    if ($timestamp === false) {
+        return '—';
+    }
+
+    return htmlspecialchars(date($dateFormat, $timestamp));
+};
+$formatLeaveType = static function (string $leaveType) use ($t): string {
+    $translationKey = 'leave.type.' . $leaveType;
+    $translated = $t($translationKey);
+
+    if ($translated !== $translationKey) {
+        return $translated;
+    }
+
+    return ucfirst(str_replace('_', ' ', $leaveType));
+};
 ?>
 
 <div class="page-header">
@@ -49,6 +76,36 @@ $formatDays = static fn(float $value): string => rtrim(rtrim(number_format($valu
     </table>
 </div>
 <?php endif; ?>
+
+<div class="card">
+    <h2><?= htmlspecialchars($t('leave.team_calendar.title')) ?></h2>
+    <?php if (empty($teamAbsences)): ?>
+        <p class="text-muted"><?= htmlspecialchars($t('leave.team_calendar.empty')) ?></p>
+    <?php else: ?>
+    <table class="table">
+        <thead>
+            <tr>
+                <th><?= htmlspecialchars($t('leave.team_calendar.employee')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.type')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.from')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.to')) ?></th>
+                <th><?= htmlspecialchars($t('leave.team_calendar.days')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($teamAbsences as $absence): ?>
+            <tr>
+                <td><?= htmlspecialchars($absence['first_name'] . ' ' . $absence['last_name']) ?></td>
+                <td><?= htmlspecialchars($formatLeaveType((string) $absence['leave_type'])) ?></td>
+                <td><?= $formatDate((string) $absence['start_date']) ?></td>
+                <td><?= $formatDate((string) $absence['end_date']) ?></td>
+                <td><?= $formatDays((float) $absence['calculated_days']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+</div>
 
 <div class="card">
     <h2>My Leave Requests</h2>
