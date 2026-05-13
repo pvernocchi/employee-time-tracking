@@ -174,11 +174,11 @@ $router->post('/admin/settings/leave-policy/{id}', [\App\Controllers\LeavePolicy
 $router->post('/admin/settings/leave-policy/{id}/delete', [\App\Controllers\LeavePolicyController::class, 'delete'], $adminMiddleware);
 
 // Admin: Employee Management
-$router->get('/admin/employees', [\App\Controllers\EmployeeController::class, 'index'], $adminMiddleware);
+$router->get('/admin/employees', [\App\Controllers\EmployeeController::class, 'index'], $managerMiddleware);
 $router->get('/admin/employees/create', [\App\Controllers\EmployeeController::class, 'create'], $adminMiddleware);
 $router->post('/admin/employees/create', [\App\Controllers\EmployeeController::class, 'store'], $adminMiddleware);
-$router->get('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'edit'], $adminMiddleware);
-$router->post('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'update'], $adminMiddleware);
+$router->get('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'edit'], $managerMiddleware);
+$router->post('/admin/employees/edit/{id}', [\App\Controllers\EmployeeController::class, 'update'], $managerMiddleware);
 
 // Admin: Reports
 $router->get('/admin/reports', [\App\Controllers\ReportController::class, 'index'], $managerMiddleware);

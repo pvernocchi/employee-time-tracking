@@ -11,15 +11,29 @@ class EmployeeController
     public function index(): void
     {
         $db = Database::getInstance();
-        $employees = $db->fetchAll(
-            'SELECT e.id, e.email, e.first_name, e.last_name, e.role, e.department, e.hourly_rate, e.manager_id, e.is_active, e.created_at,
-                    m.first_name AS manager_first_name, m.last_name AS manager_last_name
-             FROM users e
-             LEFT JOIN users m ON e.manager_id = m.id
-             ORDER BY e.last_name, e.first_name'
-        );
+        $isAdmin = Auth::isAdmin();
 
-        View::render('employees.index', ['employees' => $employees]);
+        if ($isAdmin) {
+            $employees = $db->fetchAll(
+                'SELECT e.id, e.email, e.first_name, e.last_name, e.role, e.department, e.hourly_rate, e.manager_id, e.is_active, e.created_at,
+                        m.first_name AS manager_first_name, m.last_name AS manager_last_name
+                 FROM users e
+                 LEFT JOIN users m ON e.manager_id = m.id
+                 ORDER BY e.last_name, e.first_name'
+            );
+        } else {
+            $employees = $db->fetchAll(
+                'SELECT e.id, e.email, e.first_name, e.last_name, e.role, e.department, e.hourly_rate, e.manager_id, e.is_active, e.created_at,
+                        m.first_name AS manager_first_name, m.last_name AS manager_last_name
+                 FROM users e
+                 LEFT JOIN users m ON e.manager_id = m.id
+                 WHERE e.manager_id = ?
+                 ORDER BY e.last_name, e.first_name',
+                [Auth::id()]
+            );
+        }
+
+        View::render('employees.index', ['employees' => $employees, 'isAdmin' => $isAdmin]);
     }
 
     public function create(): void
@@ -139,6 +153,7 @@ class EmployeeController
     public function edit(string $id): void
     {
         $db = Database::getInstance();
+        $isAdmin = Auth::isAdmin();
         $employee = $db->fetchOne(
             'SELECT id, email, first_name, last_name, role, department, hourly_rate, manager_id, is_active FROM users WHERE id = ?',
             [(int) $id]
@@ -146,6 +161,12 @@ class EmployeeController
 
         if (!$employee) {
             $_SESSION['flash_error'] = 'Employee not found.';
+            header('Location: /admin/employees');
+            exit;
+        }
+
+        if (!$isAdmin && (int) ($employee['manager_id'] ?? 0) !== Auth::id()) {
+            $_SESSION['flash_error'] = 'Access denied.';
             header('Location: /admin/employees');
             exit;
         }
@@ -169,6 +190,7 @@ class EmployeeController
             'managers' => $managers,
             'teamCandidates' => $teamCandidates,
             'assignedTeamIds' => $assignedTeamIds,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -181,18 +203,36 @@ class EmployeeController
         }
 
         $db = Database::getInstance();
+        $isAdmin = Auth::isAdmin();
+
+        // Verify the manager can only edit their own employees
+        if (!$isAdmin) {
+            $employee = $db->fetchOne('SELECT role, manager_id FROM users WHERE id = ?', [(int) $id]);
+            if (!$employee || (int) ($employee['manager_id'] ?? 0) !== Auth::id()) {
+                $_SESSION['flash_error'] = 'Access denied.';
+                header('Location: /admin/employees');
+                exit;
+            }
+        }
 
         $data = [
             'email' => trim($_POST['email'] ?? ''),
             'first_name' => trim($_POST['first_name'] ?? ''),
             'last_name' => trim($_POST['last_name'] ?? ''),
-            'role' => $_POST['role'] ?? 'employee',
             'department' => trim($_POST['department'] ?? '') ?: null,
             'hourly_rate' => $_POST['hourly_rate'] ? (float) $_POST['hourly_rate'] : null,
-            'manager_id' => isset($_POST['manager_id']) && $_POST['manager_id'] !== '' ? (int) $_POST['manager_id'] : null,
             'is_active' => isset($_POST['is_active']) ? 1 : 0,
         ];
         $teamMemberIds = array_map('intval', $_POST['team_member_ids'] ?? []);
+
+        if ($isAdmin) {
+            $data['role'] = $_POST['role'] ?? 'employee';
+            $data['manager_id'] = isset($_POST['manager_id']) && $_POST['manager_id'] !== '' ? (int) $_POST['manager_id'] : null;
+        } else {
+            // Managers cannot change the role or manager assignment; reuse the fetched employee record
+            $data['role'] = $employee['role'];
+            $data['manager_id'] = $employee['manager_id'];
+        }
 
         // Update password only if provided
         if (!empty($_POST['password'])) {
@@ -206,45 +246,47 @@ class EmployeeController
 
         $employeeId = (int) $id;
 
-        if ($data['role'] === 'employee' && $data['manager_id'] === null) {
-            $_SESSION['flash_error'] = 'Employees must have a manager assigned.';
-            header("Location: /admin/employees/edit/{$id}");
-            exit;
-        }
-
-        if ($data['manager_id'] !== null) {
-            if ($data['manager_id'] === $employeeId) {
-                $_SESSION['flash_error'] = 'An employee cannot be their own manager.';
+        if ($isAdmin) {
+            if ($data['role'] === 'employee' && $data['manager_id'] === null) {
+                $_SESSION['flash_error'] = 'Employees must have a manager assigned.';
                 header("Location: /admin/employees/edit/{$id}");
                 exit;
+            }
+
+            if ($data['manager_id'] !== null) {
+                if ($data['manager_id'] === $employeeId) {
+                    $_SESSION['flash_error'] = 'An employee cannot be their own manager.';
+                    header("Location: /admin/employees/edit/{$id}");
+                    exit;
+                }
+
+                if (!in_array($data['role'], ['employee', 'manager'], true)) {
+                    $_SESSION['flash_error'] = 'Only employees and managers can have a manager assigned.';
+                    header("Location: /admin/employees/edit/{$id}");
+                    exit;
+                }
+
+                $manager = $db->fetchOne(
+                    'SELECT id FROM users WHERE id = ? AND is_active = 1 AND role IN ("manager", "admin")',
+                    [$data['manager_id']]
+                );
+                if (!$manager) {
+                    $_SESSION['flash_error'] = 'Selected manager is invalid.';
+                    header("Location: /admin/employees/edit/{$id}");
+                    exit;
+                }
             }
 
             if (!in_array($data['role'], ['employee', 'manager'], true)) {
-                $_SESSION['flash_error'] = 'Only employees and managers can have a manager assigned.';
-                header("Location: /admin/employees/edit/{$id}");
-                exit;
+                $data['manager_id'] = null;
             }
-
-            $manager = $db->fetchOne(
-                'SELECT id FROM users WHERE id = ? AND is_active = 1 AND role IN ("manager", "admin")',
-                [$data['manager_id']]
-            );
-            if (!$manager) {
-                $_SESSION['flash_error'] = 'Selected manager is invalid.';
-                header("Location: /admin/employees/edit/{$id}");
-                exit;
-            }
-        }
-
-        if (!in_array($data['role'], ['employee', 'manager'], true)) {
-            $data['manager_id'] = null;
         }
 
         $db->update('users', $data, 'id = ?', [(int) $id]);
 
-        if ($data['role'] === 'manager') {
+        if ($isAdmin && $data['role'] === 'manager') {
             $this->syncTeamMembers($db, $employeeId, $teamMemberIds);
-        } else {
+        } elseif ($isAdmin) {
             $db->query('UPDATE users SET manager_id = NULL WHERE manager_id = ?', [$employeeId]);
         }
 
