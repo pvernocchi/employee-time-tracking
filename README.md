@@ -69,62 +69,9 @@ Antes de empezar, asegúrate de tener:
 
 ---
 
-## 🛠️ Primeros pasos
-
-### 1. Obtener el código
-
-```bash
-git clone https://github.com/pvernocchi/employee-time-tracking.git
-cd employee-time-tracking
-```
-
-### 2. Instalar dependencias
-
-Para producción:
-
-```bash
-composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
-```
-
-Para desarrollo local:
-
-```bash
-composer install
-```
-
-### 3. Preparar el servidor web
-
-Configura Apache para que la raíz del sitio apunte a:
-
-```text
-/path/to/employee-time-tracking/public
-```
-
-El archivo `public/index.php` actúa como controlador frontal y redirige al instalador cuando la aplicación aún no está configurada.
-
-### 4. Ejecutar el instalador web
-
-Abre la URL de la aplicación en el navegador. Si no existe `config/config.php` o la base de datos no está instalada, la aplicación redirige automáticamente a `/install`.
-
-El instalador solicita:
-
-1. Datos de la aplicación: nombre, URL y zona horaria.
-2. Credenciales de MySQL.
-3. Datos del primer usuario administrador.
-4. Confirmación para crear la configuración y aplicar migraciones.
+## 🛠️ Instalación
 
 Para instrucciones más detalladas, consulta la [guía de instalación](install.md). Para actualizar una instalación existente, consulta la [guía de actualización](update.md).
-
----
-
-## 💡 Ejemplos de uso
-
-Después de iniciar sesión:
-
-- Un **empleado** puede fichar desde `/clock`, revisar su jornada en `/timesheet` y solicitar permisos en `/leave/request`.
-- Un **responsable** puede revisar solicitudes en `/admin/leave` y consultar informes de equipo en `/admin/reports`.
-- Un **administrador** puede gestionar empleados en `/admin/employees`, configurar seguridad en `/admin/security` y revisar cumplimiento en `/compliance`.
-- Un **inspector** puede acceder a vistas de solo lectura y exportaciones desde `/inspector`.
 
 ---
 
@@ -168,18 +115,6 @@ mysql -u usuario -p nombre_base_datos < database/schema.sql
 ```
 
 El repositorio incluye un flujo de GitHub Actions en [`.github/workflows/ftp-deploy.yml`](.github/workflows/ftp-deploy.yml) que instala dependencias de producción y despliega por FTPS usando secretos del repositorio.
-
----
-
-## ✅ Validación en desarrollo
-
-No hay scripts dedicados de prueba en Composer. Para validar cambios PHP, ejecuta comprobaciones de sintaxis:
-
-```bash
-find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
-```
-
-Si modificas vistas o flujos de usuario, prueba manualmente los roles afectados antes de abrir un pull request.
 
 ---
 
