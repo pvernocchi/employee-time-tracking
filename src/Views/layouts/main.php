@@ -72,6 +72,7 @@
                 </svg>
             </button>
             <a href="/profile" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.profile')) ?>">👤</a>
+            <a href="/profile/api-keys" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.api_keys')) ?>">🗝️</a>
             <a href="/mfa/setup" class="btn btn-sm btn-outline" title="<?= htmlspecialchars($t('nav.mfa_setup')) ?>">🔑</a>
             <a href="/logout" class="btn btn-sm btn-outline"><?= htmlspecialchars($t('nav.logout')) ?></a>
         </div>

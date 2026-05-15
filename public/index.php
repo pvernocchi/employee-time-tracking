@@ -223,6 +223,9 @@ $router->post('/mfa/remove/{id}', [\App\Controllers\MfaController::class, 'remov
 
 // User Profile
 $router->get('/profile', [\App\Controllers\UserProfileController::class, 'index'], $authMiddleware);
+$router->get('/profile/api-keys', [\App\Controllers\ApiKeyController::class, 'index'], $authMiddleware);
+$router->post('/profile/api-keys', [\App\Controllers\ApiKeyController::class, 'create'], $authMiddleware);
+$router->post('/profile/api-keys/{id}/revoke', [\App\Controllers\ApiKeyController::class, 'revoke'], $authMiddleware);
 $router->post('/profile/preferences', [\App\Controllers\UserProfileController::class, 'savePreferences'], $authMiddleware);
 $router->post('/profile/schedule', [\App\Controllers\UserProfileController::class, 'saveSchedule'], $authMiddleware);
 $router->post('/profile/notifications', [\App\Controllers\UserProfileController::class, 'saveNotificationPreferences'], $authMiddleware);
