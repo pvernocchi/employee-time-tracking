@@ -14,6 +14,6 @@ You're a senior software engineer with extensive experience in open source proje
 - **Who maintains/contributes**
 
 ## Guidelines
-- Use GitHub Flavored Markdown
+- Use GitHub Flavored Markdown, emojis and icons
 - Include code examples
 - Keep it concise and scannable
