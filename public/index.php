@@ -13,6 +13,7 @@ ini_set('log_errors', '1');
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Auth;
+use App\Core\ApiAuth;
 use App\Core\Database;
 use App\Core\I18n;
 use App\Core\Router;
@@ -123,6 +124,16 @@ $router->get('/mfa/verify', [\App\Controllers\MfaController::class, 'showVerify'
 $router->post('/mfa/verify', [\App\Controllers\MfaController::class, 'verify']);
 $router->post('/mfa/webauthn/auth-challenge', [\App\Controllers\MfaController::class, 'webAuthnAuthChallenge']);
 $router->post('/mfa/webauthn/auth-verify', [\App\Controllers\MfaController::class, 'webAuthnAuthVerify']);
+
+// API (API key auth)
+$apiMiddleware = [ApiAuth::class . '::requireApiKey'];
+$router->get('/api/v1/me', [\App\Controllers\ApiController::class, 'me'], $apiMiddleware);
+$router->get('/api/v1/time-entries', [\App\Controllers\ApiController::class, 'listTimeEntries'], $apiMiddleware);
+$router->get('/api/v1/time-entries/active', [\App\Controllers\ApiController::class, 'activeEntry'], $apiMiddleware);
+$router->post('/api/v1/clock-in', [\App\Controllers\ApiController::class, 'clockIn'], $apiMiddleware);
+$router->post('/api/v1/clock-out', [\App\Controllers\ApiController::class, 'clockOut'], $apiMiddleware);
+$router->get('/api/v1/leave-requests', [\App\Controllers\ApiController::class, 'listLeaveRequests'], $apiMiddleware);
+$router->post('/api/v1/leave-requests', [\App\Controllers\ApiController::class, 'createLeaveRequest'], $apiMiddleware);
 
 // ----- Protected Routes -----
 $authMiddleware = [Auth::class . '::requireLogin'];

@@ -95,6 +95,7 @@ employee-time-tracking/
 ├── .github/workflows/       # Automatización de despliegue
 ├── composer.json            # Dependencias y autoload PSR-4
 ├── install.md               # Guía de instalación
+├── openapi.yaml             # Especificación OpenAPI 3.0 del REST API
 └── update.md                # Guía de actualización
 ```
 
