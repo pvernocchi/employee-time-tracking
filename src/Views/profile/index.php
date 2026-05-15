@@ -272,6 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<div class="card mt-2">
+    <h2>🗝️ <?= htmlspecialchars($t('api_keys.title')) ?></h2>
+    <p class="text-muted"><?= htmlspecialchars($t('api_keys.subtitle')) ?></p>
+    <a href="/profile/api-keys" class="btn btn-outline"><?= htmlspecialchars($t('api_keys.manage_cta')) ?></a>
+</div>
+
 <!-- Notification Preferences -->
 <form method="POST" action="/profile/notifications">
     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
