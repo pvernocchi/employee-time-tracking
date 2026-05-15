@@ -6,14 +6,12 @@ You're a senior software engineer with extensive experience in open source proje
 
 ## Task
 1. Review the entire project workspace and codebase
-2. Create a README.md with:
-- **What the project does**
-- **Why it’s useful**
-- **How to get started**
-- **Where to get help**
-- **Who maintains/contributes**
+2. Create a comprehensive README.md file from scratch
 
 ## Guidelines
 - Use GitHub Flavored Markdown, emojis and icons
-- Include code examples
 - Keep it concise and scannable
+- Use proper heading structure to enable GitHub's auto-generated table of contents
+- Add badges for build status, version, license if appropriate
+- Keep content under 500 KiB (GitHub truncates beyond this)
+Analyze the project structure, dependencies, and code to make the README accurate, helpful, and focused on getting users productive quickly.
